@@ -48,7 +48,7 @@ namespace SlimGraph.Auth
             return GetAuthenticationImplAsync(tenant, scope);
         }
 
-        public async Task<AuthSuccessResponse> GetAuthenticationImplAsync(IAzureTenant tenant, string scope)
+        private async Task<AuthSuccessResponse> GetAuthenticationImplAsync(IAzureTenant tenant, string scope)
         {
             var data = azureCredentials.GetRequestData(scope);
 
