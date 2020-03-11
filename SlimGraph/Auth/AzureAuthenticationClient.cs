@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using Microsoft.Extensions.Caching.Memory;
+using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -7,23 +9,44 @@ namespace SlimGraph.Auth
 {
     public class AzureAuthenticationClient : IAuthenticationProvider
     {
+        private const int MinTokenLifetimeSeconds = 300;
+
         private readonly IAzureCredentials azureCredentials;
         private readonly HttpClient httpClient;
+        private readonly IMemoryCache? memoryCache;
 
-        public AzureAuthenticationClient(IAzureCredentials azureCredentials, HttpClient httpClient)
+        public AzureAuthenticationClient(IAzureCredentials azureCredentials, HttpClient httpClient, IMemoryCache? memoryCache = null)
         {
             this.azureCredentials = azureCredentials;
             this.httpClient = httpClient;
+            this.memoryCache = memoryCache;
         }
 
-        public async Task AuthenticateRequestAsync(IAzureTenant tenant, HttpRequestMessage request)
+        public async Task AuthenticateRequestAsync(IAzureTenant tenant, string scope, HttpRequestMessage request)
         {
-            var auth = await GetAuthenticationAsync(tenant, scope: SlimGraphConstants.ScopeDefault);
+            var auth = await GetAuthenticationAsync(tenant, scope);
 
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", auth.AccessToken);
         }
 
-        public async Task<AuthSuccessResponse> GetAuthenticationAsync(IAzureTenant tenant, string scope)
+        public Task<AuthSuccessResponse> GetAuthenticationAsync(IAzureTenant tenant, string scope)
+        {
+            if (memoryCache != null)
+            {
+                return memoryCache.GetOrCreateAsync((tenant, scope), async entry =>
+                {
+                    var response = await GetAuthenticationImplAsync(tenant, scope);
+
+                    entry.SetAbsoluteExpiration(TimeSpan.FromSeconds(response.ExpiresIn - MinTokenLifetimeSeconds));
+
+                    return response;
+                });
+            }
+
+            return GetAuthenticationImplAsync(tenant, scope);
+        }
+
+        public async Task<AuthSuccessResponse> GetAuthenticationImplAsync(IAzureTenant tenant, string scope)
         {
             var data = azureCredentials.GetRequestData(scope);
 

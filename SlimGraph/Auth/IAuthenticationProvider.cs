@@ -5,6 +5,6 @@ namespace SlimGraph.Auth
 {
     public interface IAuthenticationProvider
     {
-        Task AuthenticateRequestAsync(IAzureTenant tenant, HttpRequestMessage request);
+        Task AuthenticateRequestAsync(IAzureTenant tenant, string scope, HttpRequestMessage request);
     }
 }

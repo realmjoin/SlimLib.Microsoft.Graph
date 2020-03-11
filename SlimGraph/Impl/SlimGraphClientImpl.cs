@@ -43,7 +43,7 @@ namespace SlimGraph
                 };
             }
 
-            await authenticationProvider.AuthenticateRequestAsync(tenant, request).ConfigureAwait(false);
+            await authenticationProvider.AuthenticateRequestAsync(tenant, SlimGraphConstants.ScopeDefault, request).ConfigureAwait(false);
 
             if (preferMinimal)
             {
