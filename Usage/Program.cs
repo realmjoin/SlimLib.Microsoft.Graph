@@ -13,7 +13,7 @@ namespace Usage
 {
     public class Program
     {
-        public static IConfigurationRoot Configuration { get; private set; }
+        public static IConfigurationRoot? Configuration { get; private set; }
 
         public static async Task Main(string[] args)
         {
