@@ -33,7 +33,9 @@ namespace SlimGraph.Auth
         {
             if (memoryCache != null)
             {
-                return memoryCache.GetOrCreateAsync((tenant, scope), async entry =>
+                var key = nameof(AzureAuthenticationClient) + nameof(GetAuthenticationAsync) + tenant.TokenUrl + scope;
+
+                return memoryCache.GetOrCreateAsync(key, async entry =>
                 {
                     var response = await GetAuthenticationImplAsync(tenant, scope);
 
