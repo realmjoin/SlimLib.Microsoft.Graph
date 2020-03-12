@@ -4,6 +4,7 @@
     {
         ISlimGraphOrgContactsClient OrgContacts { get; }
         ISlimGraphDevicesClient Devices { get; }
+        ISlimGraphDirectoryRolesClient DirectoryRoles { get; }
         ISlimGraphManagedDevicesClient ManagedDevices { get; }
         ISlimGraphGroupsClient Groups { get; }
         ISlimGraphServicePrincipalsClient ServicePrincipals { get; }

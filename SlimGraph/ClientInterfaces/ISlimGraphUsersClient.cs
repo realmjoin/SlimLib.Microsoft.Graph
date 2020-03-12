@@ -14,6 +14,8 @@ namespace SlimGraph
         Task<DeltaResult<JsonElement>> GetUsersDeltaAsync(IAzureTenant tenant, DeltaRequestOptions options = default, CancellationToken cancellationToken = default);
         Task<DeltaResult<JsonElement>> GetUsersDeltaChangeAsync(IAzureTenant tenant, string previousDeltaLink, DeltaRequestOptions options = default, CancellationToken cancellationToken = default);
 
+        IAsyncEnumerable<JsonElement> GetMemberOfAsync(IAzureTenant tenant, Guid userID, ListRequestOptions options = default, CancellationToken cancellationToken = default);
+
         IAsyncEnumerable<Guid> GetMemberGroupsAsync(IAzureTenant tenant, Guid userID, bool securityEnabledOnly, InvokeRequestOptions options = default, CancellationToken cancellationToken = default);
         IAsyncEnumerable<Guid> GetMemberObjectsAsync(IAzureTenant tenant, Guid userID, bool securityEnabledOnly, InvokeRequestOptions options = default, CancellationToken cancellationToken = default);
 
