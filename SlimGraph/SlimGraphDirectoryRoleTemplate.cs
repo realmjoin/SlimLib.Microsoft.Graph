@@ -4,14 +4,16 @@ namespace SlimGraph
 {
     public class SlimGraphDirectoryRoleTemplate
     {
-        public SlimGraphDirectoryRoleTemplate(Guid templateID, string graphDisplayName, string portalDisplayName)
+        public SlimGraphDirectoryRoleTemplate(string templateIDString, string graphDisplayName, string portalDisplayName)
         {
-            TemplateID = templateID;
+            TemplateID = new Guid(templateIDString);
+            TemplateIDString = templateIDString;
             GraphDisplayName = graphDisplayName ?? throw new ArgumentNullException(nameof(graphDisplayName));
             PortalDisplayName = portalDisplayName ?? throw new ArgumentNullException(nameof(portalDisplayName));
         }
 
         public Guid TemplateID { get; set; }
+        public string TemplateIDString { get; set; }
         public string GraphDisplayName { get; set; }
         public string PortalDisplayName { get; set; }
 
