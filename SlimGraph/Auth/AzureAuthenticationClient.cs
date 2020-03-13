@@ -33,7 +33,7 @@ namespace SlimGraph.Auth
         {
             if (memoryCache != null)
             {
-                var key = nameof(AzureAuthenticationClient) + nameof(GetAuthenticationAsync) + tenant.TokenUrl + scope;
+                var key = nameof(AzureAuthenticationClient) + nameof(GetAuthenticationAsync) + tenant.Identifier + scope;
 
                 return memoryCache.GetOrCreateAsync(key, async entry =>
                 {
