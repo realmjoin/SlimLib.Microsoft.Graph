@@ -44,5 +44,25 @@ namespace SlimGraph
 
             } while (nextLink != null);
         }
+        async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.GetManagedDeviceEncryptionStatesAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            string? nextLink = options.BuildLink("deviceManagement/managedDeviceEncryptionStates");
+
+            do
+            {
+                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+
+                foreach (var item in root.GetProperty("value").EnumerateArray())
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        yield break;
+
+                    yield return item;
+                }
+
+                HandleNextLink(root, ref nextLink);
+
+            } while (nextLink != null);
+        }
     }
 }

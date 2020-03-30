@@ -12,5 +12,6 @@ namespace SlimGraph
         Task<JsonElement> GetManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions options = default, CancellationToken cancellationToken = default);
         Task<JsonElement> GetManagedDeviceOverviewAsync(IAzureTenant tenant, ScalarRequestOptions options = default, CancellationToken cancellationToken = default);
         IAsyncEnumerable<JsonElement> GetManagedDevicesAsync(IAzureTenant tenant, ListRequestOptions options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonElement> GetManagedDeviceEncryptionStatesAsync(IAzureTenant tenant, ListRequestOptions options = default, CancellationToken cancellationToken = default);
     }
 }
