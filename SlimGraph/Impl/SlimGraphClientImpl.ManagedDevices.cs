@@ -17,6 +17,13 @@ namespace SlimGraph
             return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
         }
 
+        async Task<JsonElement> ISlimGraphManagedDevicesClient.GetManagedDeviceOverviewAsync(IAzureTenant tenant, ScalarRequestOptions options, CancellationToken cancellationToken)
+        {
+            var link = options.BuildLink($"deviceManagement/managedDeviceOverview");
+
+            return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+        }
+
         async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.GetManagedDevicesAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             string? nextLink = options.BuildLink("deviceManagement/managedDevices");
