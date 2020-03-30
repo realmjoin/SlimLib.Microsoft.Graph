@@ -10,6 +10,20 @@ namespace SlimGraph
 {
     partial class SlimGraphClientImpl
     {
+        async Task ISlimGraphManagedDevicesClient.SyncManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions options, CancellationToken cancellationToken)
+        {
+            var link = options.BuildLink($"deviceManagement/managedDevices/{deviceID}/syncDevice");
+
+            await PostAsync(tenant, null, link, cancellationToken).ConfigureAwait(false);
+        }
+
+        async Task ISlimGraphManagedDevicesClient.WindowsDefenderScanManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, bool quickScan, ScalarRequestOptions options, CancellationToken cancellationToken)
+        {
+            var link = options.BuildLink($"deviceManagement/managedDevices/{deviceID}/windowsDefenderScan");
+
+            await PostAsync(tenant, new { quickScan }, link, cancellationToken).ConfigureAwait(false);
+        }
+
         async Task<JsonElement> ISlimGraphManagedDevicesClient.GetManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions options, CancellationToken cancellationToken)
         {
             var link = options.BuildLink($"deviceManagement/managedDevices/{deviceID}");

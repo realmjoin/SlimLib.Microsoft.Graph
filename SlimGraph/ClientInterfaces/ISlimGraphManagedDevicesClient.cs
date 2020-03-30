@@ -9,6 +9,8 @@ namespace SlimGraph
 {
     public interface ISlimGraphManagedDevicesClient
     {
+        Task SyncManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions options = default, CancellationToken cancellationToken = default);
+        Task WindowsDefenderScanManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, bool quickScan, ScalarRequestOptions options = default, CancellationToken cancellationToken = default);
         Task<JsonElement> GetManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions options = default, CancellationToken cancellationToken = default);
         Task<JsonElement> GetManagedDeviceOverviewAsync(IAzureTenant tenant, ScalarRequestOptions options = default, CancellationToken cancellationToken = default);
         IAsyncEnumerable<JsonElement> GetManagedDevicesAsync(IAzureTenant tenant, ListRequestOptions options = default, CancellationToken cancellationToken = default);

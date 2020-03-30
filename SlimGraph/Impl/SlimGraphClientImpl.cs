@@ -28,7 +28,7 @@ namespace SlimGraph
         private Task<JsonElement> GetAsync(IAzureTenant tenant, string requestUri, CancellationToken cancellationToken, bool preferMinimal = false)
             => SendAsync(tenant, HttpMethod.Get, null, requestUri, cancellationToken, preferMinimal);
 
-        private Task<JsonElement> PostAsync(IAzureTenant tenant, object data, string requestUri, CancellationToken cancellationToken, bool preferMinimal = false)
+        private Task<JsonElement> PostAsync(IAzureTenant tenant, object? data, string requestUri, CancellationToken cancellationToken, bool preferMinimal = false)
             => SendAsync(tenant, HttpMethod.Post, data, requestUri, cancellationToken, preferMinimal);
 
         private async Task<JsonElement> SendAsync(IAzureTenant tenant, HttpMethod method, object? data, string requestUri, CancellationToken cancellationToken, bool preferMinimal = false)
@@ -63,13 +63,19 @@ namespace SlimGraph
                 logger.LogDebug("Received HTTP header Preference-Applied: return=minimal");
             }
 
+            var path = request.RequestUri.AbsolutePath;
+
+            if (response.StatusCode == HttpStatusCode.NoContent)
+            {
+                logger.LogInformation("Got no content for HTTP request to {path}.", path);
+                return default;
+            }
+
             using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
             var root = await JsonSerializer.DeserializeAsync<JsonElement>(content, cancellationToken: cancellationToken);
 
             if (!response.IsSuccessStatusCode)
                 throw HandleError(response.StatusCode, root);
-
-            var path = request.RequestUri.AbsolutePath;
 
             if (root.TryGetProperty("value", out var items) && items.ValueKind == JsonValueKind.Array)
             {
