@@ -6,6 +6,7 @@
         ISlimGraphDevicesClient Devices { get; }
         ISlimGraphDirectoryRolesClient DirectoryRoles { get; }
         ISlimGraphDetectedAppsClient DetectedApps { get; }
+        ISlimGraphMobileAppsClient MobileApps { get; }
         ISlimGraphManagedDevicesClient ManagedDevices { get; }
         ISlimGraphGroupsClient Groups { get; }
         ISlimGraphServicePrincipalsClient ServicePrincipals { get; }
