@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SlimGraph
 {
-    internal sealed partial class SlimGraphClientImpl : ISlimGraphOrgContactsClient, ISlimGraphDevicesClient, ISlimGraphDirectoryRolesClient, ISlimGraphManagedDevicesClient, ISlimGraphGroupsClient, ISlimGraphSubscribedSkusClient, ISlimGraphServicePrincipalsClient, ISlimGraphUsersClient
+    internal sealed partial class SlimGraphClientImpl : ISlimGraphOrgContactsClient, ISlimGraphDevicesClient, ISlimGraphDirectoryRolesClient, ISlimGraphDetectedAppsClient, ISlimGraphManagedDevicesClient, ISlimGraphGroupsClient, ISlimGraphSubscribedSkusClient, ISlimGraphServicePrincipalsClient, ISlimGraphUsersClient
     {
         private readonly IAuthenticationProvider authenticationProvider;
         private readonly HttpClient httpClient;

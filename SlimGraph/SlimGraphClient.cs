@@ -16,6 +16,7 @@ namespace SlimGraph
         public ISlimGraphOrgContactsClient OrgContacts => impl;
         public ISlimGraphDevicesClient Devices => impl;
         public ISlimGraphDirectoryRolesClient DirectoryRoles => impl;
+        public ISlimGraphDetectedAppsClient DetectedApps => impl;
         public ISlimGraphManagedDevicesClient ManagedDevices => impl;
         public ISlimGraphGroupsClient Groups => impl;
         public ISlimGraphServicePrincipalsClient ServicePrincipals => impl;
