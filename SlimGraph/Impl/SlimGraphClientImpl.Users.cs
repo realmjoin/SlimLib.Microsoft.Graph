@@ -17,6 +17,51 @@ namespace SlimGraph
             return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
         }
 
+        async Task<JsonElement> ISlimGraphUsersClient.GetUserPhotoAsync(IAzureTenant tenant, Guid userID, string size, ScalarRequestOptions options, CancellationToken cancellationToken)
+        {
+            string link;
+
+            if (string.IsNullOrEmpty(size))
+                link = options.BuildLink($"users/{userID}/photo");
+            else
+                link = options.BuildLink($"users/{userID}/photos/{size}");
+
+            return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+        }
+
+        async Task<SlimGraphPicture?> ISlimGraphUsersClient.GetUserPhotoDataAsync(IAzureTenant tenant, Guid userID, string size, ScalarRequestOptions options, CancellationToken cancellationToken)
+        {
+            string link;
+
+            if (string.IsNullOrEmpty(size))
+                link = options.BuildLink($"users/{userID}/photo/$value");
+            else
+                link = options.BuildLink($"users/{userID}/photos/{size}/$value");
+
+            return await GetPictureAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+        }
+
+        async IAsyncEnumerable<JsonElement> ISlimGraphUsersClient.GetUserPhotosAsync(IAzureTenant tenant, Guid userID, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            string? nextLink = options.BuildLink($"users/{userID}/photos");
+
+            do
+            {
+                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+
+                foreach (var item in root.GetProperty("value").EnumerateArray())
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        yield break;
+
+                    yield return item;
+                }
+
+                HandleNextLink(root, ref nextLink);
+
+            } while (nextLink != null);
+        }
+
         async IAsyncEnumerable<JsonElement> ISlimGraphUsersClient.GetUsersAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             string? nextLink = options.BuildLink("users");

@@ -33,6 +33,50 @@ namespace SlimGraph
 
         private async Task<JsonElement> SendAsync(IAzureTenant tenant, HttpMethod method, object? data, string requestUri, CancellationToken cancellationToken, bool preferMinimal = false)
         {
+            using var response = await SendInternalAsync(tenant, method, data, requestUri, cancellationToken, preferMinimal);
+
+            if (response.StatusCode == HttpStatusCode.NoContent)
+            {
+                logger.LogInformation("Got no content for HTTP request to {requestUri}.", requestUri);
+                return default;
+            }
+
+            using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+
+            var root = await JsonSerializer.DeserializeAsync<JsonElement>(content, cancellationToken: cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+                throw HandleError(response.StatusCode, root);
+
+            if (root.TryGetProperty("value", out var items) && items.ValueKind == JsonValueKind.Array)
+            {
+                logger.LogInformation("Got {count} items for HTTP request to {requestUri}.", items.GetArrayLength(), requestUri);
+            }
+            else
+            {
+                logger.LogInformation("Got single item for HTTP request to {requestUri}.", requestUri);
+            }
+
+            return root;
+        }
+
+        private async Task<SlimGraphPicture?> GetPictureAsync(IAzureTenant tenant, string requestUri, CancellationToken cancellationToken, bool preferMinimal = false)
+        {
+            using var response = await SendInternalAsync(tenant, HttpMethod.Get, null, requestUri, cancellationToken, preferMinimal);
+
+            if (response.StatusCode == HttpStatusCode.NoContent)
+            {
+                logger.LogInformation("Got no content for HTTP request to {requestUri}.", requestUri);
+                return null;
+            }
+
+            var buffer = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+
+            return new SlimGraphPicture(buffer, response.Content.Headers.ContentType);
+        }
+
+        private async Task<HttpResponseMessage> SendInternalAsync(IAzureTenant tenant, HttpMethod method, object? data, string requestUri, CancellationToken cancellationToken, bool preferMinimal)
+        {
             using var request = new HttpRequestMessage(method, requestUri);
 
             if (data != null)
@@ -51,7 +95,7 @@ namespace SlimGraph
                 request.Headers.Add("Prefer", "return=minimal");
             }
 
-            using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
             if (preferMinimal)
             {
@@ -63,30 +107,7 @@ namespace SlimGraph
                 logger.LogDebug("Received HTTP header Preference-Applied: return=minimal");
             }
 
-            var path = request.RequestUri.AbsolutePath;
-
-            if (response.StatusCode == HttpStatusCode.NoContent)
-            {
-                logger.LogInformation("Got no content for HTTP request to {path}.", path);
-                return default;
-            }
-
-            using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-            var root = await JsonSerializer.DeserializeAsync<JsonElement>(content, cancellationToken: cancellationToken);
-
-            if (!response.IsSuccessStatusCode)
-                throw HandleError(response.StatusCode, root);
-
-            if (root.TryGetProperty("value", out var items) && items.ValueKind == JsonValueKind.Array)
-            {
-                logger.LogInformation("Got {count} items for HTTP request to {path}.", items.GetArrayLength(), path);
-            }
-            else
-            {
-                logger.LogInformation("Got single item for HTTP request to {path}.", path);
-            }
-
-            return root;
+            return response;
         }
 
         private static SlimGraphException HandleError(HttpStatusCode statusCode, JsonElement root)
