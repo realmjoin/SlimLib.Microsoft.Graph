@@ -31,6 +31,48 @@ namespace SlimGraph
             return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
         }
 
+        async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.GetManagedDeviceDetectedAppsAsync(IAzureTenant tenant, Guid deviceID, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            string? nextLink = options.BuildLink($"deviceManagement/managedDevices/{deviceID}/detectedApps");
+
+            do
+            {
+                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+
+                foreach (var item in root.GetProperty("value").EnumerateArray())
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        yield break;
+
+                    yield return item;
+                }
+
+                HandleNextLink(root, ref nextLink);
+
+            } while (nextLink != null);
+        }
+
+        async IAsyncEnumerable<Guid> ISlimGraphManagedDevicesClient.GetManagedDeviceUsersAsync(IAzureTenant tenant, Guid deviceID, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            string? nextLink = options.BuildLink($"deviceManagement/managedDevices/{deviceID}/users");
+
+            do
+            {
+                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+
+                foreach (var item in root.GetProperty("value").EnumerateArray())
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        yield break;
+
+                    yield return item.GetProperty("id").GetGuid();
+                }
+
+                HandleNextLink(root, ref nextLink);
+
+            } while (nextLink != null);
+        }
+
         async Task<JsonElement> ISlimGraphManagedDevicesClient.GetManagedDeviceOverviewAsync(IAzureTenant tenant, ScalarRequestOptions options, CancellationToken cancellationToken)
         {
             var link = options.BuildLink($"deviceManagement/managedDeviceOverview");
@@ -58,6 +100,7 @@ namespace SlimGraph
 
             } while (nextLink != null);
         }
+
         async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.GetManagedDeviceEncryptionStatesAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             string? nextLink = options.BuildLink("deviceManagement/managedDeviceEncryptionStates");
