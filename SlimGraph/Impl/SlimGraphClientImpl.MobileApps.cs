@@ -37,5 +37,47 @@ namespace SlimGraph
 
             } while (nextLink != null);
         }
+
+        async IAsyncEnumerable<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppDeviceStatusesAsync(IAzureTenant tenant, Guid appID, ListRequestOptions options = default, CancellationToken cancellationToken = default)
+        {
+            string? nextLink = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/deviceStatuses");
+
+            do
+            {
+                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+
+                foreach (var item in root.GetProperty("value").EnumerateArray())
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        yield break;
+
+                    yield return item;
+                }
+
+                HandleNextLink(root, ref nextLink);
+
+            } while (nextLink != null);
+        }
+
+        async IAsyncEnumerable<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppUserStatusesAsync(IAzureTenant tenant, Guid appID, ListRequestOptions options = default, CancellationToken cancellationToken = default)
+        {
+            string? nextLink = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/userStatuses");
+
+            do
+            {
+                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+
+                foreach (var item in root.GetProperty("value").EnumerateArray())
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        yield break;
+
+                    yield return item;
+                }
+
+                HandleNextLink(root, ref nextLink);
+
+            } while (nextLink != null);
+        }
     }
 }
