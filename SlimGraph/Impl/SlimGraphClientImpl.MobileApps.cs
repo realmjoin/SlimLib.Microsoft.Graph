@@ -38,7 +38,7 @@ namespace SlimGraph
             } while (nextLink != null);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppDeviceStatusesAsync(IAzureTenant tenant, Guid appID, ListRequestOptions options = default, CancellationToken cancellationToken = default)
+        async IAsyncEnumerable<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppDeviceStatusesAsync(IAzureTenant tenant, Guid appID, ListRequestOptions options = default, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             string? nextLink = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/deviceStatuses");
 
@@ -59,7 +59,7 @@ namespace SlimGraph
             } while (nextLink != null);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppUserStatusesAsync(IAzureTenant tenant, Guid appID, ListRequestOptions options = default, CancellationToken cancellationToken = default)
+        async IAsyncEnumerable<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppUserStatusesAsync(IAzureTenant tenant, Guid appID, ListRequestOptions options = default, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             string? nextLink = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/userStatuses");
 
