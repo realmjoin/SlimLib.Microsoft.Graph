@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlimGraph.Auth;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -30,6 +32,78 @@ namespace SlimGraph
 
         private Task<JsonElement> PostAsync(IAzureTenant tenant, object? data, string requestUri, CancellationToken cancellationToken, bool preferMinimal = false)
             => SendAsync(tenant, HttpMethod.Post, data, requestUri, cancellationToken, preferMinimal);
+
+        private async IAsyncEnumerable<JsonElement> GetArrayAsync(IAzureTenant tenant, string nextLink, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            string? link = nextLink;
+
+            do
+            {
+                var root = await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+
+                foreach (var item in root.GetProperty("value").EnumerateArray())
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        yield break;
+
+                    yield return item;
+                }
+
+                HandleNextLink(root, ref link);
+
+            } while (link != null);
+        }
+
+        private async IAsyncEnumerable<JsonElement> PostArrayAsync(IAzureTenant tenant, object? data, string nextLink, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            string? nLink = nextLink;
+
+            do
+            {
+                var root = await PostAsync(tenant, data, nLink, cancellationToken).ConfigureAwait(false);
+
+                foreach (var item in root.GetProperty("value").EnumerateArray())
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        yield break;
+
+                    yield return item;
+                }
+
+                HandleNextLink(root, ref nLink);
+
+            } while (nLink != null);
+        }
+
+        private async Task<DeltaResult<JsonElement>> GetDeltaAsync(IAzureTenant tenant, string nextLink, DeltaRequestOptions options, CancellationToken cancellationToken)
+        {
+            var result = new List<JsonElement>();
+
+            string? nLink = nextLink;
+            string? dLink = default;
+
+            do
+            {
+                var root = await GetAsync(tenant, nLink, cancellationToken, preferMinimal: options.PreferMinimal).ConfigureAwait(false);
+
+                foreach (var item in root.GetProperty("value").EnumerateArray())
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        break;
+
+                    result.Add(item);
+                }
+
+                if (cancellationToken.IsCancellationRequested)
+                    break;
+
+                HandleNextLink(root, ref nLink);
+                HandleDeltaLink(root, ref dLink);
+
+            } while (nLink != null);
+
+            return new DeltaResult<JsonElement>(result, dLink);
+        }
 
         private async Task<JsonElement> SendAsync(IAzureTenant tenant, HttpMethod method, object? data, string requestUri, CancellationToken cancellationToken, bool preferMinimal = false)
         {

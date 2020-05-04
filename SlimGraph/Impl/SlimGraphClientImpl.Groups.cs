@@ -43,224 +43,120 @@ namespace SlimGraph
 
         async IAsyncEnumerable<JsonElement> ISlimGraphGroupsClient.GetGroupPhotosAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            string? nextLink = options.BuildLink($"groups/{groupID}/photos");
+            var nextLink = options.BuildLink($"groups/{groupID}/photos");
 
-            do
+            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
             {
-                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item;
-                }
-
-                HandleNextLink(root, ref nextLink);
-
-            } while (nextLink != null);
+                yield return item;
+            }
         }
 
         async IAsyncEnumerable<JsonElement> ISlimGraphGroupsClient.GetGroupsAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation]  CancellationToken cancellationToken)
         {
-            string? nextLink = options.BuildLink("groups");
+            var nextLink = options.BuildLink("groups");
 
-            do
+            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
             {
-                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item;
-                }
-
-                HandleNextLink(root, ref nextLink);
-
-            } while (nextLink != null);
+                yield return item;
+            }
         }
 
-        async Task<DeltaResult<JsonElement>> ISlimGraphGroupsClient.GetGroupsDeltaAsync(IAzureTenant tenant, DeltaRequestOptions options, CancellationToken cancellationToken)
+        Task<DeltaResult<JsonElement>> ISlimGraphGroupsClient.GetGroupsDeltaAsync(IAzureTenant tenant, DeltaRequestOptions options, CancellationToken cancellationToken)
         {
-            var result = new List<JsonElement>();
+            var nextLink = options.BuildLink("groups/delta");
 
-            string? nextLink = options.BuildLink("groups/delta");
-            string? deltaLink = default;
-
-            do
-            {
-                var root = await GetAsync(tenant, nextLink, cancellationToken, preferMinimal: options.PreferMinimal).ConfigureAwait(false);
-
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        return new DeltaResult<JsonElement>(result, deltaLink);
-
-                    result.Add(item);
-                }
-
-                HandleNextLink(root, ref nextLink);
-                HandleDeltaLink(root, ref deltaLink);
-
-            } while (nextLink != null);
-
-            return new DeltaResult<JsonElement>(result, deltaLink);
+            return GetDeltaAsync(tenant, nextLink, options, cancellationToken);
         }
 
-        async Task<DeltaResult<JsonElement>> ISlimGraphGroupsClient.GetGroupsDeltaChangeAsync(IAzureTenant tenant, string previousDeltaLink, DeltaRequestOptions options, CancellationToken cancellationToken)
+        Task<DeltaResult<JsonElement>> ISlimGraphGroupsClient.GetGroupsDeltaChangeAsync(IAzureTenant tenant, string previousDeltaLink, DeltaRequestOptions options, CancellationToken cancellationToken)
         {
-            var result = new List<JsonElement>();
-
-            string? nextLink = previousDeltaLink;
-            string? deltaLink = default;
-
-            do
-            {
-                var root = await GetAsync(tenant, nextLink, cancellationToken, preferMinimal: options.PreferMinimal).ConfigureAwait(false);
-
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        return new DeltaResult<JsonElement>(result, deltaLink);
-
-                    result.Add(item);
-                }
-
-                HandleNextLink(root, ref nextLink);
-                HandleDeltaLink(root, ref deltaLink);
-
-            } while (nextLink != null);
-
-            return new DeltaResult<JsonElement>(result, deltaLink);
+            return GetDeltaAsync(tenant, previousDeltaLink, options, cancellationToken);
         }
 
         async IAsyncEnumerable<JsonElement> ISlimGraphGroupsClient.GetMembersAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            string? nextLink = options.BuildLink($"groups/{groupID}/members");
+            var nextLink = options.BuildLink($"groups/{groupID}/members");
 
-            do
+            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
             {
-                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item;
-                }
-
-                HandleNextLink(root, ref nextLink);
-
-            } while (nextLink != null);
+                yield return item;
+            }
         }
 
         async IAsyncEnumerable<JsonElement> ISlimGraphGroupsClient.GetTransitiveMembersAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            string? nextLink = options.BuildLink($"groups/{groupID}/transitiveMembers");
+            var nextLink = options.BuildLink($"groups/{groupID}/transitiveMembers");
 
-            do
+            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
             {
-                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item;
-                }
-
-                HandleNextLink(root, ref nextLink);
-
-            } while (nextLink != null);
+                yield return item;
+            }
         }
 
         async IAsyncEnumerable<JsonElement> ISlimGraphGroupsClient.GetMemberOfAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            string? nextLink = options.BuildLink($"groups/{groupID}/memberOf");
+            var nextLink = options.BuildLink($"groups/{groupID}/memberOf");
 
-            do
+            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
             {
-                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item;
-                }
-
-                HandleNextLink(root, ref nextLink);
-
-            } while (nextLink != null);
+                yield return item;
+            }
         }
 
         async IAsyncEnumerable<JsonElement> ISlimGraphGroupsClient.GetTransitiveMemberOfAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            string? nextLink = options.BuildLink($"groups/{groupID}/transitiveMemberOf");
+            var nextLink = options.BuildLink($"groups/{groupID}/transitiveMemberOf");
 
-            do
+            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
             {
-                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item;
-                }
-
-                HandleNextLink(root, ref nextLink);
-
-            } while (nextLink != null);
+                yield return item;
+            }
         }
 
         async IAsyncEnumerable<Guid> ISlimGraphGroupsClient.GetMemberGroupsAsync(IAzureTenant tenant, Guid groupID, bool securityEnabledOnly, InvokeRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            string? nextLink = options.BuildLink($"groups/{groupID}/getMemberGroups");
+            var nextLink = options.BuildLink($"groups/{groupID}/getMemberGroups");
+            var data = new { securityEnabledOnly };
 
-            do
+            await foreach (var item in PostArrayAsync(tenant, data, nextLink, cancellationToken))
             {
-                var root = await PostAsync(tenant, new { securityEnabledOnly }, nextLink, cancellationToken).ConfigureAwait(false);
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item.GetGuid();
-                }
-
-                HandleNextLink(root, ref nextLink);
-
-            } while (nextLink != null);
+                yield return item.GetGuid();
+            }
         }
 
         async IAsyncEnumerable<Guid> ISlimGraphGroupsClient.GetMemberObjectsAsync(IAzureTenant tenant, Guid groupID, bool securityEnabledOnly, InvokeRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            string? nextLink = options.BuildLink($"groups/{groupID}/getMemberObjects");
+            var nextLink = options.BuildLink($"groups/{groupID}/getMemberObjects");
+            var data = new { securityEnabledOnly };
 
-            do
+            await foreach (var item in PostArrayAsync(tenant, data, nextLink, cancellationToken))
             {
-                var root = await PostAsync(tenant, new { securityEnabledOnly }, nextLink, cancellationToken).ConfigureAwait(false);
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item.GetGuid();
-                }
-
-                HandleNextLink(root, ref nextLink);
-
-            } while (nextLink != null);
+                yield return item.GetGuid();
+            }
         }
     }
 }

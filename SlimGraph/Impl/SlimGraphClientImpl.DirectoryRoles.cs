@@ -19,44 +19,28 @@ namespace SlimGraph
 
         async IAsyncEnumerable<JsonElement> ISlimGraphDirectoryRolesClient.GetDirectoryRolesAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            string? nextLink = options.BuildLink("directoryRoles");
+            var nextLink = options.BuildLink("directoryRoles");
 
-            do
+            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
             {
-                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item;
-                }
-
-                HandleNextLink(root, ref nextLink);
-
-            } while (nextLink != null);
+                yield return item;
+            }
         }
 
         async IAsyncEnumerable<JsonElement> ISlimGraphDirectoryRolesClient.GetMembersAsync(IAzureTenant tenant, Guid directoryRoleID, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            string? nextLink = options.BuildLink($"directoryRoles/{directoryRoleID}/members");
+            var nextLink = options.BuildLink($"directoryRoles/{directoryRoleID}/members");
 
-            do
+            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
             {
-                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item;
-                }
-
-                HandleNextLink(root, ref nextLink);
-
-            } while (nextLink != null);
+                yield return item;
+            }
         }
     }
 }

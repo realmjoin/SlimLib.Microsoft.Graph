@@ -19,23 +19,15 @@ namespace SlimGraph
 
         async IAsyncEnumerable<JsonElement> ISlimGraphSubscribedSkusClient.GetSubscribedSkusAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            string? nextLink = options.BuildLink("subscribedSkus");
+            var nextLink = options.BuildLink("subscribedSkus");
 
-            do
+            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
             {
-                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item;
-                }
-
-                HandleNextLink(root, ref nextLink);
-
-            } while (nextLink != null);
+                yield return item;
+            }
         }
     }
 }

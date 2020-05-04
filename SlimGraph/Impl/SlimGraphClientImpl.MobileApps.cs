@@ -19,65 +19,41 @@ namespace SlimGraph
 
         async IAsyncEnumerable<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppsAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            string? nextLink = options.BuildLink("deviceAppManagement/mobileApps");
+            var nextLink = options.BuildLink("deviceAppManagement/mobileApps");
 
-            do
+            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
             {
-                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item;
-                }
-
-                HandleNextLink(root, ref nextLink);
-
-            } while (nextLink != null);
+                yield return item;
+            }
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppDeviceStatusesAsync(IAzureTenant tenant, Guid appID, ListRequestOptions options = default, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        async IAsyncEnumerable<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppDeviceStatusesAsync(IAzureTenant tenant, Guid appID, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            string? nextLink = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/deviceStatuses");
+            var nextLink = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/deviceStatuses");
 
-            do
+            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
             {
-                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item;
-                }
-
-                HandleNextLink(root, ref nextLink);
-
-            } while (nextLink != null);
+                yield return item;
+            }
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppUserStatusesAsync(IAzureTenant tenant, Guid appID, ListRequestOptions options = default, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        async IAsyncEnumerable<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppUserStatusesAsync(IAzureTenant tenant, Guid appID, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            string? nextLink = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/userStatuses");
+            var nextLink = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/userStatuses");
 
-            do
+            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
             {
-                var root = await GetAsync(tenant, nextLink, cancellationToken).ConfigureAwait(false);
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item;
-                }
-
-                HandleNextLink(root, ref nextLink);
-
-            } while (nextLink != null);
+                yield return item;
+            }
         }
     }
 }
