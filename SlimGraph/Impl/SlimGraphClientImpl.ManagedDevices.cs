@@ -1,5 +1,6 @@
 ﻿using SlimGraph.Auth;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -21,7 +22,15 @@ namespace SlimGraph
         {
             var link = options.BuildLink($"deviceManagement/managedDevices/{deviceID}/windowsDefenderScan");
 
-            await PostAsync(tenant, new { quickScan }, link, cancellationToken).ConfigureAwait(false);
+            var buffer = new ArrayBufferWriter<byte>();
+            using (var writer = new Utf8JsonWriter(buffer))
+            {
+                writer.WriteStartObject();
+                writer.WriteBoolean("quickScan", quickScan);
+                writer.WriteEndObject();
+            }
+
+            await PostAsync(tenant, buffer.WrittenMemory, link, cancellationToken).ConfigureAwait(false);
         }
 
         async Task<JsonElement> ISlimGraphManagedDevicesClient.GetManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions options, CancellationToken cancellationToken)

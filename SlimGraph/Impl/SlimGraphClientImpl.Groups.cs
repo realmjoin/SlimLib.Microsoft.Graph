@@ -1,5 +1,6 @@
 ﻿using SlimGraph.Auth;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -134,9 +135,16 @@ namespace SlimGraph
         async IAsyncEnumerable<Guid> ISlimGraphGroupsClient.GetMemberGroupsAsync(IAzureTenant tenant, Guid groupID, bool securityEnabledOnly, InvokeRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = options.BuildLink($"groups/{groupID}/getMemberGroups");
-            var data = new { securityEnabledOnly };
 
-            await foreach (var item in PostArrayAsync(tenant, data, nextLink, cancellationToken))
+            var buffer = new ArrayBufferWriter<byte>();
+            using (var writer = new Utf8JsonWriter(buffer))
+            {
+                writer.WriteStartObject();
+                writer.WriteBoolean("securityEnabledOnly", securityEnabledOnly);
+                writer.WriteEndObject();
+            }
+
+            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -148,9 +156,16 @@ namespace SlimGraph
         async IAsyncEnumerable<Guid> ISlimGraphGroupsClient.GetMemberObjectsAsync(IAzureTenant tenant, Guid groupID, bool securityEnabledOnly, InvokeRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = options.BuildLink($"groups/{groupID}/getMemberObjects");
-            var data = new { securityEnabledOnly };
 
-            await foreach (var item in PostArrayAsync(tenant, data, nextLink, cancellationToken))
+            var buffer = new ArrayBufferWriter<byte>();
+            using (var writer = new Utf8JsonWriter(buffer))
+            {
+                writer.WriteStartObject();
+                writer.WriteBoolean("securityEnabledOnly", securityEnabledOnly);
+                writer.WriteEndObject();
+            }
+
+            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;

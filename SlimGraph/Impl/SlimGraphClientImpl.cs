@@ -27,11 +27,17 @@ namespace SlimGraph
             this.logger = logger;
         }
 
+        private Task<JsonElement> DeleteAsync(IAzureTenant tenant, string requestUri, CancellationToken cancellationToken, bool preferMinimal = false)
+            => SendAsync(tenant, HttpMethod.Delete, null, requestUri, cancellationToken, preferMinimal);
+
         private Task<JsonElement> GetAsync(IAzureTenant tenant, string requestUri, CancellationToken cancellationToken, bool preferMinimal = false)
             => SendAsync(tenant, HttpMethod.Get, null, requestUri, cancellationToken, preferMinimal);
 
-        private Task<JsonElement> PostAsync(IAzureTenant tenant, object? data, string requestUri, CancellationToken cancellationToken, bool preferMinimal = false)
-            => SendAsync(tenant, HttpMethod.Post, data, requestUri, cancellationToken, preferMinimal);
+        private Task<JsonElement> PatchAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, CancellationToken cancellationToken, bool preferMinimal = false)
+            => SendAsync(tenant, HttpMethod.Patch, utf8Data, requestUri, cancellationToken, preferMinimal);
+
+        private Task<JsonElement> PostAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, CancellationToken cancellationToken, bool preferMinimal = false)
+            => SendAsync(tenant, HttpMethod.Post, utf8Data, requestUri, cancellationToken, preferMinimal);
 
         private async IAsyncEnumerable<JsonElement> GetArrayAsync(IAzureTenant tenant, string nextLink, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
@@ -54,13 +60,13 @@ namespace SlimGraph
             } while (link != null);
         }
 
-        private async IAsyncEnumerable<JsonElement> PostArrayAsync(IAzureTenant tenant, object? data, string nextLink, [EnumeratorCancellation] CancellationToken cancellationToken)
+        private async IAsyncEnumerable<JsonElement> PostArrayAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string nextLink, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             string? nLink = nextLink;
 
             do
             {
-                var root = await PostAsync(tenant, data, nLink, cancellationToken).ConfigureAwait(false);
+                var root = await PostAsync(tenant, utf8Data, nLink, cancellationToken).ConfigureAwait(false);
 
                 foreach (var item in root.GetProperty("value").EnumerateArray())
                 {
@@ -105,11 +111,11 @@ namespace SlimGraph
             return new DeltaResult<JsonElement>(result, dLink);
         }
 
-        private async Task<JsonElement> SendAsync(IAzureTenant tenant, HttpMethod method, object? data, string requestUri, CancellationToken cancellationToken, bool preferMinimal = false)
+        private async Task<JsonElement> SendAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, CancellationToken cancellationToken, bool preferMinimal = false)
         {
-            using var response = await SendInternalAsync(tenant, method, data, requestUri, cancellationToken, preferMinimal);
+            using var response = await SendInternalAsync(tenant, method, utf8Data, requestUri, cancellationToken, preferMinimal);
 
-            if (response.StatusCode == HttpStatusCode.NoContent)
+            if (response.StatusCode == HttpStatusCode.NoContent || response.Content.Headers.ContentLength == 0)
             {
                 logger.LogInformation("Got no content for HTTP request to {requestUri}.", requestUri);
                 return default;
@@ -149,13 +155,13 @@ namespace SlimGraph
             return new SlimGraphPicture(buffer, response.Content.Headers.ContentType);
         }
 
-        private async Task<HttpResponseMessage> SendInternalAsync(IAzureTenant tenant, HttpMethod method, object? data, string requestUri, CancellationToken cancellationToken, bool preferMinimal)
+        private async Task<HttpResponseMessage> SendInternalAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, CancellationToken cancellationToken, bool preferMinimal)
         {
             using var request = new HttpRequestMessage(method, requestUri);
 
-            if (data != null)
+            if (utf8Data != null)
             {
-                request.Content = new ByteArrayContent(JsonSerializer.SerializeToUtf8Bytes(data))
+                request.Content = new ReadOnlyMemoryContent(utf8Data.Value)
                 {
                     Headers = { ContentType = new MediaTypeHeaderValue("application/json") { CharSet = Encoding.UTF8.WebName } }
                 };
