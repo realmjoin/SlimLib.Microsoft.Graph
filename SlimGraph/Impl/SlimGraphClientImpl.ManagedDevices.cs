@@ -15,7 +15,7 @@ namespace SlimGraph
         {
             var link = options.BuildLink($"deviceManagement/managedDevices/{deviceID}/syncDevice");
 
-            await PostAsync(tenant, null, link, cancellationToken).ConfigureAwait(false);
+            await PostAsync(tenant, null, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task ISlimGraphManagedDevicesClient.WindowsDefenderScanManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, bool quickScan, ScalarRequestOptions options, CancellationToken cancellationToken)
@@ -30,21 +30,21 @@ namespace SlimGraph
                 writer.WriteEndObject();
             }
 
-            await PostAsync(tenant, buffer.WrittenMemory, link, cancellationToken).ConfigureAwait(false);
+            await PostAsync(tenant, buffer.WrittenMemory, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task<JsonElement> ISlimGraphManagedDevicesClient.GetManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions options, CancellationToken cancellationToken)
         {
             var link = options.BuildLink($"deviceManagement/managedDevices/{deviceID}");
 
-            return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.GetManagedDeviceDetectedAppsAsync(IAzureTenant tenant, Guid deviceID, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = options.BuildLink($"deviceManagement/managedDevices/{deviceID}/detectedApps");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -57,7 +57,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink($"deviceManagement/managedDevices/{deviceID}/users");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -70,14 +70,14 @@ namespace SlimGraph
         {
             var link = options.BuildLink($"deviceManagement/managedDeviceOverview");
 
-            return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.GetManagedDevicesAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = options.BuildLink("deviceManagement/managedDevices");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -90,7 +90,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink("deviceManagement/managedDeviceEncryptionStates");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;

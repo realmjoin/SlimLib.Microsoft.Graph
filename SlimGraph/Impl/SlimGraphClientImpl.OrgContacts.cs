@@ -14,14 +14,14 @@ namespace SlimGraph
         {
             var link = options.BuildLink($"contacts/{orgContactID}");
 
-            return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async IAsyncEnumerable<JsonElement> ISlimGraphOrgContactsClient.GetOrgContactsAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = options.BuildLink("contacts");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;

@@ -15,7 +15,7 @@ namespace SlimGraph
         {
             var link = options.BuildLink($"groups/{groupID}");
 
-            return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task<JsonElement> ISlimGraphGroupsClient.GetGroupPhotoAsync(IAzureTenant tenant, Guid groupID, string size, ScalarRequestOptions options, CancellationToken cancellationToken)
@@ -27,7 +27,7 @@ namespace SlimGraph
             else
                 link = options.BuildLink($"groups/{groupID}/photos/{size}");
 
-            return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task<SlimGraphPicture?> ISlimGraphGroupsClient.GetGroupPhotoDataAsync(IAzureTenant tenant, Guid groupID, string size, ScalarRequestOptions options, CancellationToken cancellationToken)
@@ -46,7 +46,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink($"groups/{groupID}/photos");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -55,11 +55,11 @@ namespace SlimGraph
             }
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphGroupsClient.GetGroupsAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation]  CancellationToken cancellationToken)
+        async IAsyncEnumerable<JsonElement> ISlimGraphGroupsClient.GetGroupsAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = options.BuildLink("groups");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -84,7 +84,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink($"groups/{groupID}/members");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -97,7 +97,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink($"groups/{groupID}/transitiveMembers");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -110,7 +110,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink($"groups/{groupID}/memberOf");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -123,7 +123,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink($"groups/{groupID}/transitiveMemberOf");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -144,7 +144,7 @@ namespace SlimGraph
                 writer.WriteEndObject();
             }
 
-            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, cancellationToken))
+            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, new RequestHeaderOptions(), cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -165,7 +165,7 @@ namespace SlimGraph
                 writer.WriteEndObject();
             }
 
-            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, cancellationToken))
+            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, new RequestHeaderOptions(), cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;

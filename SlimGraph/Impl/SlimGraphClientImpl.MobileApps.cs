@@ -15,28 +15,28 @@ namespace SlimGraph
         {
             var link = options.BuildLink($"deviceAppManagement/mobileApps/{appID}");
 
-            return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task<JsonElement> ISlimGraphMobileAppsClient.CreateMobileAppAsync(IAzureTenant tenant, JsonElement data, InvokeRequestOptions options, CancellationToken cancellationToken)
         {
             var link = options.BuildLink("deviceAppManagement/mobileApps");
 
-            return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, cancellationToken).ConfigureAwait(false);
+            return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task ISlimGraphMobileAppsClient.UpdateMobileAppAsync(IAzureTenant tenant, Guid appID, JsonElement data, InvokeRequestOptions options, CancellationToken cancellationToken)
         {
             var link = options.BuildLink($"deviceAppManagement/mobileApps/{appID}");
 
-            await PatchAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, cancellationToken).ConfigureAwait(false);
+            await PatchAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task ISlimGraphMobileAppsClient.DeleteMobileAppAsync(IAzureTenant tenant, Guid appID, InvokeRequestOptions options, CancellationToken cancellationToken)
         {
             var link = options.BuildLink($"deviceAppManagement/mobileApps/{appID}");
 
-            await DeleteAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+            await DeleteAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
 
@@ -44,7 +44,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink("deviceAppManagement/mobileApps");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -57,7 +57,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/deviceStatuses");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -70,7 +70,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/userStatuses");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -84,14 +84,14 @@ namespace SlimGraph
         {
             var link = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/{type}/contentVersions/{mobileAppContentID}");
 
-            return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task<string> ISlimGraphMobileAppsClient.CreateMobileAppContentAsync(IAzureTenant tenant, Guid appID, string type, InvokeRequestOptions options, CancellationToken cancellationToken)
         {
             var link = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/{type}/contentVersions");
 
-            var response = await PostAsync(tenant, new byte[] { 0x7B, 0x7D }, link, cancellationToken).ConfigureAwait(false);
+            var response = await PostAsync(tenant, new byte[] { 0x7B, 0x7D }, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
             return response.GetProperty("id").GetString();
         }
 
@@ -114,21 +114,21 @@ namespace SlimGraph
         {
             var link = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/{type}/contentVersions/{mobileAppContentID}/files/{mobileAppContentFileID}");
 
-            return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task<JsonElement> ISlimGraphMobileAppsClient.CreateMobileAppContentFilesAsync(IAzureTenant tenant, Guid appID, string type, string mobileAppContentID, JsonElement data, InvokeRequestOptions options, CancellationToken cancellationToken)
         {
             var link = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/{type}/contentVersions/{mobileAppContentID}/files");
 
-            return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, cancellationToken).ConfigureAwait(false);
+            return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task ISlimGraphMobileAppsClient.CommitMobileAppContentFilesAsync(IAzureTenant tenant, Guid appID, string type, string mobileAppContentID, Guid mobileAppContentFileID, JsonElement data, InvokeRequestOptions options, CancellationToken cancellationToken)
         {
             var link = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/{type}/contentVersions/{mobileAppContentID}/files/{mobileAppContentFileID}/commit");
 
-            await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, cancellationToken).ConfigureAwait(false);
+            await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
     }
 }

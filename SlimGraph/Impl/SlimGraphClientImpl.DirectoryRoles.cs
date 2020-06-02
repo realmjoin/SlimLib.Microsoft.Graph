@@ -14,14 +14,14 @@ namespace SlimGraph
         {
             var link = options.BuildLink($"directoryRoles/{directoryRoleID}");
 
-            return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async IAsyncEnumerable<JsonElement> ISlimGraphDirectoryRolesClient.GetDirectoryRolesAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = options.BuildLink("directoryRoles");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -34,7 +34,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink($"directoryRoles/{directoryRoleID}/members");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;

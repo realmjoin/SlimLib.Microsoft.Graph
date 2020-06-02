@@ -5,7 +5,7 @@ namespace SlimGraph
 {
     public struct ListRequestOptions : ILinkBuilder
     {
-        public ListRequestOptions(string select, string filter, string search, string expand, string orderBy, bool count, int skip, int top)
+        public ListRequestOptions(string select, string filter, string search, string expand, string orderBy, bool? count, int skip, int top, bool consistencyLevelEventual)
         {
             Select = select ?? throw new ArgumentNullException(nameof(select));
             Filter = filter ?? throw new ArgumentNullException(nameof(filter));
@@ -15,6 +15,7 @@ namespace SlimGraph
             Count = count;
             Skip = skip;
             Top = top;
+            ConsistencyLevelEventual = consistencyLevelEventual;
         }
 
         public string? Select { get; set; }
@@ -25,6 +26,7 @@ namespace SlimGraph
         public bool? Count { get; set; }
         public int? Skip { get; set; }
         public int? Top { get; set; }
+        public bool ConsistencyLevelEventual { get; set; }
 
         public string BuildLink(string call)
         {

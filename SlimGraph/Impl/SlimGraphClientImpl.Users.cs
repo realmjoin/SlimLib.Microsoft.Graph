@@ -15,7 +15,7 @@ namespace SlimGraph
         {
             var link = options.BuildLink($"users/{userID}");
 
-            return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task<JsonElement> ISlimGraphUsersClient.GetUserPhotoAsync(IAzureTenant tenant, Guid userID, string size, ScalarRequestOptions options, CancellationToken cancellationToken)
@@ -27,7 +27,7 @@ namespace SlimGraph
             else
                 link = options.BuildLink($"users/{userID}/photos/{size}");
 
-            return await GetAsync(tenant, link, cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task<SlimGraphPicture?> ISlimGraphUsersClient.GetUserPhotoDataAsync(IAzureTenant tenant, Guid userID, string size, ScalarRequestOptions options, CancellationToken cancellationToken)
@@ -46,7 +46,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink($"users/{userID}/photos");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -59,7 +59,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink("users");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -84,7 +84,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink($"users/{userID}/memberOf");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -97,7 +97,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink($"users/{userID}/ownedDevices");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -110,7 +110,7 @@ namespace SlimGraph
         {
             var nextLink = options.BuildLink($"users/{userID}/registeredDevices");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -147,7 +147,7 @@ namespace SlimGraph
                 writer.WriteEndObject();
             }
 
-            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, cancellationToken))
+            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, new RequestHeaderOptions(), cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -168,7 +168,7 @@ namespace SlimGraph
                 writer.WriteEndObject();
             }
 
-            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, cancellationToken))
+            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, new RequestHeaderOptions(), cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
