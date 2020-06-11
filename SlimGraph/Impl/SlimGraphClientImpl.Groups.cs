@@ -11,11 +11,25 @@ namespace SlimGraph
 {
     partial class SlimGraphClientImpl
     {
+        async Task<JsonElement> ISlimGraphGroupsClient.CreateGroupAsync(IAzureTenant tenant, JsonElement data, InvokeRequestOptions options, CancellationToken cancellationToken)
+        {
+            var link = options.BuildLink("groups");
+
+            return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+
         async Task<JsonElement> ISlimGraphGroupsClient.GetGroupAsync(IAzureTenant tenant, Guid groupID, ScalarRequestOptions options, CancellationToken cancellationToken)
         {
             var link = options.BuildLink($"groups/{groupID}");
 
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+
+        async Task ISlimGraphGroupsClient.DeleteGroupAsync(IAzureTenant tenant, Guid groupID, InvokeRequestOptions options, CancellationToken cancellationToken)
+        {
+            var link = options.BuildLink($"groups/{groupID}");
+
+            await DeleteAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task<JsonElement> ISlimGraphGroupsClient.GetGroupPhotoAsync(IAzureTenant tenant, Guid groupID, string size, ScalarRequestOptions options, CancellationToken cancellationToken)
@@ -172,6 +186,50 @@ namespace SlimGraph
 
                 yield return item.GetGuid();
             }
+        }
+
+        async Task ISlimGraphGroupsClient.AddMemberAsync(IAzureTenant tenant, Guid groupID, Guid memberID, InvokeRequestOptions options, CancellationToken cancellationToken)
+        {
+            var link = options.BuildLink($"groups/{groupID}/members/$ref");
+
+            var buffer = new ArrayBufferWriter<byte>();
+            using (var writer = new Utf8JsonWriter(buffer))
+            {
+                writer.WriteStartObject();
+                writer.WriteString("@odata.id", httpClient.BaseAddress + "directoryObjects/" + memberID);
+                writer.WriteEndObject();
+            }
+
+            await PostAsync(tenant, buffer.WrittenMemory, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+
+        async Task ISlimGraphGroupsClient.AddMembersAsync(IAzureTenant tenant, Guid groupID, IEnumerable<Guid> memberIDs, InvokeRequestOptions options, CancellationToken cancellationToken)
+        {
+            var link = options.BuildLink($"groups/{groupID}");
+
+            var buffer = new ArrayBufferWriter<byte>();
+            using (var writer = new Utf8JsonWriter(buffer))
+            {
+                writer.WriteStartObject();
+                writer.WriteStartArray("members@odata.bind");
+
+                foreach (var memberID in memberIDs)
+                {
+                    writer.WriteStringValue(httpClient.BaseAddress + "directoryObjects/" + memberID);
+                }
+
+                writer.WriteEndArray();
+                writer.WriteEndObject();
+            }
+
+            await PatchAsync(tenant, buffer.WrittenMemory, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+
+        async Task ISlimGraphGroupsClient.RemoveMemberAsync(IAzureTenant tenant, Guid groupID, Guid memberID, InvokeRequestOptions options, CancellationToken cancellationToken)
+        {
+            var link = options.BuildLink($"groups/{groupID}/members/{memberID}/$ref");
+
+            await DeleteAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
     }
 }
