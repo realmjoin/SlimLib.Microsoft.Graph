@@ -25,5 +25,7 @@ namespace SlimGraph
         Task<JsonElement> GetMobileAppContentFilesAsync(IAzureTenant tenant, Guid appID, string type, string mobileAppContentID, Guid mobileAppContentFileID, ScalarRequestOptions options = default, CancellationToken cancellationToken = default);
         Task<JsonElement> CreateMobileAppContentFilesAsync(IAzureTenant tenant, Guid appID, string type, string mobileAppContentID, JsonElement data, InvokeRequestOptions options = default, CancellationToken cancellationToken = default);
         Task CommitMobileAppContentFilesAsync(IAzureTenant tenant, Guid appID, string type, string mobileAppContentID, Guid mobileAppContentFileID, JsonElement data, InvokeRequestOptions options = default, CancellationToken cancellationToken = default);
+
+        Task AssignMobileAppAsync(IAzureTenant tenant, Guid appID, JsonElement data, InvokeRequestOptions options = default, CancellationToken cancellationToken = default);
     }
 }

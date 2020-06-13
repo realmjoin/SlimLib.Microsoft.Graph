@@ -130,5 +130,12 @@ namespace SlimGraph
 
             await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
+
+        async Task ISlimGraphMobileAppsClient.AssignMobileAppAsync(IAzureTenant tenant, Guid appID, JsonElement data, InvokeRequestOptions options, CancellationToken cancellationToken)
+        {
+            var link = options.BuildLink($"deviceAppManagement/mobileApps/{appID}/assign");
+
+            await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
     }
 }
