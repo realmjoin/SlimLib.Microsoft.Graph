@@ -10,18 +10,18 @@ namespace SlimGraph
 {
     partial class SlimGraphClientImpl
     {
-        async Task<JsonElement> ISlimGraphDirectoryRolesClient.GetDirectoryRoleAsync(IAzureTenant tenant, Guid directoryRoleID, ScalarRequestOptions options, CancellationToken cancellationToken)
+        async Task<JsonElement> ISlimGraphDirectoryRolesClient.GetDirectoryRoleAsync(IAzureTenant tenant, Guid directoryRoleID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = options.BuildLink($"directoryRoles/{directoryRoleID}");
+            var link = BuildLink(options, $"directoryRoles/{directoryRoleID}");
 
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphDirectoryRolesClient.GetDirectoryRolesAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        async IAsyncEnumerable<JsonElement> ISlimGraphDirectoryRolesClient.GetDirectoryRolesAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var nextLink = options.BuildLink("directoryRoles");
+            var nextLink = BuildLink(options, "directoryRoles");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -30,11 +30,11 @@ namespace SlimGraph
             }
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphDirectoryRolesClient.GetMembersAsync(IAzureTenant tenant, Guid directoryRoleID, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        async IAsyncEnumerable<JsonElement> ISlimGraphDirectoryRolesClient.GetMembersAsync(IAzureTenant tenant, Guid directoryRoleID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var nextLink = options.BuildLink($"directoryRoles/{directoryRoleID}/members");
+            var nextLink = BuildLink(options, $"directoryRoles/{directoryRoleID}/members");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;

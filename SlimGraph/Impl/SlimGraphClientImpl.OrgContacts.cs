@@ -10,18 +10,18 @@ namespace SlimGraph
 {
     partial class SlimGraphClientImpl
     {
-        async Task<JsonElement> ISlimGraphOrgContactsClient.GetOrgContactAsync(IAzureTenant tenant, Guid orgContactID, ScalarRequestOptions options, CancellationToken cancellationToken)
+        async Task<JsonElement> ISlimGraphOrgContactsClient.GetOrgContactAsync(IAzureTenant tenant, Guid orgContactID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = options.BuildLink($"contacts/{orgContactID}");
+            var link = BuildLink(options, $"contacts/{orgContactID}");
 
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphOrgContactsClient.GetOrgContactsAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        async IAsyncEnumerable<JsonElement> ISlimGraphOrgContactsClient.GetOrgContactsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var nextLink = options.BuildLink("contacts");
+            var nextLink = BuildLink(options, "contacts");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;

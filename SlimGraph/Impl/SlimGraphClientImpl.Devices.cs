@@ -10,18 +10,18 @@ namespace SlimGraph
 {
     partial class SlimGraphClientImpl
     {
-        async Task<JsonElement> ISlimGraphDevicesClient.GetDeviceAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions options, CancellationToken cancellationToken)
+        async Task<JsonElement> ISlimGraphDevicesClient.GetDeviceAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = options.BuildLink($"devices/{deviceID}");
+            var link = BuildLink(options, $"devices/{deviceID}");
 
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphDevicesClient.GetDevicesAsync(IAzureTenant tenant, ListRequestOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        async IAsyncEnumerable<JsonElement> ISlimGraphDevicesClient.GetDevicesAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var nextLink = options.BuildLink("devices");
+            var nextLink = BuildLink(options, "devices");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, new RequestHeaderOptions { ConsistencyLevelEventual = options.ConsistencyLevelEventual }, cancellationToken))
+            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;

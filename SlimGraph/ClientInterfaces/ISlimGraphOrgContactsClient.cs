@@ -9,8 +9,8 @@ namespace SlimGraph
 {
     public interface ISlimGraphOrgContactsClient
     {
-        Task<JsonElement> GetOrgContactAsync(IAzureTenant tenant, Guid contactID, ScalarRequestOptions options = default, CancellationToken cancellationToken = default);
+        Task<JsonElement> GetOrgContactAsync(IAzureTenant tenant, Guid contactID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
 
-        IAsyncEnumerable<JsonElement> GetOrgContactsAsync(IAzureTenant tenant, ListRequestOptions options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonElement> GetOrgContactsAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }

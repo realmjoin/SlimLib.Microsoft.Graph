@@ -9,8 +9,8 @@ namespace SlimGraph
 {
     public interface ISlimGraphSubscribedSkusClient
     {
-        Task<JsonElement> GetSubscribedSkuAsync(IAzureTenant tenant, Guid subscribedSkuID, ScalarRequestOptions options = default, CancellationToken cancellationToken = default);
+        Task<JsonElement> GetSubscribedSkuAsync(IAzureTenant tenant, Guid subscribedSkuID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
 
-        IAsyncEnumerable<JsonElement> GetSubscribedSkusAsync(IAzureTenant tenant, ListRequestOptions options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonElement> GetSubscribedSkusAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }

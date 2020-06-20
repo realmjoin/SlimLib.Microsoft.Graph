@@ -8,7 +8,7 @@ namespace SlimGraph
 {
     public interface ISlimGraphDetectedAppsClient
     {
-        Task<JsonElement> GetDetectedAppAsync(IAzureTenant tenant, string appID, ScalarRequestOptions options = default, CancellationToken cancellationToken = default);
-        IAsyncEnumerable<JsonElement> GetDetectedAppsAsync(IAzureTenant tenant, ListRequestOptions options = default, CancellationToken cancellationToken = default);
+        Task<JsonElement> GetDetectedAppAsync(IAzureTenant tenant, string appID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonElement> GetDetectedAppsAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }

@@ -27,25 +27,29 @@ namespace SlimGraph
             this.logger = logger;
         }
 
-        private Task<JsonElement> DeleteAsync(IAzureTenant tenant, string requestUri, RequestHeaderOptions options, CancellationToken cancellationToken)
+        private Task<JsonElement> DeleteAsync(IAzureTenant tenant, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
             => SendAsync(tenant, HttpMethod.Delete, null, requestUri, options, cancellationToken);
 
-        private Task<JsonElement> GetAsync(IAzureTenant tenant, string requestUri, RequestHeaderOptions options, CancellationToken cancellationToken)
+        private Task<JsonElement> GetAsync(IAzureTenant tenant, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
             => SendAsync(tenant, HttpMethod.Get, null, requestUri, options, cancellationToken);
 
-        private Task<JsonElement> PatchAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions options, CancellationToken cancellationToken)
+        private Task<JsonElement> PatchAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
             => SendAsync(tenant, HttpMethod.Patch, utf8Data, requestUri, options, cancellationToken);
 
-        private Task<JsonElement> PostAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions options, CancellationToken cancellationToken)
+        private Task<JsonElement> PostAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
             => SendAsync(tenant, HttpMethod.Post, utf8Data, requestUri, options, cancellationToken);
 
-        private async IAsyncEnumerable<JsonElement> GetArrayAsync(IAzureTenant tenant, string nextLink, RequestHeaderOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        private async IAsyncEnumerable<JsonElement> GetArrayAsync(IAzureTenant tenant, string nextLink, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             string? link = nextLink;
 
+            var reqOptions = new RequestHeaderOptions { ConsistencyLevelEventual = options?.ConsistencyLevelEventual ?? false };
+
             do
             {
-                var root = await GetAsync(tenant, link, options, cancellationToken).ConfigureAwait(false);
+                var root = await GetAsync(tenant, link, reqOptions, cancellationToken).ConfigureAwait(false);
+
+                options?.OnPageReceived(root);
 
                 foreach (var item in root.GetProperty("value").EnumerateArray())
                 {
@@ -60,7 +64,7 @@ namespace SlimGraph
             } while (link != null);
         }
 
-        private async IAsyncEnumerable<JsonElement> PostArrayAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string nextLink, RequestHeaderOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        private async IAsyncEnumerable<JsonElement> PostArrayAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string nextLink, RequestHeaderOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             string? nLink = nextLink;
 
@@ -81,16 +85,23 @@ namespace SlimGraph
             } while (nLink != null);
         }
 
-        private async Task<DeltaResult<JsonElement>> GetDeltaAsync(IAzureTenant tenant, string nextLink, DeltaRequestOptions options, CancellationToken cancellationToken)
+        private async Task<DeltaResult<JsonElement>> GetDeltaAsync(IAzureTenant tenant, string nextLink, DeltaRequestOptions? options, CancellationToken cancellationToken)
         {
             var result = new List<JsonElement>();
 
             string? nLink = nextLink;
             string? dLink = default;
 
+            RequestHeaderOptions? reqOptions = null;
+
+            if (options?.PreferMinimal == true)
+            {
+                reqOptions = new RequestHeaderOptions { PreferMinimal = true };
+            }
+
             do
             {
-                var root = await GetAsync(tenant, nLink, new RequestHeaderOptions { PreferMinimal = options.PreferMinimal }, cancellationToken).ConfigureAwait(false);
+                var root = await GetAsync(tenant, nLink, reqOptions, cancellationToken).ConfigureAwait(false);
 
                 foreach (var item in root.GetProperty("value").EnumerateArray())
                 {
@@ -111,7 +122,7 @@ namespace SlimGraph
             return new DeltaResult<JsonElement>(result, dLink);
         }
 
-        private async Task<JsonElement> SendAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, RequestHeaderOptions options, CancellationToken cancellationToken)
+        private async Task<JsonElement> SendAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
         {
             using var response = await SendInternalAsync(tenant, method, utf8Data, requestUri, options, cancellationToken);
 
@@ -142,7 +153,7 @@ namespace SlimGraph
 
         private async Task<SlimGraphPicture?> GetPictureAsync(IAzureTenant tenant, string requestUri, CancellationToken cancellationToken)
         {
-            using var response = await SendInternalAsync(tenant, HttpMethod.Get, null, requestUri, new RequestHeaderOptions(), cancellationToken);
+            using var response = await SendInternalAsync(tenant, HttpMethod.Get, null, requestUri, null, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.NoContent)
             {
@@ -155,7 +166,7 @@ namespace SlimGraph
             return new SlimGraphPicture(buffer, response.Content.Headers.ContentType);
         }
 
-        private async Task<HttpResponseMessage> SendInternalAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, RequestHeaderOptions options, CancellationToken cancellationToken)
+        private async Task<HttpResponseMessage> SendInternalAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
         {
             using var request = new HttpRequestMessage(method, requestUri);
 
@@ -169,13 +180,13 @@ namespace SlimGraph
 
             await authenticationProvider.AuthenticateRequestAsync(tenant, SlimGraphConstants.ScopeDefault, request).ConfigureAwait(false);
 
-            if (options.ConsistencyLevelEventual == true)
+            if (options?.ConsistencyLevelEventual == true)
             {
                 logger.LogDebug("Setting HTTP header ConsistencyLevel: eventual");
                 request.Headers.Add("ConsistencyLevel", "eventual");
             }
 
-            if (options.PreferMinimal == true)
+            if (options?.PreferMinimal == true)
             {
                 logger.LogDebug("Setting HTTP header Prefer: return=minimal");
                 request.Headers.Add("Prefer", "return=minimal");
@@ -183,7 +194,7 @@ namespace SlimGraph
 
             var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
-            if (options.PreferMinimal == true)
+            if (options?.PreferMinimal == true)
             {
                 if (!response.Headers.TryGetValues("Preference-Applied", out var values) || !values.Any(x => x == "return=minimal"))
                 {
@@ -234,6 +245,68 @@ namespace SlimGraph
             {
                 deltaLink = null;
             }
+        }
+
+        private string BuildLink(ScalarRequestOptions? options, string call)
+        {
+            var args = new List<string>();
+
+            if (options?.Select != null)
+                args.Add("$select=" + Uri.EscapeDataString(options.Select));
+
+            if (options?.Expand != null)
+                args.Add("$expand=" + Uri.EscapeDataString(options.Expand));
+
+            return RequestOptions.BuildLink(call, args);
+        }
+
+        private string BuildLink(ListRequestOptions? options, string call)
+        {
+            var args = new List<string>();
+
+            if (options?.Select != null)
+                args.Add("$select=" + Uri.EscapeDataString(options.Select));
+
+            if (options?.Filter != null)
+                args.Add("$filter=" + Uri.EscapeDataString(options.Filter));
+
+            if (options?.Search != null)
+                args.Add("$search=" + Uri.EscapeDataString(options.Search));
+
+            if (options?.Expand != null)
+                args.Add("$expand=" + Uri.EscapeDataString(options.Expand));
+
+            if (options?.OrderBy != null)
+                args.Add("$orderby=" + Uri.EscapeDataString(options.OrderBy));
+
+            if (options?.Count != null)
+                args.Add("$count=" + (options.Count.Value ? "true" : "false"));
+
+            if (options?.Skip != null)
+                args.Add("$skip=" + options.Skip);
+
+            if (options?.Top != null)
+                args.Add("$top=" + options.Top);
+
+            return RequestOptions.BuildLink(call, args);
+        }
+
+        private string BuildLink(InvokeRequestOptions? options, string call)
+        {
+            return RequestOptions.BuildLink(call, Enumerable.Empty<string>());
+        }
+
+        private string BuildLink(DeltaRequestOptions? options, string call)
+        {
+            var args = new List<string>();
+
+            if (options?.Select != null)
+                args.Add("$select=" + Uri.EscapeDataString(options.Select));
+
+            if (options?.Filter != null)
+                args.Add("$filter=" + Uri.EscapeDataString(options.Filter));
+
+            return RequestOptions.BuildLink(call, args);
         }
     }
 }

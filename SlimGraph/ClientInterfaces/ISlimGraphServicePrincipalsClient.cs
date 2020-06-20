@@ -9,8 +9,8 @@ namespace SlimGraph
 {
     public interface ISlimGraphServicePrincipalsClient
     {
-        Task<JsonElement> GetServicePrincipalAsync(IAzureTenant tenant, Guid servicePrincipalID, ScalarRequestOptions options = default, CancellationToken cancellationToken = default);
+        Task<JsonElement> GetServicePrincipalAsync(IAzureTenant tenant, Guid servicePrincipalID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
 
-        IAsyncEnumerable<JsonElement> GetServicePrincipalsAsync(IAzureTenant tenant, ListRequestOptions options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonElement> GetServicePrincipalsAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }
