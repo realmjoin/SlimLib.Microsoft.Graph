@@ -2,6 +2,7 @@
 {
     public interface ISlimGraphClient
     {
+        ISlimGraphOrganizationsClient Organization { get; }
         ISlimGraphOrgContactsClient OrgContacts { get; }
         ISlimGraphDevicesClient Devices { get; }
         ISlimGraphDirectoryRolesClient DirectoryRoles { get; }

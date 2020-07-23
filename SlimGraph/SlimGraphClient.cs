@@ -13,6 +13,7 @@ namespace SlimGraph
             impl = new SlimGraphClientImpl(authenticationProvider, httpClient, logger);
         }
 
+        public ISlimGraphOrganizationsClient Organization => impl;
         public ISlimGraphOrgContactsClient OrgContacts => impl;
         public ISlimGraphDevicesClient Devices => impl;
         public ISlimGraphDirectoryRolesClient DirectoryRoles => impl;
