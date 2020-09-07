@@ -98,5 +98,25 @@ namespace SlimGraph
                 yield return item;
             }
         }
+
+        async Task<JsonElement> ISlimGraphManagedDevicesClient.GetWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, Guid windowsAutopilotDeviceIdentityId, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/windowsAutopilotDeviceIdentities/{windowsAutopilotDeviceIdentityId}");
+
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+
+        async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.GetWindowsAutopilotDeviceIdentitiesAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var nextLink = BuildLink(options, "deviceManagement/windowsAutopilotDeviceIdentities");
+
+            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
+
+                yield return item;
+            }
+        }
     }
 }
