@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace SlimGraph
 {
-    internal sealed partial class SlimGraphClientImpl : ISlimGraphOrganizationsClient, ISlimGraphOrgContactsClient, ISlimGraphDevicesClient, ISlimGraphDirectoryRolesClient, ISlimGraphDetectedAppsClient, ISlimGraphMobileAppsClient, ISlimGraphManagedDevicesClient, ISlimGraphGroupsClient, ISlimGraphSubscribedSkusClient, ISlimGraphServicePrincipalsClient, ISlimGraphUsersClient
+    internal sealed partial class SlimGraphClientImpl : ISlimGraphAuditLogsClient, ISlimGraphOrganizationsClient, ISlimGraphOrgContactsClient, ISlimGraphDevicesClient, ISlimGraphDirectoryRolesClient, ISlimGraphDetectedAppsClient, ISlimGraphMobileAppsClient, ISlimGraphManagedDevicesClient, ISlimGraphGroupsClient, ISlimGraphSubscribedSkusClient, ISlimGraphServicePrincipalsClient, ISlimGraphUsersClient
     {
         private readonly IAuthenticationProvider authenticationProvider;
         private readonly HttpClient httpClient;
