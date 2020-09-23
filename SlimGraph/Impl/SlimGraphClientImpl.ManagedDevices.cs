@@ -122,7 +122,7 @@ namespace SlimGraph
 
         async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.ImportWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, IEnumerable<JsonElement> identities, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, "deviceManagement/windowsAutopilotDeviceIdentities/import");
+            var nextLink = BuildLink(options, "deviceManagement/importedWindowsAutopilotDeviceIdentities/import");
 
             var buffer = new ArrayBufferWriter<byte>();
             using (var writer = new Utf8JsonWriter(buffer))
