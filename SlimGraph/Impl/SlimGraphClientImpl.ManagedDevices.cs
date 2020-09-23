@@ -158,7 +158,7 @@ namespace SlimGraph
 
         async Task ISlimGraphManagedDevicesClient.WipeManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}");
+            var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/wipe");
 
             await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link,  new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
