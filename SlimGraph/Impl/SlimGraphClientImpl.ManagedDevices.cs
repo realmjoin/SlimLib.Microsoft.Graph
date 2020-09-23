@@ -99,9 +99,10 @@ namespace SlimGraph
             }
         }
 
-        async Task<JsonElement> ISlimGraphManagedDevicesClient.GetWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, Guid windowsAutopilotDeviceIdentityId, ScalarRequestOptions? options, CancellationToken cancellationToken)
+
+        async Task<JsonElement> ISlimGraphManagedDevicesClient.GetWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, Guid identityID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"deviceManagement/windowsAutopilotDeviceIdentities/{windowsAutopilotDeviceIdentityId}");
+            var link = BuildLink(options, $"deviceManagement/windowsAutopilotDeviceIdentities/{identityID}");
 
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
@@ -117,6 +118,49 @@ namespace SlimGraph
 
                 yield return item;
             }
+        }
+
+        async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.ImportWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, IEnumerable<JsonElement> identities, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var nextLink = BuildLink(options, "deviceManagement/windowsAutopilotDeviceIdentities/import");
+
+            var buffer = new ArrayBufferWriter<byte>();
+            using (var writer = new Utf8JsonWriter(buffer))
+            {
+                writer.WriteStartObject();
+                writer.WriteStartArray("importedWindowsAutopilotDeviceIdentities");
+
+                foreach (var identity in identities)
+                {
+                    identity.WriteTo(writer);
+                }
+
+                writer.WriteEndArray();
+                writer.WriteEndObject();
+            }
+
+            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, new RequestHeaderOptions(), cancellationToken))
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
+
+                yield return item;
+            }
+        }
+
+        async Task ISlimGraphManagedDevicesClient.DeleteWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, Guid identityID, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/windowsAutopilotDeviceIdentities/{identityID}");
+
+            await DeleteAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+
+
+        async Task ISlimGraphManagedDevicesClient.WipeManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}");
+
+            await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link,  new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
     }
 }
