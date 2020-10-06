@@ -120,6 +120,13 @@ namespace SlimGraph
             }
         }
 
+        async Task<JsonElement> ISlimGraphManagedDevicesClient.GetImportedWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, Guid identityID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/importedWindowsAutopilotDeviceIdentities/{identityID}");
+
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+
         async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.ImportWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, IEnumerable<JsonElement> identities, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "deviceManagement/importedWindowsAutopilotDeviceIdentities/import");

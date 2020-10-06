@@ -20,6 +20,7 @@ namespace SlimGraph
 
         Task<JsonElement> GetWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, Guid identityID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
         IAsyncEnumerable<JsonElement> GetWindowsAutopilotDeviceIdentitiesAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task<JsonElement> GetImportedWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, Guid identityID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
         IAsyncEnumerable<JsonElement> ImportWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, IEnumerable<JsonElement> identities, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
         Task DeleteWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, Guid identityID, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
 
