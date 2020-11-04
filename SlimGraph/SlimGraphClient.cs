@@ -24,6 +24,7 @@ namespace SlimGraph
         public ISlimGraphGroupsClient Groups => impl;
         public ISlimGraphServicePrincipalsClient ServicePrincipals => impl;
         public ISlimGraphSubscribedSkusClient SubscribedSkus => impl;
+        public ISlimGraphPrivilegedAccessClient PrivilegedAccess => impl;
         public ISlimGraphUsersClient Users => impl;
     }
 }

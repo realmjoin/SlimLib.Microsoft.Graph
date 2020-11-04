@@ -13,6 +13,7 @@
         ISlimGraphGroupsClient Groups { get; }
         ISlimGraphServicePrincipalsClient ServicePrincipals { get; }
         ISlimGraphSubscribedSkusClient SubscribedSkus { get; }
+        ISlimGraphPrivilegedAccessClient PrivilegedAccess { get; }
         ISlimGraphUsersClient Users { get; }
     }
 }
