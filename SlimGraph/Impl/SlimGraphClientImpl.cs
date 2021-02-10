@@ -137,7 +137,7 @@ namespace SlimGraph
             var root = await JsonSerializer.DeserializeAsync<JsonElement>(content, cancellationToken: cancellationToken);
 
             if (!response.IsSuccessStatusCode)
-                throw HandleError(response.StatusCode, root);
+                throw HandleError(response.StatusCode, response.Headers, root);
 
             if (root.TryGetProperty("value", out var items) && items.ValueKind == JsonValueKind.Array)
             {
@@ -207,20 +207,20 @@ namespace SlimGraph
             return response;
         }
 
-        private static SlimGraphException HandleError(HttpStatusCode statusCode, JsonElement root)
+        private static SlimGraphException HandleError(HttpStatusCode statusCode, HttpResponseHeaders headers, JsonElement root)
         {
             try
             {
                 if (root.TryGetProperty("error", out var error))
                 {
-                    return new SlimGraphException(statusCode, error.GetProperty("code").GetString(), error.GetProperty("message").GetString());
+                    return new SlimGraphException(statusCode, headers, error.GetProperty("code").GetString(), error.GetProperty("message").GetString());
                 }
             }
             catch
             {
             }
 
-            return new SlimGraphException(0, "Unkown error", "Unkown error");
+            return new SlimGraphException(0, null, "Unkown error", "Unkown error");
         }
 
         private static void HandleNextLink(JsonElement root, ref string? nextLink)
