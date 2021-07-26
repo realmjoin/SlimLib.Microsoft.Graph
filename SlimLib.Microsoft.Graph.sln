@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29424.173
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlimLib.Microsoft.Graph", "SlimLib.Microsoft.Graph\SlimLib.Microsoft.Graph.csproj", "{EFEB42B0-AA14-498D-B90F-DE1F993DE999}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{5229FF83-EFA6-4E0B-9A0B-06D7E3974C29}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{2695475C-79FF-46C4-B93F-0A176BC90BD4}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\publish.yml = .github\workflows\publish.yml
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Usage", "Usage\Usage.csproj", "{D3DDBD51-FD49-4815-B66C-BD274E746999}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EFEB42B0-AA14-498D-B90F-DE1F993DE999}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFEB42B0-AA14-498D-B90F-DE1F993DE999}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFEB42B0-AA14-498D-B90F-DE1F993DE999}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFEB42B0-AA14-498D-B90F-DE1F993DE999}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3DDBD51-FD49-4815-B66C-BD274E746999}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3DDBD51-FD49-4815-B66C-BD274E746999}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3DDBD51-FD49-4815-B66C-BD274E746999}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3DDBD51-FD49-4815-B66C-BD274E746999}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2695475C-79FF-46C4-B93F-0A176BC90BD4} = {5229FF83-EFA6-4E0B-9A0B-06D7E3974C29}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C3AF45B3-2874-43E1-B2F3-C530A8A72CA5}
+	EndGlobalSection
+EndGlobal
