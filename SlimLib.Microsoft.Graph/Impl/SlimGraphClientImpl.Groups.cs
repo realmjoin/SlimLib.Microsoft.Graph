@@ -107,9 +107,35 @@ namespace SlimLib.Microsoft.Graph
             }
         }
 
+        async IAsyncEnumerable<JsonElement> ISlimGraphGroupsClient.GetMembersAsync(IAzureTenant tenant, Guid groupID, string type, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var nextLink = BuildLink(options, $"groups/{groupID}/members/{type}");
+
+            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
+
+                yield return item;
+            }
+        }
+
         async IAsyncEnumerable<JsonElement> ISlimGraphGroupsClient.GetTransitiveMembersAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"groups/{groupID}/transitiveMembers");
+
+            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
+
+                yield return item;
+            }
+        }
+
+        async IAsyncEnumerable<JsonElement> ISlimGraphGroupsClient.GetTransitiveMembersAsync(IAzureTenant tenant, Guid groupID, string type, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var nextLink = BuildLink(options, $"groups/{groupID}/transitiveMembers/{type}");
 
             await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
             {

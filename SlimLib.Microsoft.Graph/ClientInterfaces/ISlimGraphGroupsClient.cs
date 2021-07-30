@@ -22,7 +22,9 @@ namespace SlimLib.Microsoft.Graph
         Task<DeltaResult<JsonElement>> GetGroupsDeltaChangeAsync(IAzureTenant tenant, string previousDeltaLink, DeltaRequestOptions? options = default, CancellationToken cancellationToken = default);
 
         IAsyncEnumerable<JsonElement> GetMembersAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonElement> GetMembersAsync(IAzureTenant tenant, Guid groupID, string type, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
         IAsyncEnumerable<JsonElement> GetTransitiveMembersAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonElement> GetTransitiveMembersAsync(IAzureTenant tenant, Guid groupID, string type, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
 
         IAsyncEnumerable<JsonElement> GetMemberOfAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
         IAsyncEnumerable<JsonElement> GetTransitiveMemberOfAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
