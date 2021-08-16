@@ -79,6 +79,19 @@ namespace SlimLib.Microsoft.Graph
             }
         }
 
+        async IAsyncEnumerable<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppAssignmentsAsync(IAzureTenant tenant, Guid appID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var nextLink = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}/assignments");
+
+            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
+
+                yield return item;
+            }
+        }
+
 
         async Task<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppContentAsync(IAzureTenant tenant, Guid appID, string type, string mobileAppContentID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
