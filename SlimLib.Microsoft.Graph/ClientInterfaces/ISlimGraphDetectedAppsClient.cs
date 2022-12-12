@@ -10,5 +10,6 @@ namespace SlimLib.Microsoft.Graph
     {
         Task<JsonElement> GetDetectedAppAsync(IAzureTenant tenant, string appID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
         IAsyncEnumerable<JsonElement> GetDetectedAppsAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonElement> GetManagedDevicesAsync(IAzureTenant tenant, string appID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }
