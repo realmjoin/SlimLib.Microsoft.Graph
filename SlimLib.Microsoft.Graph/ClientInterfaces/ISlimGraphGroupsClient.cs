@@ -35,8 +35,8 @@ namespace SlimLib.Microsoft.Graph
         IAsyncEnumerable<Guid> GetMemberGroupsAsync(IAzureTenant tenant, Guid groupID, bool securityEnabledOnly, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
         IAsyncEnumerable<Guid> GetMemberObjectsAsync(IAzureTenant tenant, Guid groupID, bool securityEnabledOnly, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
 
-        Task AddMemberAsync(IAzureTenant tenant, Guid groupID, Guid memberID, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
-        Task AddMembersAsync(IAzureTenant tenant, Guid groupID, IEnumerable<Guid> memberIDs, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task AddMemberAsync(IAzureTenant tenant, Guid groupID, TypedMember member, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task AddMembersAsync(IAzureTenant tenant, Guid groupID, IEnumerable<TypedMember> members, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
         Task RemoveMemberAsync(IAzureTenant tenant, Guid groupID, Guid memberID, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }

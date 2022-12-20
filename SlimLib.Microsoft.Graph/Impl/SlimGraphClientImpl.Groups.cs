@@ -240,7 +240,7 @@ namespace SlimLib.Microsoft.Graph
             }
         }
 
-        async Task ISlimGraphGroupsClient.AddMemberAsync(IAzureTenant tenant, Guid groupID, Guid memberID, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        async Task ISlimGraphGroupsClient.AddMemberAsync(IAzureTenant tenant, Guid groupID, TypedMember member, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"groups/{groupID}/members/$ref");
 
@@ -248,14 +248,14 @@ namespace SlimLib.Microsoft.Graph
             using (var writer = new Utf8JsonWriter(buffer))
             {
                 writer.WriteStartObject();
-                writer.WriteString("@odata.id", httpClient.BaseAddress + "directoryObjects/" + memberID);
+                writer.WriteString("@odata.id", "" + httpClient.BaseAddress + member);
                 writer.WriteEndObject();
             }
 
             await PostAsync(tenant, buffer.WrittenMemory, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        async Task ISlimGraphGroupsClient.AddMembersAsync(IAzureTenant tenant, Guid groupID, IEnumerable<Guid> memberIDs, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        async Task ISlimGraphGroupsClient.AddMembersAsync(IAzureTenant tenant, Guid groupID, IEnumerable<TypedMember> members, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"groups/{groupID}");
 
@@ -265,9 +265,9 @@ namespace SlimLib.Microsoft.Graph
                 writer.WriteStartObject();
                 writer.WriteStartArray("members@odata.bind");
 
-                foreach (var memberID in memberIDs)
+                foreach (var member in members)
                 {
-                    writer.WriteStringValue(httpClient.BaseAddress + "directoryObjects/" + memberID);
+                    writer.WriteStringValue("" + httpClient.BaseAddress + member);
                 }
 
                 writer.WriteEndArray();
