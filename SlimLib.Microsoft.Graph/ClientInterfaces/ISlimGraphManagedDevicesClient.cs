@@ -26,5 +26,6 @@ namespace SlimLib.Microsoft.Graph
         Task DeleteWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, Guid identityID, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
 
         Task WipeManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, JsonElement data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonElement> GetDeviceHealthScripts(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }

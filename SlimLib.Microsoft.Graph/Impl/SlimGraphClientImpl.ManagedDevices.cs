@@ -168,7 +168,19 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/wipe");
 
-            await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link,  new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+        async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.GetDeviceHealthScripts(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var nextLink = BuildLink(options, "deviceManagement/deviceHealthScripts");
+
+            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
+
+                yield return item;
+            }
         }
     }
 }
