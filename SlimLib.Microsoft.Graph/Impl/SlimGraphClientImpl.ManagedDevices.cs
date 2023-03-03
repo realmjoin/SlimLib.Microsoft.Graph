@@ -183,5 +183,25 @@ namespace SlimLib.Microsoft.Graph
                 yield return item;
             }
         }
+        async Task<JsonElement> ISlimGraphManagedDevicesClient.CreateDeviceHealthScriptAsync(IAzureTenant tenant, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, "deviceManagement/deviceHealthScripts");
+            return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+        async Task<JsonElement> ISlimGraphManagedDevicesClient.UpdateDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}");
+            return await PatchAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+        async Task ISlimGraphManagedDevicesClient.DeleteDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}");
+            await DeleteAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+        async Task ISlimGraphManagedDevicesClient.AssignDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}/assign");
+            await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
     }
 }
