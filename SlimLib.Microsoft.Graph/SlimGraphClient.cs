@@ -15,6 +15,7 @@ namespace SlimLib.Microsoft.Graph
 
         public ISlimGraphAuditEventsClient AuditEvents => impl;
         public ISlimGraphAuditLogsClient AuditLogs => impl;
+        public ISlimGraphDirectoryObjectsClient DirectoryObjects => impl;
         public ISlimGraphOrganizationsClient Organization => impl;
         public ISlimGraphOrgContactsClient OrgContacts => impl;
         public ISlimGraphDevicesClient Devices => impl;
