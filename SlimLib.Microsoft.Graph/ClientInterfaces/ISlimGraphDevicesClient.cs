@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SlimLib.Microsoft.Graph
 {
-    public interface ISlimGraphDevicesClient
+    public interface ISlimGraphDevicesClient : ISlimGraphDirectoryObjectsClient
     {
         Task<JsonElement> GetDeviceAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
 

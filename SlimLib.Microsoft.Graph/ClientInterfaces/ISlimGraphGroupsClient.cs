@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SlimLib.Microsoft.Graph
 {
-    public interface ISlimGraphGroupsClient
+    public interface ISlimGraphGroupsClient : ISlimGraphDirectoryObjectsClient
     {
         Task<JsonElement> CreateGroupAsync(IAzureTenant tenant, JsonElement data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
         Task<JsonElement> GetGroupAsync(IAzureTenant tenant, Guid groupID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);

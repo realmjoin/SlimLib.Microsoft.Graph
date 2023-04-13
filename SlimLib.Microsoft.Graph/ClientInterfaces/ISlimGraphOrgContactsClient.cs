@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SlimLib.Microsoft.Graph
 {
-    public interface ISlimGraphOrgContactsClient
+    public interface ISlimGraphOrgContactsClient : ISlimGraphDirectoryObjectsClient
     {
         Task<JsonElement> GetOrgContactAsync(IAzureTenant tenant, Guid contactID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
 
