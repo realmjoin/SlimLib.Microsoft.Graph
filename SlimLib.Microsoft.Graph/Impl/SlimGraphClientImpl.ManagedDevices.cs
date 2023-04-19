@@ -183,6 +183,11 @@ namespace SlimLib.Microsoft.Graph
                 yield return item;
             }
         }
+        async Task<JsonElement> ISlimGraphManagedDevicesClient.GetDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, InvokeRequestOptions? options, System.Threading.CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}");
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
         async Task<JsonElement> ISlimGraphManagedDevicesClient.CreateDeviceHealthScriptAsync(IAzureTenant tenant, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, "deviceManagement/deviceHealthScripts");
