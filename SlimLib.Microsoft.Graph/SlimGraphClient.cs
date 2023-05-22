@@ -13,6 +13,7 @@ namespace SlimLib.Microsoft.Graph
             impl = new SlimGraphClientImpl(authenticationProvider, httpClient, logger);
         }
 
+        public ISlimGraphAdministrativeUnitsClient AdministrativeUnits => impl;
         public ISlimGraphAuditEventsClient AuditEvents => impl;
         public ISlimGraphAuditLogsClient AuditLogs => impl;
         public ISlimGraphDirectoryObjectsClient DirectoryObjects => impl;

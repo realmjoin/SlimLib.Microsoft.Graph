@@ -2,6 +2,7 @@
 {
     public interface ISlimGraphClient
     {
+        ISlimGraphAdministrativeUnitsClient AdministrativeUnits { get; }
         ISlimGraphAuditEventsClient AuditEvents { get; }
         ISlimGraphAuditLogsClient AuditLogs { get; }
         ISlimGraphOrganizationsClient Organization { get; }
