@@ -11,6 +11,7 @@ namespace SlimLib.Microsoft.Graph
     {
         Task<JsonElement> CreateGroupAsync(IAzureTenant tenant, JsonElement data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
         Task<JsonElement> GetGroupAsync(IAzureTenant tenant, Guid groupID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task<JsonElement> UpdateGroupAsync(IAzureTenant tenant, Guid groupID, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken = default);
         Task DeleteGroupAsync(IAzureTenant tenant, Guid groupID, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
 
         Task<JsonElement> GetGroupPhotoAsync(IAzureTenant tenant, Guid groupID, string size = "", ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);

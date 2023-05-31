@@ -25,6 +25,13 @@ namespace SlimLib.Microsoft.Graph
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
+        async Task<JsonElement> ISlimGraphGroupsClient.UpdateGroupAsync(IAzureTenant tenant, Guid groupID, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"groups/{groupID}");
+
+            return await PatchAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+
         async Task ISlimGraphGroupsClient.DeleteGroupAsync(IAzureTenant tenant, Guid groupID, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"groups/{groupID}");
