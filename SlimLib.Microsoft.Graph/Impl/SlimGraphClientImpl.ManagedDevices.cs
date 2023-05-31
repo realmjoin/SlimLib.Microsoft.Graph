@@ -2,8 +2,10 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,15 +24,12 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/windowsDefenderScan");
 
-            var buffer = new ArrayBufferWriter<byte>();
-            using (var writer = new Utf8JsonWriter(buffer))
+            var data = new JsonObject
             {
-                writer.WriteStartObject();
-                writer.WriteBoolean("quickScan", quickScan);
-                writer.WriteEndObject();
-            }
+               ["quickScan"] = quickScan
+            };
 
-            await PostAsync(tenant, buffer.WrittenMemory, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task<JsonElement> ISlimGraphManagedDevicesClient.GetManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
@@ -128,26 +127,16 @@ namespace SlimLib.Microsoft.Graph
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.ImportWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, IEnumerable<JsonElement> identities, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.ImportWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, ICollection<JsonObject> identities, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "deviceManagement/importedWindowsAutopilotDeviceIdentities/import");
 
-            var buffer = new ArrayBufferWriter<byte>();
-            using (var writer = new Utf8JsonWriter(buffer))
+            var data = new JsonObject
             {
-                writer.WriteStartObject();
-                writer.WriteStartArray("importedWindowsAutopilotDeviceIdentities");
+                ["importedWindowsAutopilotDeviceIdentities"] = new JsonArray(identities.ToArray())
+            };
 
-                foreach (var identity in identities)
-                {
-                    identity.WriteTo(writer);
-                }
-
-                writer.WriteEndArray();
-                writer.WriteEndObject();
-            }
-
-            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, new RequestHeaderOptions(), cancellationToken))
+            await foreach (var item in PostArrayAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), nextLink, new RequestHeaderOptions(), cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -164,7 +153,7 @@ namespace SlimLib.Microsoft.Graph
         }
 
 
-        async Task ISlimGraphManagedDevicesClient.WipeManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        async Task ISlimGraphManagedDevicesClient.WipeManagedDeviceAsync(IAzureTenant tenant, Guid deviceID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/wipe");
 
@@ -183,17 +172,17 @@ namespace SlimLib.Microsoft.Graph
                 yield return item;
             }
         }
-        async Task<JsonElement> ISlimGraphManagedDevicesClient.GetDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, InvokeRequestOptions? options, System.Threading.CancellationToken cancellationToken)
+        async Task<JsonElement> ISlimGraphManagedDevicesClient.GetDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}");
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
-        async Task<JsonElement> ISlimGraphManagedDevicesClient.CreateDeviceHealthScriptAsync(IAzureTenant tenant, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        async Task<JsonElement> ISlimGraphManagedDevicesClient.CreateDeviceHealthScriptAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, "deviceManagement/deviceHealthScripts");
             return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
-        async Task<JsonElement> ISlimGraphManagedDevicesClient.UpdateDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        async Task<JsonElement> ISlimGraphManagedDevicesClient.UpdateDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}");
             return await PatchAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
@@ -203,7 +192,7 @@ namespace SlimLib.Microsoft.Graph
             var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}");
             await DeleteAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
-        async Task ISlimGraphManagedDevicesClient.AssignDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        async Task ISlimGraphManagedDevicesClient.AssignDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}/assign");
             await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);

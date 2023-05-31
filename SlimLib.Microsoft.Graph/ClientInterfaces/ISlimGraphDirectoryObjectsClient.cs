@@ -7,6 +7,6 @@ namespace SlimLib.Microsoft.Graph
 {
     public interface ISlimGraphDirectoryObjectsClient
     {
-        IAsyncEnumerable<Guid> CheckMemberGroupsAsync(IAzureTenant tenant, Guid objectID, IEnumerable<Guid> groupIDs, InvokeRequestOptions? options, CancellationToken cancellationToken);
+        IAsyncEnumerable<Guid> CheckMemberGroupsAsync(IAzureTenant tenant, Guid objectID, ICollection<Guid> groupIDs, InvokeRequestOptions? options, CancellationToken cancellationToken);
     }
 }

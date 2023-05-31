@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,9 +10,9 @@ namespace SlimLib.Microsoft.Graph
 {
     public interface ISlimGraphGroupsClient : ISlimGraphDirectoryObjectsClient
     {
-        Task<JsonElement> CreateGroupAsync(IAzureTenant tenant, JsonElement data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task<JsonElement> CreateGroupAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
         Task<JsonElement> GetGroupAsync(IAzureTenant tenant, Guid groupID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
-        Task<JsonElement> UpdateGroupAsync(IAzureTenant tenant, Guid groupID, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken = default);
+        Task<JsonElement> UpdateGroupAsync(IAzureTenant tenant, Guid groupID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken = default);
         Task DeleteGroupAsync(IAzureTenant tenant, Guid groupID, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
 
         Task<JsonElement> GetGroupPhotoAsync(IAzureTenant tenant, Guid groupID, string size = "", ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);

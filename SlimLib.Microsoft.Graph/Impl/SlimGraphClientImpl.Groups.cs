@@ -1,9 +1,10 @@
 ﻿using SlimLib.Auth.Azure;
 using System;
-using System.Buffers;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ namespace SlimLib.Microsoft.Graph
 {
     partial class SlimGraphClientImpl
     {
-        async Task<JsonElement> ISlimGraphGroupsClient.CreateGroupAsync(IAzureTenant tenant, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        async Task<JsonElement> ISlimGraphGroupsClient.CreateGroupAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, "groups");
 
@@ -25,7 +26,7 @@ namespace SlimLib.Microsoft.Graph
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        async Task<JsonElement> ISlimGraphGroupsClient.UpdateGroupAsync(IAzureTenant tenant, Guid groupID, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        async Task<JsonElement> ISlimGraphGroupsClient.UpdateGroupAsync(IAzureTenant tenant, Guid groupID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"groups/{groupID}");
 
@@ -209,15 +210,12 @@ namespace SlimLib.Microsoft.Graph
         {
             var nextLink = BuildLink(options, $"groups/{groupID}/getMemberGroups");
 
-            var buffer = new ArrayBufferWriter<byte>();
-            using (var writer = new Utf8JsonWriter(buffer))
+            var data = new JsonObject
             {
-                writer.WriteStartObject();
-                writer.WriteBoolean("securityEnabledOnly", securityEnabledOnly);
-                writer.WriteEndObject();
-            }
+                ["securityEnabledOnly"] = securityEnabledOnly
+            };
 
-            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, new RequestHeaderOptions(), cancellationToken))
+            await foreach (var item in PostArrayAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), nextLink, new RequestHeaderOptions(), cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -230,15 +228,12 @@ namespace SlimLib.Microsoft.Graph
         {
             var nextLink = BuildLink(options, $"groups/{groupID}/getMemberObjects");
 
-            var buffer = new ArrayBufferWriter<byte>();
-            using (var writer = new Utf8JsonWriter(buffer))
+            var data = new JsonObject
             {
-                writer.WriteStartObject();
-                writer.WriteBoolean("securityEnabledOnly", securityEnabledOnly);
-                writer.WriteEndObject();
-            }
+                ["securityEnabledOnly"] = securityEnabledOnly
+            };
 
-            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, new RequestHeaderOptions(), cancellationToken))
+            await foreach (var item in PostArrayAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), nextLink, new RequestHeaderOptions(), cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -251,37 +246,24 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"groups/{groupID}/members/$ref");
 
-            var buffer = new ArrayBufferWriter<byte>();
-            using (var writer = new Utf8JsonWriter(buffer))
+            var data = new JsonObject
             {
-                writer.WriteStartObject();
-                writer.WriteString("@odata.id", "" + httpClient.BaseAddress + member);
-                writer.WriteEndObject();
-            }
+                ["@odata.id"] = "" + httpClient.BaseAddress + member
+            };
 
-            await PostAsync(tenant, buffer.WrittenMemory, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task ISlimGraphGroupsClient.AddMembersAsync(IAzureTenant tenant, Guid groupID, IEnumerable<TypedMember> members, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"groups/{groupID}");
 
-            var buffer = new ArrayBufferWriter<byte>();
-            using (var writer = new Utf8JsonWriter(buffer))
+            var data = new JsonObject
             {
-                writer.WriteStartObject();
-                writer.WriteStartArray("members@odata.bind");
+                ["members@odata.bind"] = new JsonArray(members.Select(x => JsonValue.Create("" + httpClient.BaseAddress + x)).ToArray())
+            };
 
-                foreach (var member in members)
-                {
-                    writer.WriteStringValue("" + httpClient.BaseAddress + member);
-                }
-
-                writer.WriteEndArray();
-                writer.WriteEndObject();
-            }
-
-            await PatchAsync(tenant, buffer.WrittenMemory, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            await PatchAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task ISlimGraphGroupsClient.RemoveMemberAsync(IAzureTenant tenant, Guid groupID, Guid memberID, InvokeRequestOptions? options, CancellationToken cancellationToken)

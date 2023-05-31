@@ -4,6 +4,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,14 +19,14 @@ namespace SlimLib.Microsoft.Graph
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        async Task<JsonElement> ISlimGraphMobileAppsClient.CreateMobileAppAsync(IAzureTenant tenant, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        async Task<JsonElement> ISlimGraphMobileAppsClient.CreateMobileAppAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, "deviceAppManagement/mobileApps");
 
             return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        async Task ISlimGraphMobileAppsClient.UpdateMobileAppAsync(IAzureTenant tenant, Guid appID, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        async Task ISlimGraphMobileAppsClient.UpdateMobileAppAsync(IAzureTenant tenant, Guid appID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}");
 
@@ -110,16 +111,13 @@ namespace SlimLib.Microsoft.Graph
 
         async Task ISlimGraphMobileAppsClient.CommitMobileAppContentAsync(IAzureTenant tenant, Guid appID, string type, string mobileAppContentID, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var buffer = new ArrayBufferWriter<byte>();
-            using (var writer = new Utf8JsonWriter(buffer))
+            var data = new JsonObject
             {
-                writer.WriteStartObject();
-                writer.WriteString("@odata.type", "#" + type);
-                writer.WriteString("committedContentVersion", mobileAppContentID);
-                writer.WriteEndObject();
-            }
+                ["@odata.type"] = "#" + type,
+                ["committedContentVersion"] = mobileAppContentID,
+            };
 
-            await ((ISlimGraphMobileAppsClient)this).UpdateMobileAppAsync(tenant, appID, JsonSerializer.Deserialize<JsonElement>(buffer.WrittenSpan));
+            await ((ISlimGraphMobileAppsClient)this).UpdateMobileAppAsync(tenant, appID, data, cancellationToken: cancellationToken);
         }
 
 
@@ -130,21 +128,21 @@ namespace SlimLib.Microsoft.Graph
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        async Task<JsonElement> ISlimGraphMobileAppsClient.CreateMobileAppContentFilesAsync(IAzureTenant tenant, Guid appID, string type, string mobileAppContentID, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        async Task<JsonElement> ISlimGraphMobileAppsClient.CreateMobileAppContentFilesAsync(IAzureTenant tenant, Guid appID, string type, string mobileAppContentID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}/{type}/contentVersions/{mobileAppContentID}/files");
 
             return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        async Task ISlimGraphMobileAppsClient.CommitMobileAppContentFilesAsync(IAzureTenant tenant, Guid appID, string type, string mobileAppContentID, Guid mobileAppContentFileID, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        async Task ISlimGraphMobileAppsClient.CommitMobileAppContentFilesAsync(IAzureTenant tenant, Guid appID, string type, string mobileAppContentID, Guid mobileAppContentFileID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}/{type}/contentVersions/{mobileAppContentID}/files/{mobileAppContentFileID}/commit");
 
             await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        async Task ISlimGraphMobileAppsClient.AssignMobileAppAsync(IAzureTenant tenant, Guid appID, JsonElement data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        async Task ISlimGraphMobileAppsClient.AssignMobileAppAsync(IAzureTenant tenant, Guid appID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}/assign");
 

@@ -4,6 +4,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -152,15 +153,12 @@ namespace SlimLib.Microsoft.Graph
         {
             var nextLink = BuildLink(options, $"users/{id}/getMemberGroups");
 
-            var buffer = new ArrayBufferWriter<byte>();
-            using (var writer = new Utf8JsonWriter(buffer))
+            var data = new JsonObject
             {
-                writer.WriteStartObject();
-                writer.WriteBoolean("securityEnabledOnly", securityEnabledOnly);
-                writer.WriteEndObject();
-            }
+               { "securityEnabledOnly", securityEnabledOnly }
+            };
 
-            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, new RequestHeaderOptions(), cancellationToken))
+            await foreach (var item in PostArrayAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), nextLink, new RequestHeaderOptions(), cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
@@ -173,15 +171,12 @@ namespace SlimLib.Microsoft.Graph
         {
             var nextLink = BuildLink(options, $"users/{id}/getMemberObjects");
 
-            var buffer = new ArrayBufferWriter<byte>();
-            using (var writer = new Utf8JsonWriter(buffer))
+            var data = new JsonObject
             {
-                writer.WriteStartObject();
-                writer.WriteBoolean("securityEnabledOnly", securityEnabledOnly);
-                writer.WriteEndObject();
-            }
+               { "securityEnabledOnly", securityEnabledOnly }
+            };
 
-            await foreach (var item in PostArrayAsync(tenant, buffer.WrittenMemory, nextLink, new RequestHeaderOptions(), cancellationToken))
+            await foreach (var item in PostArrayAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), nextLink, new RequestHeaderOptions(), cancellationToken))
             {
                 if (cancellationToken.IsCancellationRequested)
                     yield break;
