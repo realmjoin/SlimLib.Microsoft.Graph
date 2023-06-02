@@ -26,7 +26,7 @@ namespace SlimLib.Microsoft.Graph
 
             var data = new JsonObject
             {
-               ["quickScan"] = quickScan
+                ["quickScan"] = quickScan
             };
 
             await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
@@ -196,6 +196,48 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}/assign");
             await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+        async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.GetDeviceHealthScriptAssignmentsAsync(IAzureTenant tenant, string deviceHealthScriptId, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var nextLink = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}/assignments");
+            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
+                yield return item;
+            }
+        }
+        async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.GetDeviceAndAppManagementAssignmentFiltersAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var nextLink = BuildLink(options, "deviceManagement/assignmentFilters");
+
+            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
+
+                yield return item;
+            }
+        }
+        async Task<JsonElement> ISlimGraphManagedDevicesClient.GetDeviceAndAppManagementAssignmentFilterAsync(IAzureTenant tenant, string deviceAndAppManagementAssignmentFilterId, InvokeRequestOptions? options, System.Threading.CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/assignmentFilters/{deviceAndAppManagementAssignmentFilterId}");
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+        async Task<JsonElement> ISlimGraphManagedDevicesClient.CreateDeviceAndAppManagementAssignmentFilterAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, "deviceManagement/assignmentFilters");
+            return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+        async Task<JsonElement> ISlimGraphManagedDevicesClient.UpdateDeviceAndAppManagementAssignmentFilterAsync(IAzureTenant tenant, string deviceAndAppManagementAssignmentFilterId, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/assignmentFilters/{deviceAndAppManagementAssignmentFilterId}");
+            return await PatchAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+        async Task ISlimGraphManagedDevicesClient.DeleteDeviceAndAppManagementAssignmentFilterAsync(IAzureTenant tenant, string deviceAndAppManagementAssignmentFilterId, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/assignmentFilters/{deviceAndAppManagementAssignmentFilterId}");
+            await DeleteAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
     }
 }
