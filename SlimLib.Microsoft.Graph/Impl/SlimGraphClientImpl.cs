@@ -247,7 +247,7 @@ namespace SlimLib.Microsoft.Graph
             }
         }
 
-        private string BuildLink(ScalarRequestOptions? options, string call)
+        private static string BuildLink(ScalarRequestOptions? options, string call)
         {
             var args = new List<string>();
 
@@ -260,7 +260,7 @@ namespace SlimLib.Microsoft.Graph
             return RequestOptions.BuildLink(call, args);
         }
 
-        private string BuildLink(ListRequestOptions? options, string call)
+        private static string BuildLink(ListRequestOptions? options, string call)
         {
             var args = new List<string>();
 
@@ -293,12 +293,12 @@ namespace SlimLib.Microsoft.Graph
             return RequestOptions.BuildLink(call, args);
         }
 
-        private string BuildLink(InvokeRequestOptions? options, string call)
+        private static string BuildLink(InvokeRequestOptions? options, string call)
         {
             return RequestOptions.BuildLink(call, Enumerable.Empty<string>());
         }
 
-        private string BuildLink(DeltaRequestOptions? options, string call)
+        private static string BuildLink(DeltaRequestOptions? options, string call)
         {
             var args = new List<string>();
 
