@@ -13,6 +13,7 @@
         ISlimGraphMobileAppsClient MobileApps { get; }
         ISlimGraphManagedDevicesClient ManagedDevices { get; }
         ISlimGraphGroupsClient Groups { get; }
+        ISlimGraphDeviceManagementReportsClient DeviceManagementReports { get; }
         ISlimGraphServicePrincipalsClient ServicePrincipals { get; }
         ISlimGraphSubscribedSkusClient SubscribedSkus { get; }
         ISlimGraphPrivilegedAccessClient PrivilegedAccess { get; }

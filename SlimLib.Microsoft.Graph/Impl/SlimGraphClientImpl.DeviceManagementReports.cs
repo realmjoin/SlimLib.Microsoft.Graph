@@ -1,0 +1,29 @@
+﻿using SlimLib.Auth.Azure;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace SlimLib.Microsoft.Graph
+{
+    partial class SlimGraphClientImpl
+    {
+        async Task<JsonElement> ISlimGraphDeviceManagementReportsClient.GetDeviceInstallStatusByAppAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = "deviceManagement/reports/getDeviceInstallStatusReport";
+
+            var data = options?.ToJson() ?? new JsonObject();
+
+            return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+
+        async Task<JsonElement> ISlimGraphDeviceManagementReportsClient.GetUserInstallStatusAggregateByAppAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = "deviceManagement/reports/getUserInstallStatusReport";
+
+            var data = options?.ToJson() ?? new JsonObject();
+
+            return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+    }
+}

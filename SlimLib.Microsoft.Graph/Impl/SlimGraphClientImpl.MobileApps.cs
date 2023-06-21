@@ -1,6 +1,5 @@
 ﻿using SlimLib.Auth.Azure;
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -44,32 +43,6 @@ namespace SlimLib.Microsoft.Graph
         async IAsyncEnumerable<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "deviceAppManagement/mobileApps");
-
-            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item;
-            }
-        }
-
-        async IAsyncEnumerable<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppDeviceStatusesAsync(IAzureTenant tenant, Guid appID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
-        {
-            var nextLink = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}/deviceStatuses");
-
-            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item;
-            }
-        }
-
-        async IAsyncEnumerable<JsonElement> ISlimGraphMobileAppsClient.GetMobileAppUserStatusesAsync(IAzureTenant tenant, Guid appID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
-        {
-            var nextLink = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}/userStatuses");
 
             await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
             {
