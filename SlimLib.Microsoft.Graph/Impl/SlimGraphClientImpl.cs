@@ -280,6 +280,8 @@ namespace SlimLib.Microsoft.Graph
 
             if (options?.OrderBy != null)
                 args.Add("$orderby=" + Uri.EscapeDataString(options.OrderBy));
+            else if (options?.OrderByList.Count > 0)
+                args.Add("$orderby=" + Uri.EscapeDataString(string.Join(",", options.OrderByList)));
 
             if (options?.Count != null)
                 args.Add("$count=" + (options.Count.Value ? "true" : "false"));

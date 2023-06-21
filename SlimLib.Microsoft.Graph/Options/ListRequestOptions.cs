@@ -13,6 +13,7 @@ namespace SlimLib.Microsoft.Graph
         public string? Search { get; set; }
         public string? Expand { get; set; }
         public string? OrderBy { get; set; }
+        public HashSet<string> OrderByList { get; } = new();
         public bool? Count { get; set; }
         public int? Skip { get; set; }
         public int? Top { get; set; }
@@ -49,7 +50,21 @@ namespace SlimLib.Microsoft.Graph
                 json.Add("expand", Expand);
 
             if (OrderBy is not null)
-                json.Add("orderBy", OrderBy);
+            {
+                throw new NotSupportedException($"{nameof(OrderBy)} is not supported when using JSON. Use {nameof(OrderByList)} instead.");
+            }
+            else
+            {
+                if (OrderByList.Count > 0)
+                {
+                    var list = new JsonArray();
+
+                    foreach (var item in OrderByList)
+                        list.Add(JsonValue.Create(item));
+
+                    json.Add("orderBy", list);
+                }
+            }
 
             if (Count is not null)
                 json.Add("count", Count.Value);
