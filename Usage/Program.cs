@@ -50,6 +50,9 @@ namespace Usage
             var client = serviceScope.ServiceProvider.GetRequiredService<ISlimGraphClient>();
             var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
+            // Example how to use new Intune app reporting
+            // See for more: https://techcommunity.microsoft.com/t5/intune-customer-success/support-tip-retrieving-intune-apps-reporting-data-from-microsoft/ba-p/3851578
+
             var appID = new Guid("f38e72d5-b55d-45cd-8496-5224215f031c");
 
             var raw = await client.DeviceManagementReports.GetUserInstallStatusAggregateByAppAsync(tenant, new() { Filter = $"(ApplicationId eq '{appID}')" });
