@@ -220,7 +220,7 @@ namespace SlimLib.Microsoft.Graph
             {
             }
 
-            return new SlimGraphException(0, null, "Unkown error", "Unkown error");
+            return new SlimGraphException(0, null, "Unkown error", "");
         }
 
         private static void HandleNextLink(JsonElement root, ref string? nextLink)
