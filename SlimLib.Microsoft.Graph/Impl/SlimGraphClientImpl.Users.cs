@@ -69,14 +69,14 @@ namespace SlimLib.Microsoft.Graph
             }
         }
 
-        Task<DeltaResult<JsonElement>> ISlimGraphUsersClient.GetUsersDeltaAsync(IAzureTenant tenant, DeltaRequestOptions? options, CancellationToken cancellationToken)
+        Task<Results.Delta.DeltaResult<JsonElement>> ISlimGraphUsersClient.GetUsersDeltaAsync(IAzureTenant tenant, DeltaRequestOptions? options, CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "users/delta");
 
             return GetDeltaAsync(tenant, nextLink, options, cancellationToken);
         }
 
-        Task<DeltaResult<JsonElement>> ISlimGraphUsersClient.GetUsersDeltaChangeAsync(IAzureTenant tenant, string previousDeltaLink, DeltaRequestOptions? options, CancellationToken cancellationToken)
+        Task<Results.Delta.DeltaResult<JsonElement>> ISlimGraphUsersClient.GetUsersDeltaChangeAsync(IAzureTenant tenant, string previousDeltaLink, DeltaRequestOptions? options, CancellationToken cancellationToken)
         {
             return GetDeltaAsync(tenant, previousDeltaLink, options, cancellationToken);
         }

@@ -85,7 +85,7 @@ namespace SlimLib.Microsoft.Graph
             } while (nLink != null);
         }
 
-        private async Task<DeltaResult<JsonElement>> GetDeltaAsync(IAzureTenant tenant, string nextLink, DeltaRequestOptions? options, CancellationToken cancellationToken)
+        private async Task<Results.Delta.DeltaResult<JsonElement>> GetDeltaAsync(IAzureTenant tenant, string nextLink, DeltaRequestOptions? options, CancellationToken cancellationToken)
         {
             var result = new List<JsonElement>();
 
@@ -119,7 +119,7 @@ namespace SlimLib.Microsoft.Graph
 
             } while (nLink != null);
 
-            return new DeltaResult<JsonElement>(result, dLink);
+            return new Results.Delta.DeltaResult<JsonElement>(result, dLink);
         }
 
         private async Task<JsonElement> SendAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
