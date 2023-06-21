@@ -266,6 +266,8 @@ namespace SlimLib.Microsoft.Graph
 
             if (options?.Select != null)
                 args.Add("$select=" + Uri.EscapeDataString(options.Select));
+            else if (options?.SelectList.Count > 0)
+                args.Add("$select=" + Uri.EscapeDataString(string.Join(",", options.SelectList)));
 
             if (options?.Filter != null)
                 args.Add("$filter=" + Uri.EscapeDataString(options.Filter));

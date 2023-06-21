@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -7,6 +8,7 @@ namespace SlimLib.Microsoft.Graph
     public class ListRequestOptions
     {
         public string? Select { get; set; }
+        public HashSet<string> SelectList { get; } = new();
         public string? Filter { get; set; }
         public string? Search { get; set; }
         public string? Expand { get; set; }
@@ -21,7 +23,21 @@ namespace SlimLib.Microsoft.Graph
             var json = new JsonObject();
 
             if (Select is not null)
-                json.Add("select", Select);
+            {
+                throw new NotSupportedException($"{nameof(Select)} is not supported when using JSON. Use {nameof(SelectList)} instead.");
+            }
+            else
+            {
+                if (SelectList.Count > 0)
+                {
+                    var list = new JsonArray();
+
+                    foreach (var item in SelectList)
+                        list.Add(JsonValue.Create(item));
+
+                    json.Add("select", list);
+                }
+            }
 
             if (Filter is not null)
                 json.Add("filter", Filter);

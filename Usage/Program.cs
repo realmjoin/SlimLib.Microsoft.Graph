@@ -55,6 +55,9 @@ namespace Usage
 
             var appID = new Guid("f38e72d5-b55d-45cd-8496-5224215f031c");
 
+            // In this example we parse the raw response (which is reminiscent of CSV) using Report.ReportResult
+            // which results in list of rows, with each row containing a list of values as raw JsonElement.
+
             var raw = await client.DeviceManagementReports.GetUserInstallStatusAggregateByAppAsync(tenant, new() { Filter = $"(ApplicationId eq '{appID}')" });
             var report = SlimLib.Microsoft.Graph.Results.Report.ReportResult.Create(raw);
 
@@ -79,7 +82,12 @@ john.doe@contoso.com
 0
              */
 
-            raw = await client.DeviceManagementReports.GetDeviceInstallStatusByAppAsync(tenant, new() { Filter = $"(ApplicationId eq '{appID}')" });
+            // This examples uses ToDynamicResult() to create dynamic objects from each list of JsonElements.
+            // It also uses the new SelectList feature to only return the columns we need.
+            // Note that for this report, when you request AppInstallState, you also get AppInstallState_loc which is the localized version of the state.
+            // You can not request AppInstallState_loc directly, it will fail with an UnknownError.
+
+            raw = await client.DeviceManagementReports.GetDeviceInstallStatusByAppAsync(tenant, new() { SelectList = { "DeviceName", "AppInstallState" }, Filter = $"(ApplicationId eq '{appID}')" });
             report = SlimLib.Microsoft.Graph.Results.Report.ReportResult.Create(raw);
 
             foreach (var item in report.ToDynamicResult())
