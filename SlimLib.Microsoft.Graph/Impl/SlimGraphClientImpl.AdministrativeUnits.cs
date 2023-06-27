@@ -9,7 +9,7 @@ namespace SlimLib.Microsoft.Graph
 {
     partial class SlimGraphClientImpl
     {
-        async Task<JsonElement> ISlimGraphAdministrativeUnitsClient.CreateGroupAsync(IAzureTenant tenant, Guid adminUnitID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        async Task<JsonElement> ISlimGraphAdministrativeUnitsClient.AddMemberAsync(IAzureTenant tenant, Guid adminUnitID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"directory/administrativeUnits/{adminUnitID}/members");
 

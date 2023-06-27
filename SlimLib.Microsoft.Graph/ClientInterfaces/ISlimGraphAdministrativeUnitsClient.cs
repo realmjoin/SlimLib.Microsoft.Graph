@@ -9,6 +9,6 @@ namespace SlimLib.Microsoft.Graph
 {
     public interface ISlimGraphAdministrativeUnitsClient
     {
-        Task<JsonElement> CreateGroupAsync(IAzureTenant tenant, Guid adminUnitID, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task<JsonElement> AddMemberAsync(IAzureTenant tenant, Guid adminUnitID, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }
