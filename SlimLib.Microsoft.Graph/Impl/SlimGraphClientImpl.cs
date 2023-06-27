@@ -264,10 +264,8 @@ namespace SlimLib.Microsoft.Graph
         {
             var args = new List<string>();
 
-            if (options?.Select != null)
-                args.Add("$select=" + Uri.EscapeDataString(options.Select));
-            else if (options?.SelectList.Count > 0)
-                args.Add("$select=" + Uri.EscapeDataString(string.Join(",", options.SelectList)));
+            if (options?.Select.Count > 0)
+                args.Add("$select=" + Uri.EscapeDataString(string.Join(",", options.Select)));
 
             if (options?.Filter != null)
                 args.Add("$filter=" + Uri.EscapeDataString(options.Filter));
@@ -278,10 +276,8 @@ namespace SlimLib.Microsoft.Graph
             if (options?.Expand != null)
                 args.Add("$expand=" + Uri.EscapeDataString(options.Expand));
 
-            if (options?.OrderBy != null)
-                args.Add("$orderby=" + Uri.EscapeDataString(options.OrderBy));
-            else if (options?.OrderByList.Count > 0)
-                args.Add("$orderby=" + Uri.EscapeDataString(string.Join(",", options.OrderByList)));
+            if (options?.OrderBy.Count > 0)
+                args.Add("$orderby=" + Uri.EscapeDataString(string.Join(",", options.OrderBy)));
 
             if (options?.Count != null)
                 args.Add("$count=" + (options.Count.Value ? "true" : "false"));

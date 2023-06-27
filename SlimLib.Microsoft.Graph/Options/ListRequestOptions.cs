@@ -7,13 +7,11 @@ namespace SlimLib.Microsoft.Graph
 {
     public class ListRequestOptions
     {
-        public string? Select { get; set; }
-        public HashSet<string> SelectList { get; } = new();
+        public HashSet<string> Select { get; } = new();
         public string? Filter { get; set; }
         public string? Search { get; set; }
         public string? Expand { get; set; }
-        public string? OrderBy { get; set; }
-        public HashSet<string> OrderByList { get; } = new();
+        public HashSet<string> OrderBy { get; } = new();
         public bool? Count { get; set; }
         public int? Skip { get; set; }
         public int? Top { get; set; }
@@ -23,21 +21,14 @@ namespace SlimLib.Microsoft.Graph
         {
             var json = new JsonObject();
 
-            if (Select is not null)
+            if (Select.Count > 0)
             {
-                throw new NotSupportedException($"{nameof(Select)} is not supported when using JSON. Use {nameof(SelectList)} instead.");
-            }
-            else
-            {
-                if (SelectList.Count > 0)
-                {
-                    var list = new JsonArray();
+                var list = new JsonArray();
 
-                    foreach (var item in SelectList)
-                        list.Add(JsonValue.Create(item));
+                foreach (var item in Select)
+                    list.Add(JsonValue.Create(item));
 
-                    json.Add("select", list);
-                }
+                json.Add("select", list);
             }
 
             if (Filter is not null)
@@ -49,21 +40,14 @@ namespace SlimLib.Microsoft.Graph
             if (Expand is not null)
                 json.Add("expand", Expand);
 
-            if (OrderBy is not null)
+            if (OrderBy.Count > 0)
             {
-                throw new NotSupportedException($"{nameof(OrderBy)} is not supported when using JSON. Use {nameof(OrderByList)} instead.");
-            }
-            else
-            {
-                if (OrderByList.Count > 0)
-                {
-                    var list = new JsonArray();
+                var list = new JsonArray();
 
-                    foreach (var item in OrderByList)
-                        list.Add(JsonValue.Create(item));
+                foreach (var item in OrderBy)
+                    list.Add(JsonValue.Create(item));
 
-                    json.Add("orderBy", list);
-                }
+                json.Add("orderBy", list);
             }
 
             if (Count is not null)
