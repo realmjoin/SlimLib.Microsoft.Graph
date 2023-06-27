@@ -87,7 +87,7 @@ john.doe@contoso.com
             // Note that for this report, when you request AppInstallState, you also get AppInstallState_loc which is the localized version of the state.
             // You can not request AppInstallState_loc directly, it will fail with an UnknownError.
 
-            raw = await client.DeviceManagementReports.GetDeviceInstallStatusByAppAsync(tenant, new() { SelectList = { "DeviceName", "AppInstallState" }, OrderByList = { "DeviceName asc" }, Filter = $"(ApplicationId eq '{appID}')" });
+            raw = await client.DeviceManagementReports.GetDeviceInstallStatusByAppAsync(tenant, new() { Select = { "DeviceName", "AppInstallState" }, OrderBy = { "DeviceName asc" }, Filter = $"(ApplicationId eq '{appID}')" });
             report = SlimLib.Microsoft.Graph.Results.Report.ReportResult.Create(raw);
 
             foreach (var item in report.ToDynamicResult())
