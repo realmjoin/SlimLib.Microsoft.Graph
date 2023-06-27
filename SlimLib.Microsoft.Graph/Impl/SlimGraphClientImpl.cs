@@ -252,7 +252,7 @@ namespace SlimLib.Microsoft.Graph
             var args = new List<string>();
 
             if (options?.Select != null)
-                args.Add("$select=" + Uri.EscapeDataString(options.Select));
+                args.Add("$select=" + Uri.EscapeDataString(string.Join(",", options.Select)));
 
             if (options?.Expand != null)
                 args.Add("$expand=" + Uri.EscapeDataString(options.Expand));
@@ -301,7 +301,7 @@ namespace SlimLib.Microsoft.Graph
             var args = new List<string>();
 
             if (options?.Select != null)
-                args.Add("$select=" + Uri.EscapeDataString(options.Select));
+                args.Add("$select=" + Uri.EscapeDataString(string.Join(",", options.Select)));
 
             if (options?.Filter != null)
                 args.Add("$filter=" + Uri.EscapeDataString(options.Filter));

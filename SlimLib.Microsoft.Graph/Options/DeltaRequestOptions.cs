@@ -1,8 +1,10 @@
-﻿namespace SlimLib.Microsoft.Graph
+﻿using System.Collections.Generic;
+
+namespace SlimLib.Microsoft.Graph
 {
     public class DeltaRequestOptions
     {
-        public string? Select { get; set; }
+        public HashSet<string> Select { get; } = new();
         public string? Filter { get; set; }
         public bool PreferMinimal { get; set; }
     }
