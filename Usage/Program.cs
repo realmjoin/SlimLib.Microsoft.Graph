@@ -39,7 +39,7 @@ namespace Usage
 
             services.AddHttpClient();
             services.AddMemoryCache();
-            services.AddSingleton<IAuthenticationProvider>(sp => new AzureAuthenticationClient(clientCredentials, sp.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(AzureAuthenticationClient)), sp.GetService<IMemoryCache>()));
+            services.AddSingleton<IAuthenticationProvider>(sp => new CachingAzureAuthenticationClient(clientCredentials, sp.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(CachingAzureAuthenticationClient)), sp.GetRequiredService<IMemoryCache>()));
             services.AddHttpClient<ISlimGraphClient, SlimGraphClient>(client => client.BaseAddress = new Uri(SlimGraphConstants.EndpointBeta)).AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(500)));
 
             using var container = services.BuildServiceProvider();
