@@ -249,5 +249,33 @@ namespace SlimLib.Microsoft.Graph
             var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}/runSummary");
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
+        async Task ISlimGraphManagedDevicesClient.InitiateOnDemandProactiveRemediationAsync(IAzureTenant tenant, Guid deviceID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/initiateOnDemandProactiveRemediation");
+
+            await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+        async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.GetRemoteActionAuditsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var nextLink = BuildLink(options, $"deviceManagement/remoteActionAudits");
+            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
+
+                yield return item;
+            }
+        }
+        async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.GetDeviceHealthScriptStatesAsync(IAzureTenant tenant, Guid deviceID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var nextLink = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/deviceHealthScriptStates");
+            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
+
+                yield return item;
+            }
+        }
     }
 }
