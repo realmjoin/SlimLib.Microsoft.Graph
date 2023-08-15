@@ -41,5 +41,8 @@ namespace SlimLib.Microsoft.Graph
         Task AssignDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
         Task<JsonElement> GetDeviceHealthScriptRemediationHistoryAsync(IAzureTenant tenant, string deviceHealthScriptId, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
         Task<JsonElement> GetDeviceHealthScriptRunSummaryAsync(IAzureTenant tenant, string deviceHealthScriptId, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task InitiateOnDemandProactiveRemediationAsync(IAzureTenant tenant, Guid deviceID, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonElement> GetRemoteActionAuditsAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonElement> GetDeviceHealthScriptStatesAsync(IAzureTenant tenant, Guid deviceID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }
