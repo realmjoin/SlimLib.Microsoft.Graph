@@ -277,5 +277,16 @@ namespace SlimLib.Microsoft.Graph
                 yield return item;
             }
         }
+        async IAsyncEnumerable<JsonElement> ISlimGraphManagedDevicesClient.GetDeviceRunStatesAsync(IAzureTenant tenant, string deviceHealthScriptId, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var nextLink = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}/deviceRunStates");
+            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
+
+                yield return item;
+            }
+        }
     }
 }
