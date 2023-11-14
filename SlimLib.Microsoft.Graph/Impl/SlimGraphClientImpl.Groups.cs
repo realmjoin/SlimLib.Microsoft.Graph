@@ -206,42 +206,6 @@ namespace SlimLib.Microsoft.Graph
             }
         }
 
-        async IAsyncEnumerable<Guid> ISlimGraphGroupsClient.GetMemberGroupsAsync(IAzureTenant tenant, Guid groupID, bool securityEnabledOnly, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
-        {
-            var nextLink = BuildLink(options, $"groups/{groupID}/getMemberGroups");
-
-            var data = new JsonObject
-            {
-                ["securityEnabledOnly"] = securityEnabledOnly
-            };
-
-            await foreach (var item in PostArrayAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), nextLink, new RequestHeaderOptions(), cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item.GetGuid();
-            }
-        }
-
-        async IAsyncEnumerable<Guid> ISlimGraphGroupsClient.GetMemberObjectsAsync(IAzureTenant tenant, Guid groupID, bool securityEnabledOnly, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
-        {
-            var nextLink = BuildLink(options, $"groups/{groupID}/getMemberObjects");
-
-            var data = new JsonObject
-            {
-                ["securityEnabledOnly"] = securityEnabledOnly
-            };
-
-            await foreach (var item in PostArrayAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), nextLink, new RequestHeaderOptions(), cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item.GetGuid();
-            }
-        }
-
         async Task ISlimGraphGroupsClient.AddMemberAsync(IAzureTenant tenant, Guid groupID, TypedMember member, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"groups/{groupID}/members/$ref");
