@@ -12,7 +12,7 @@ namespace SlimLib.Microsoft.Graph
     {
         Task<JsonElement> GetMobileAppAsync(IAzureTenant tenant, Guid appID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
         Task<JsonElement> CreateMobileAppAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
-        Task UpdateMobileAppAsync(IAzureTenant tenant, Guid appID, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task<JsonElement> UpdateMobileAppAsync(IAzureTenant tenant, Guid appID, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
         Task DeleteMobileAppAsync(IAzureTenant tenant, Guid appID, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
 
         IAsyncEnumerable<JsonElement> GetMobileAppsAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
