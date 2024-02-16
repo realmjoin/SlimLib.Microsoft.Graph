@@ -288,5 +288,11 @@ namespace SlimLib.Microsoft.Graph
                 yield return item;
             }
         }
+        async Task ISlimGraphManagedDevicesClient.RotateLocalAdminPasswordAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/rotateLocalAdminPassword");
+
+            await PostAsync(tenant, null, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
     }
 }

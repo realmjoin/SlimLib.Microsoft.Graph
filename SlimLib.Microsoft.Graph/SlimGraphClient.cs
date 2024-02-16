@@ -31,5 +31,6 @@ namespace SlimLib.Microsoft.Graph
         public ISlimGraphSubscribedSkusClient SubscribedSkus => impl;
         public ISlimGraphPrivilegedAccessClient PrivilegedAccess => impl;
         public ISlimGraphUsersClient Users => impl;
+        public ISlimGraphDeviceLocalCredentialsClient DeviceLocalCredentials => impl;
     }
 }
