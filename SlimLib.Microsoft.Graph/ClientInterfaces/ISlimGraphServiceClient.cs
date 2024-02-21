@@ -19,5 +19,6 @@
         ISlimGraphSubscribedSkusClient SubscribedSkus { get; }
         ISlimGraphPrivilegedAccessClient PrivilegedAccess { get; }
         ISlimGraphUsersClient Users { get; }
+        ISlimGraphDeviceLocalCredentialsClient DeviceLocalCredentials { get; }
     }
 }
