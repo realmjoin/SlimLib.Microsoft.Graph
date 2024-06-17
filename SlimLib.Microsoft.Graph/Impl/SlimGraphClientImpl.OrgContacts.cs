@@ -10,24 +10,18 @@ namespace SlimLib.Microsoft.Graph
 {
     partial class SlimGraphClientImpl
     {
-        async Task<JsonElement> ISlimGraphOrgContactsClient.GetOrgContactAsync(IAzureTenant tenant, Guid orgContactID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        async Task<JsonDocument?> ISlimGraphOrgContactsClient.GetOrgContactAsync(IAzureTenant tenant, Guid orgContactID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"contacts/{orgContactID}");
 
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphOrgContactsClient.GetOrgContactsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        IAsyncEnumerable<JsonDocument> ISlimGraphOrgContactsClient.GetOrgContactsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "contacts");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item;
-            }
+            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
         }
     }
 }

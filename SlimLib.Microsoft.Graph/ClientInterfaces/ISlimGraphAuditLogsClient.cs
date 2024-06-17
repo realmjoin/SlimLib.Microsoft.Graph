@@ -9,7 +9,7 @@ namespace SlimLib.Microsoft.Graph
 {
     public interface ISlimGraphAuditLogsClient
     {
-        Task<JsonElement> GetSignInAsync(IAzureTenant tenant, Guid signInID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
-        IAsyncEnumerable<JsonElement> GetSignInsAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task<JsonDocument?> GetSignInAsync(IAzureTenant tenant, Guid signInID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonDocument> GetSignInsAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }

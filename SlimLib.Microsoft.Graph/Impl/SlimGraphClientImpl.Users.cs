@@ -10,14 +10,14 @@ namespace SlimLib.Microsoft.Graph
 {
     partial class SlimGraphClientImpl
     {
-        async Task<JsonElement> ISlimGraphUsersClient.GetUserAsync(IAzureTenant tenant, Guid userID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        async Task<JsonDocument?> ISlimGraphUsersClient.GetUserAsync(IAzureTenant tenant, Guid userID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"users/{userID}");
 
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        async Task<JsonElement> ISlimGraphUsersClient.GetUserPhotoAsync(IAzureTenant tenant, Guid userID, string size, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        async Task<JsonDocument?> ISlimGraphUsersClient.GetUserPhotoAsync(IAzureTenant tenant, Guid userID, string size, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             string link;
 
@@ -41,43 +41,25 @@ namespace SlimLib.Microsoft.Graph
             return await GetPictureAsync(tenant, link, cancellationToken).ConfigureAwait(false);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphUsersClient.GetUserPhotosAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        IAsyncEnumerable<JsonDocument> ISlimGraphUsersClient.GetUserPhotosAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"users/{userID}/photos");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item;
-            }
+            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphUsersClient.GetUserAppRoleAssignmentsAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        IAsyncEnumerable<JsonDocument> ISlimGraphUsersClient.GetUserAppRoleAssignmentsAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"users/{userID}/appRoleAssignments");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item;
-            }
+            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphUsersClient.GetUsersAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        IAsyncEnumerable<JsonDocument> ISlimGraphUsersClient.GetUsersAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "users");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item;
-            }
+            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
         }
 
         Task<Results.Delta.DeltaResult<JsonElement>> ISlimGraphUsersClient.GetUsersDeltaAsync(IAzureTenant tenant, DeltaRequestOptions? options, CancellationToken cancellationToken)
@@ -92,66 +74,42 @@ namespace SlimLib.Microsoft.Graph
             return GetDeltaAsync(tenant, previousDeltaLink, options, cancellationToken);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphUsersClient.GetMemberOfAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        IAsyncEnumerable<JsonDocument> ISlimGraphUsersClient.GetMemberOfAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"users/{userID}/memberOf");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item;
-            }
+            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphUsersClient.GetTransitiveMemberOfAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        IAsyncEnumerable<JsonDocument> ISlimGraphUsersClient.GetTransitiveMemberOfAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"users/{userID}/transitiveMemberOf");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item;
-            }
+            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphUsersClient.GetOwnedDevicesAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        IAsyncEnumerable<JsonDocument> ISlimGraphUsersClient.GetOwnedDevicesAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"users/{userID}/ownedDevices");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item;
-            }
+            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphUsersClient.GetRegisteredDevicesAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        IAsyncEnumerable<JsonDocument> ISlimGraphUsersClient.GetRegisteredDevicesAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"users/{userID}/registeredDevices");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item;
-            }
+            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
         }
 
-        IAsyncEnumerable<Guid> ISlimGraphUsersClient.CheckMemberGroupsAsync(IAzureTenant tenant, string userPrincipalName, ICollection<Guid> groupIDs, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        IAsyncEnumerable<Guid[]> ISlimGraphUsersClient.CheckMemberGroupsAsync(IAzureTenant tenant, string userPrincipalName, ICollection<Guid> groupIDs, InvokeRequestOptions? options, CancellationToken cancellationToken)
             => CheckMemberGroupsImplAsync(tenant, "users", userPrincipalName, groupIDs, options, cancellationToken);
-        IAsyncEnumerable<Guid> ISlimGraphUsersClient.GetMemberGroupsAsync(IAzureTenant tenant, string userPrincipalName, bool securityEnabledOnly, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        IAsyncEnumerable<Guid[]> ISlimGraphUsersClient.GetMemberGroupsAsync(IAzureTenant tenant, string userPrincipalName, bool securityEnabledOnly, InvokeRequestOptions? options, CancellationToken cancellationToken)
             => GetMemberGroupsImplAsync(tenant, "users", userPrincipalName, securityEnabledOnly, options, cancellationToken);
 
-        IAsyncEnumerable<Guid> ISlimGraphUsersClient.CheckMemberObjectsAsync(IAzureTenant tenant, string userPrincipalName, ICollection<Guid> ids, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        IAsyncEnumerable<Guid[]> ISlimGraphUsersClient.CheckMemberObjectsAsync(IAzureTenant tenant, string userPrincipalName, ICollection<Guid> ids, InvokeRequestOptions? options, CancellationToken cancellationToken)
             => CheckMemberObjectsImplAsync(tenant, "users", userPrincipalName, ids, options, cancellationToken);
-        IAsyncEnumerable<Guid> ISlimGraphUsersClient.GetMemberObjectsAsync(IAzureTenant tenant, string userPrincipalName, bool securityEnabledOnly, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        IAsyncEnumerable<Guid[]> ISlimGraphUsersClient.GetMemberObjectsAsync(IAzureTenant tenant, string userPrincipalName, bool securityEnabledOnly, InvokeRequestOptions? options, CancellationToken cancellationToken)
             => GetMemberObjectsImplAsync(tenant, "users", userPrincipalName, securityEnabledOnly, options, cancellationToken);
     }
 }

@@ -8,7 +8,7 @@ namespace SlimLib.Microsoft.Graph
 {
     partial class SlimGraphClientImpl
     {
-        async Task<JsonElement> ISlimGraphDeviceManagementReportsClient.GetDeviceInstallStatusByAppAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
+        async Task<JsonDocument?> ISlimGraphDeviceManagementReportsClient.GetDeviceInstallStatusByAppAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = "deviceManagement/reports/getDeviceInstallStatusReport";
 
@@ -17,7 +17,7 @@ namespace SlimLib.Microsoft.Graph
             return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        async Task<JsonElement> ISlimGraphDeviceManagementReportsClient.GetUserInstallStatusAggregateByAppAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
+        async Task<JsonDocument?> ISlimGraphDeviceManagementReportsClient.GetUserInstallStatusAggregateByAppAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = "deviceManagement/reports/getUserInstallStatusReport";
 

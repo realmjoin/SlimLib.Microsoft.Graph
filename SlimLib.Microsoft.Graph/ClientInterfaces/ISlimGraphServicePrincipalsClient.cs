@@ -9,10 +9,10 @@ namespace SlimLib.Microsoft.Graph
 {
     public interface ISlimGraphServicePrincipalsClient : ISlimGraphDirectoryObjectsClient
     {
-        Task<JsonElement> GetServicePrincipalAsync(IAzureTenant tenant, Guid servicePrincipalID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
-        IAsyncEnumerable<JsonElement> GetServicePrincipalsAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task<JsonDocument?> GetServicePrincipalAsync(IAzureTenant tenant, Guid servicePrincipalID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonDocument> GetServicePrincipalsAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
 
-        IAsyncEnumerable<JsonElement> GetAppRoleAssignmentsAsync(IAzureTenant tenant, Guid servicePrincipalID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
-        IAsyncEnumerable<JsonElement> GetAppRoleAssignedToAsync(IAzureTenant tenant, Guid servicePrincipalID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonDocument> GetAppRoleAssignmentsAsync(IAzureTenant tenant, Guid servicePrincipalID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonDocument> GetAppRoleAssignedToAsync(IAzureTenant tenant, Guid servicePrincipalID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }

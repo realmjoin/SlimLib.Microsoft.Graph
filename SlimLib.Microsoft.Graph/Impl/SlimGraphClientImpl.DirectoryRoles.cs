@@ -10,37 +10,25 @@ namespace SlimLib.Microsoft.Graph
 {
     partial class SlimGraphClientImpl
     {
-        async Task<JsonElement> ISlimGraphDirectoryRolesClient.GetDirectoryRoleAsync(IAzureTenant tenant, Guid directoryRoleID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        async Task<JsonDocument?> ISlimGraphDirectoryRolesClient.GetDirectoryRoleAsync(IAzureTenant tenant, Guid directoryRoleID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"directoryRoles/{directoryRoleID}");
 
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphDirectoryRolesClient.GetDirectoryRolesAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        IAsyncEnumerable<JsonDocument> ISlimGraphDirectoryRolesClient.GetDirectoryRolesAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "directoryRoles");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item;
-            }
+            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
         }
 
-        async IAsyncEnumerable<JsonElement> ISlimGraphDirectoryRolesClient.GetMembersAsync(IAzureTenant tenant, Guid directoryRoleID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        IAsyncEnumerable<JsonDocument> ISlimGraphDirectoryRolesClient.GetMembersAsync(IAzureTenant tenant, Guid directoryRoleID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"directoryRoles/{directoryRoleID}/members");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item;
-            }
+            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
         }
     }
 }

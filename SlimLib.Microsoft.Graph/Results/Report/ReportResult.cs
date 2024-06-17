@@ -7,9 +7,12 @@ namespace SlimLib.Microsoft.Graph.Results.Report
 {
     public class ReportResult
     {
-        public static ReportResult Create(JsonElement result)
+        public static ReportResult Create(JsonDocument result)
         {
-            return JsonSerializer.Deserialize<ReportResult>(result) ?? throw new SlimGraphException(0, null, "Unkown error", "");
+            using (result)
+            {
+                return JsonSerializer.Deserialize<ReportResult>(result) ?? throw new SlimGraphException(0, null, "Unkown error", "");
+            }
         }
 
         public int TotalRowCount { get; set; }

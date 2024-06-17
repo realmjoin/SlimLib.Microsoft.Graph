@@ -10,9 +10,9 @@ namespace SlimLib.Microsoft.Graph
 {
     public interface ISlimGraphAdministrativeUnitsClient
     {
-        Task<JsonElement> AddMemberAsync(IAzureTenant tenant, Guid adminUnitID, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task<JsonDocument?> AddMemberAsync(IAzureTenant tenant, Guid adminUnitID, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
 
-        IAsyncEnumerable<JsonElement> GetMembersAsync(IAzureTenant tenant, Guid adminUnitID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
-        IAsyncEnumerable<JsonElement> GetMembersAsync(IAzureTenant tenant, Guid adminUnitID, string type, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonDocument> GetMembersAsync(IAzureTenant tenant, Guid adminUnitID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonDocument> GetMembersAsync(IAzureTenant tenant, Guid adminUnitID, string type, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }

@@ -9,8 +9,8 @@ namespace SlimLib.Microsoft.Graph
 {
     public interface ISlimGraphOrganizationsClient
     {
-        Task<JsonElement> GetOrganizationAsync(IAzureTenant tenant, Guid organizationID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task<JsonDocument?> GetOrganizationAsync(IAzureTenant tenant, Guid organizationID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
 
-        IAsyncEnumerable<JsonElement> GetOrganizationsAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonDocument> GetOrganizationsAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }

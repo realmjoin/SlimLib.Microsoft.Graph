@@ -9,10 +9,10 @@ namespace SlimLib.Microsoft.Graph
 {
     public interface ISlimGraphDirectoryRolesClient
     {
-        Task<JsonElement> GetDirectoryRoleAsync(IAzureTenant tenant, Guid directoryRoleID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task<JsonDocument?> GetDirectoryRoleAsync(IAzureTenant tenant, Guid directoryRoleID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
 
-        IAsyncEnumerable<JsonElement> GetDirectoryRolesAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonDocument> GetDirectoryRolesAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
 
-        IAsyncEnumerable<JsonElement> GetMembersAsync(IAzureTenant tenant, Guid directoryRoleID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonDocument> GetMembersAsync(IAzureTenant tenant, Guid directoryRoleID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }

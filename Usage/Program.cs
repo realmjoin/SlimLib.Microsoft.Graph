@@ -3,16 +3,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Polly;
+using SlimLib;
 using SlimLib.Auth.Azure;
 using SlimLib.Microsoft.Graph;
 using System;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Usage
 {
     public class Program
     {
+        private static readonly JsonSerializerOptions GraphJsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
         public static IConfigurationRoot? Configuration { get; private set; }
 
         public static async Task Main(string[] args)
@@ -50,6 +54,86 @@ namespace Usage
             var client = serviceScope.ServiceProvider.GetRequiredService<ISlimGraphClient>();
             var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
+            // Basic usage
+
+            var groupId = Guid.Empty;
+
+            var options = new ListRequestOptions
+            {
+                Select = { "id", "displayName", "description", "createdDateTime" },
+                Top = 10
+            };
+
+            // Raw call using the updated API based on JsonDocument. Don't forget to dispose the JsonDocument when done!
+            {
+                await foreach (var page in client.Groups.GetGroupsAsync(tenant, options))
+                {
+                    using (page)
+                    {
+                        if (page.RootElement.GetProperty("value").Deserialize<Group[]>(GraphJsonOptions) is { } items)
+                        {
+                            foreach (var item in items)
+                            {
+                                if (groupId == default) groupId = item.Id;
+
+                                Console.WriteLine(item.DisplayName);
+                            }
+                        }
+                    }
+
+                    // Only get the first page of results.
+                    break;
+                }
+            }
+
+
+            // Using the new Deserialize<T>() extension method to simplify the code.
+            // This method will automatically set JsonNamingPolicy.CamelCase for you.
+            {
+                await foreach (var items in client.Groups.GetGroupsAsync(tenant, options).Deserialize<Group>())
+                {
+                    foreach (var item in items)
+                    {
+                        Console.WriteLine(item.DisplayName);
+                    }
+
+                    // Only get the first page of results.
+                    break;
+                }
+            }
+
+
+            var i = 0;
+
+            // Using the new AsJsonElement() extension method to migrate the old API.
+            {
+                await foreach (var item in client.Groups.GetGroupsAsync(tenant, options).AsJsonElements())
+                {
+                    Console.WriteLine(item.GetProperty("displayName").GetString());
+
+                    // Only get the first 10 elements (usually 1 page of results).
+                    if (++i >= 10) break;
+                }
+            }
+
+
+            // The same works with single items.
+            {
+                using var page = await client.Groups.GetGroupAsync(tenant, groupId);
+                Console.WriteLine(page?.RootElement.GetProperty("displayName").GetString());
+            }
+
+            {
+                var group = await client.Groups.GetGroupAsync(tenant, groupId).Deserialize<Group>();
+                Console.WriteLine(group?.DisplayName);
+            }
+
+            {
+                var json = await client.Groups.GetGroupAsync(tenant, groupId).AsJsonElement();
+                Console.WriteLine(json.GetProperty("displayName").GetString());
+            }
+
+
             // Example how to use new Intune app reporting
             // See for more: https://techcommunity.microsoft.com/t5/intune-customer-success/support-tip-retrieving-intune-apps-reporting-data-from-microsoft/ba-p/3851578
 
@@ -59,13 +143,17 @@ namespace Usage
             // which results in list of rows, with each row containing a list of values as raw JsonElement.
 
             var raw = await client.DeviceManagementReports.GetUserInstallStatusAggregateByAppAsync(tenant, new() { Filter = $"(ApplicationId eq '{appID}')" });
-            var report = SlimLib.Microsoft.Graph.Results.Report.ReportResult.Create(raw);
 
-            foreach (var row in report.Values!)
+            if (raw is not null)
             {
-                foreach (var item in row)
+                var report = SlimLib.Microsoft.Graph.Results.Report.ReportResult.Create(raw);
+
+                foreach (var row in report.Values!)
                 {
-                    Console.WriteLine(item);
+                    foreach (var item in row)
+                    {
+                        Console.WriteLine(item);
+                    }
                 }
             }
 
@@ -88,11 +176,15 @@ john.doe@contoso.com
             // You can not request AppInstallState_loc directly, it will fail with an UnknownError.
 
             raw = await client.DeviceManagementReports.GetDeviceInstallStatusByAppAsync(tenant, new() { Select = { "DeviceName", "AppInstallState" }, OrderBy = { "DeviceName asc" }, Filter = $"(ApplicationId eq '{appID}')" });
-            report = SlimLib.Microsoft.Graph.Results.Report.ReportResult.Create(raw);
 
-            foreach (var item in report.ToDynamicResult())
+            if (raw is not null)
             {
-                Console.WriteLine($"{item.DeviceName,-30} {item.AppInstallState_loc}");
+                var report = SlimLib.Microsoft.Graph.Results.Report.ReportResult.Create(raw);
+
+                foreach (var item in report.ToDynamicResult())
+                {
+                    Console.WriteLine($"{item.DeviceName,-30} {item.AppInstallState_loc}");
+                }
             }
 
             /*

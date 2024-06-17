@@ -10,9 +10,9 @@ namespace SlimLib.Microsoft.Graph
 {
     public interface ISlimGraphPrivilegedAccessClient
     {
-        Task<JsonElement> GetResourceAsync(IAzureTenant tenant, Guid tenantID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
-        IAsyncEnumerable<JsonElement> GetRoleAssignmentsAsync(IAzureTenant tenant, Guid tenantID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task<JsonDocument?> GetResourceAsync(IAzureTenant tenant, Guid tenantID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonDocument> GetRoleAssignmentsAsync(IAzureTenant tenant, Guid tenantID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
 
-        Task<JsonElement> CreateRoleAssignmentRequestAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task<JsonDocument?> CreateRoleAssignmentRequestAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }

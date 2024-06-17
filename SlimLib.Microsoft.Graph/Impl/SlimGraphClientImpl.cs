@@ -27,19 +27,21 @@ namespace SlimLib.Microsoft.Graph
             this.logger = logger;
         }
 
-        private Task<JsonElement> DeleteAsync(IAzureTenant tenant, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
-            => SendAsync(tenant, HttpMethod.Delete, null, requestUri, options, cancellationToken);
+        private async Task DeleteAsync(IAzureTenant tenant, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
+        {
+            using var doc = await SendAsync(tenant, HttpMethod.Delete, null, requestUri, options, cancellationToken).ConfigureAwait(false);
+        }
 
-        private Task<JsonElement> GetAsync(IAzureTenant tenant, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
+        private Task<JsonDocument?> GetAsync(IAzureTenant tenant, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
             => SendAsync(tenant, HttpMethod.Get, null, requestUri, options, cancellationToken);
 
-        private Task<JsonElement> PatchAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
+        private Task<JsonDocument?> PatchAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
             => SendAsync(tenant, HttpMethod.Patch, utf8Data, requestUri, options, cancellationToken);
 
-        private Task<JsonElement> PostAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
+        private Task<JsonDocument?> PostAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
             => SendAsync(tenant, HttpMethod.Post, utf8Data, requestUri, options, cancellationToken);
 
-        private async IAsyncEnumerable<JsonElement> GetArrayAsync(IAzureTenant tenant, string nextLink, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        private async IAsyncEnumerable<JsonDocument> GetArrayAsync(IAzureTenant tenant, string nextLink, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             string? link = nextLink;
 
@@ -47,42 +49,32 @@ namespace SlimLib.Microsoft.Graph
 
             do
             {
-                var root = await GetAsync(tenant, link, reqOptions, cancellationToken).ConfigureAwait(false);
+                var doc = await GetAsync(tenant, link, reqOptions, cancellationToken).ConfigureAwait(false);
 
-                options?.OnPageReceived(root);
-
-                foreach (var item in root.GetProperty("value").EnumerateArray())
+                if (doc is not null)
                 {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item;
+                    HandleNextLink(doc.RootElement, ref link);
+                    yield return doc;
                 }
-
-                HandleNextLink(root, ref link);
 
             } while (link != null);
         }
 
-        private async IAsyncEnumerable<JsonElement> PostArrayAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string nextLink, RequestHeaderOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        private async IAsyncEnumerable<JsonDocument> PostArrayAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string nextLink, RequestHeaderOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            string? nLink = nextLink;
+            string? link = nextLink;
 
             do
             {
-                var root = await PostAsync(tenant, utf8Data, nLink, options, cancellationToken).ConfigureAwait(false);
+                var doc = await PostAsync(tenant, utf8Data, link, options, cancellationToken).ConfigureAwait(false);
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
+                if (doc is not null)
                 {
-                    if (cancellationToken.IsCancellationRequested)
-                        yield break;
-
-                    yield return item;
+                    HandleNextLink(doc.RootElement, ref link);
+                    yield return doc;
                 }
 
-                HandleNextLink(root, ref nLink);
-
-            } while (nLink != null);
+            } while (link != null);
         }
 
         private async Task<Results.Delta.DeltaResult<JsonElement>> GetDeltaAsync(IAzureTenant tenant, string nextLink, DeltaRequestOptions? options, CancellationToken cancellationToken)
@@ -101,54 +93,63 @@ namespace SlimLib.Microsoft.Graph
 
             do
             {
-                var root = await GetAsync(tenant, nLink, reqOptions, cancellationToken).ConfigureAwait(false);
+                using var doc = await GetAsync(tenant, nLink, reqOptions, cancellationToken).ConfigureAwait(false);
 
-                foreach (var item in root.GetProperty("value").EnumerateArray())
+                if (doc is not null)
                 {
+                    if (doc.RootElement.TryGetProperty("value", out var items) && items.ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (var item in items.EnumerateArray())
+                        {
+                            if (cancellationToken.IsCancellationRequested)
+                                break;
+
+                            result.Add(item);
+                        }
+                    }
+
                     if (cancellationToken.IsCancellationRequested)
                         break;
 
-                    result.Add(item);
+                    HandleNextLink(doc.RootElement, ref nLink);
+                    HandleDeltaLink(doc.RootElement, ref dLink);
                 }
-
-                if (cancellationToken.IsCancellationRequested)
-                    break;
-
-                HandleNextLink(root, ref nLink);
-                HandleDeltaLink(root, ref dLink);
 
             } while (nLink != null);
 
             return new Results.Delta.DeltaResult<JsonElement>(result, dLink);
         }
 
-        private async Task<JsonElement> SendAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
+        private async Task<JsonDocument?> SendAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
         {
             using var response = await SendInternalAsync(tenant, method, utf8Data, requestUri, options, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.NoContent || response.Content.Headers.ContentLength == 0)
             {
                 logger.LogInformation("Got no content for HTTP request to {requestUri}.", requestUri);
-                return default;
+                return null;
             }
 
             using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
 
-            var root = await JsonSerializer.DeserializeAsync<JsonElement>(content, cancellationToken: cancellationToken);
+            var doc = await JsonSerializer.DeserializeAsync<JsonDocument>(content, cancellationToken: cancellationToken);
 
             if (!response.IsSuccessStatusCode)
-                throw HandleError(response.StatusCode, response.Headers, root);
+                throw HandleError(response.StatusCode, response.Headers, doc);
 
-            if (root.TryGetProperty("value", out var items) && items.ValueKind == JsonValueKind.Array)
+            if (doc is not null)
             {
-                logger.LogInformation("Got {count} items for HTTP request to {requestUri}.", items.GetArrayLength(), requestUri);
-            }
-            else
-            {
-                logger.LogInformation("Got single item for HTTP request to {requestUri}.", requestUri);
+                if (doc.RootElement.TryGetProperty("value", out var items) && items.ValueKind == JsonValueKind.Array)
+                {
+                    logger.LogInformation("Got {count} items for HTTP request to {requestUri}.", items.GetArrayLength(), requestUri);
+                }
+                else
+                {
+                    logger.LogInformation("Got single item for HTTP request to {requestUri}.", requestUri);
+                }
             }
 
-            return root;
+            return doc;
         }
 
         private async Task<SlimGraphPicture?> GetPictureAsync(IAzureTenant tenant, string requestUri, CancellationToken cancellationToken)
@@ -210,11 +211,11 @@ namespace SlimLib.Microsoft.Graph
             return response;
         }
 
-        private static SlimGraphException HandleError(HttpStatusCode statusCode, HttpResponseHeaders headers, JsonElement root)
+        private static SlimGraphException HandleError(HttpStatusCode statusCode, HttpResponseHeaders headers, JsonDocument? root)
         {
             try
             {
-                if (root.TryGetProperty("error", out var error))
+                if (root?.RootElement.TryGetProperty("error", out var error) == true)
                 {
                     return new SlimGraphException(statusCode, headers, error.GetProperty("code").GetString() ?? "", error.GetProperty("message").GetString() ?? "");
                 }

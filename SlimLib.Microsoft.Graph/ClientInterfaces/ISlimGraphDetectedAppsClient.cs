@@ -8,8 +8,8 @@ namespace SlimLib.Microsoft.Graph
 {
     public interface ISlimGraphDetectedAppsClient
     {
-        Task<JsonElement> GetDetectedAppAsync(IAzureTenant tenant, string appID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
-        IAsyncEnumerable<JsonElement> GetDetectedAppsAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
-        IAsyncEnumerable<JsonElement> GetManagedDevicesAsync(IAzureTenant tenant, string appID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task<JsonDocument?> GetDetectedAppAsync(IAzureTenant tenant, string appID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonDocument> GetDetectedAppsAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<JsonDocument> GetManagedDevicesAsync(IAzureTenant tenant, string appID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }
