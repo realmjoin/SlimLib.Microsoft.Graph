@@ -49,7 +49,7 @@ namespace Usage
             using var container = services.BuildServiceProvider();
             using var serviceScope = container.CreateScope();
 
-            var tenant = new AzureTenant(Configuration.GetValue<string>("Tenant"));
+            var tenant = new AzureTenant(Configuration.GetValue<string>("Tenant")!);
 
             var client = serviceScope.ServiceProvider.GetRequiredService<ISlimGraphClient>();
             var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
