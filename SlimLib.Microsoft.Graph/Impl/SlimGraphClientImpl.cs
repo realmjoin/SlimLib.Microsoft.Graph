@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace SlimLib.Microsoft.Graph
 {
-    internal sealed partial class SlimGraphClientImpl : ISlimGraphAdministrativeUnitsClient, ISlimGraphApplicationsClient, ISlimGraphAuditEventsClient, ISlimGraphAuditLogsClient, ISlimGraphDeviceManagementReportsClient, ISlimGraphOrganizationsClient, ISlimGraphOrgContactsClient, ISlimGraphDevicesClient, ISlimGraphDirectoryRolesClient, ISlimGraphDetectedAppsClient, ISlimGraphMobileAppsClient, ISlimGraphManagedDevicesClient, ISlimGraphGroupsClient, ISlimGraphSubscribedSkusClient, ISlimGraphServicePrincipalsClient, ISlimGraphPrivilegedAccessClient, ISlimGraphUsersClient, ISlimGraphDeviceLocalCredentialsClient
+    internal sealed partial class SlimGraphClientImpl : ISlimGraphAdministrativeUnitsClient, ISlimGraphApplicationsClient, ISlimGraphAuditEventsClient, ISlimGraphAuditLogsClient, ISlimGraphDeviceManagementReportsClient, ISlimGraphOrganizationsClient, ISlimGraphOrgContactsClient, ISlimGraphDevicesClient, ISlimGraphDirectoryRolesClient, ISlimGraphDetectedAppsClient, ISlimGraphMobileAppsClient, ISlimGraphManagedDevicesClient, ISlimGraphGroupsClient, ISlimGraphSubscribedSkusClient, ISlimGraphServicePrincipalsClient, ISlimGraphPrivilegedAccessClient, ISlimGraphUsersClient, ISlimGraphDeviceLocalCredentialsClient, ISlimGraphPartnerBillingReportsClient
     {
         private readonly IAuthenticationProvider authenticationProvider;
         private readonly HttpClient httpClient;
@@ -29,17 +29,20 @@ namespace SlimLib.Microsoft.Graph
 
         private async Task DeleteAsync(IAzureTenant tenant, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
         {
-            using var doc = await SendAsync(tenant, HttpMethod.Delete, null, requestUri, options, cancellationToken).ConfigureAwait(false);
+            using var doc = await SendAsync(tenant, HttpMethod.Delete, null, requestUri, options, null, 0, null, cancellationToken).ConfigureAwait(false);
         }
 
-        private Task<JsonDocument?> GetAsync(IAzureTenant tenant, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
-            => SendAsync(tenant, HttpMethod.Get, null, requestUri, options, cancellationToken);
+        private Task<JsonDocument?> GetAsync(IAzureTenant tenant, string requestUri, RequestHeaderOptions? options, RequestRetryOptions? requestRetryOptions, CancellationToken cancellationToken)
+            => SendAsync(tenant, HttpMethod.Get, null, requestUri, options, requestRetryOptions, 0, null, cancellationToken);
 
         private Task<JsonDocument?> PatchAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
-            => SendAsync(tenant, HttpMethod.Patch, utf8Data, requestUri, options, cancellationToken);
+            => SendAsync(tenant, HttpMethod.Patch, utf8Data, requestUri, options, null, 0, null, cancellationToken);
 
         private Task<JsonDocument?> PostAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
-            => SendAsync(tenant, HttpMethod.Post, utf8Data, requestUri, options, cancellationToken);
+            => PostAsync(tenant, utf8Data, requestUri, options, null, cancellationToken);
+
+        private Task<JsonDocument?> PostAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions? options, Func<HttpResponseMessage, Task>? httpResponseMessageCustomResponseHandler, CancellationToken cancellationToken)
+            => SendAsync(tenant, HttpMethod.Post, utf8Data, requestUri, options, null, 0, httpResponseMessageCustomResponseHandler, cancellationToken);
 
         private async IAsyncEnumerable<JsonDocument> GetArrayAsync(IAzureTenant tenant, string nextLink, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
@@ -49,7 +52,7 @@ namespace SlimLib.Microsoft.Graph
 
             do
             {
-                var doc = await GetAsync(tenant, link, reqOptions, cancellationToken).ConfigureAwait(false);
+                var doc = await GetAsync(tenant, link, reqOptions, null, cancellationToken).ConfigureAwait(false);
 
                 if (doc is not null)
                 {
@@ -93,7 +96,7 @@ namespace SlimLib.Microsoft.Graph
 
             do
             {
-                using var doc = await GetAsync(tenant, nLink, reqOptions, cancellationToken).ConfigureAwait(false);
+                using var doc = await GetAsync(tenant, nLink, reqOptions, null, cancellationToken).ConfigureAwait(false);
 
                 if (doc is not null)
                 {
@@ -120,14 +123,38 @@ namespace SlimLib.Microsoft.Graph
             return new Results.Delta.DeltaResult<JsonElement>(result, dLink);
         }
 
-        private async Task<JsonDocument?> SendAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
+        private async Task<JsonDocument?> SendAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, RequestHeaderOptions? options, RequestRetryOptions? requestRetryOptions, int sendAttempt, Func<HttpResponseMessage, Task>? httpResponseMessageCustomResponseHandler, CancellationToken cancellationToken)
         {
             using var response = await SendInternalAsync(tenant, method, utf8Data, requestUri, options, cancellationToken);
+
+            sendAttempt++;//Increment the send attempt
 
             if (response.StatusCode == HttpStatusCode.NoContent || response.Content.Headers.ContentLength == 0)
             {
                 logger.LogInformation("Got no content for HTTP request to {requestUri}.", requestUri);
+                if (httpResponseMessageCustomResponseHandler != null)
+                {
+                    await httpResponseMessageCustomResponseHandler(response);
+                }
                 return null;
+            }
+
+            if (requestRetryOptions != null)
+            {
+
+                (bool shouldRetry, int numberOfSecondsToWaitBeforeRetry) = await requestRetryOptions.RetryDelegate((sendAttempt, response)).ConfigureAwait(false);
+
+                if (shouldRetry)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(numberOfSecondsToWaitBeforeRetry), cancellationToken).ConfigureAwait(false);
+                    return await SendAsync(tenant, method, utf8Data, requestUri, options, requestRetryOptions, sendAttempt, httpResponseMessageCustomResponseHandler, cancellationToken).ConfigureAwait(false);
+                }
+
+            }
+
+            if (httpResponseMessageCustomResponseHandler != null)
+            {
+                await httpResponseMessageCustomResponseHandler(response);
             }
 
             using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);

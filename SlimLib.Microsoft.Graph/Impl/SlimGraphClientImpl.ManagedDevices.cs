@@ -36,7 +36,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}");
 
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
         }
 
         [Obsolete("This API is limited to 50 items and does not support paging. Use /beta/deviceManagement/manageddevices/xxx?$expand=detectedApps as alternative.")]
@@ -71,7 +71,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceManagement/managedDeviceOverview");
 
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
         }
 
         IAsyncEnumerable<JsonDocument> ISlimGraphManagedDevicesClient.GetManagedDevicesAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -93,7 +93,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceManagement/windowsAutopilotDeviceIdentities/{identityID}");
 
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
         }
 
         IAsyncEnumerable<JsonDocument> ISlimGraphManagedDevicesClient.GetWindowsAutopilotDeviceIdentitiesAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -107,7 +107,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceManagement/importedWindowsAutopilotDeviceIdentities/{identityID}");
 
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
         }
 
         IAsyncEnumerable<JsonDocument> ISlimGraphManagedDevicesClient.ImportWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, ICollection<JsonObject> identities, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -146,7 +146,7 @@ namespace SlimLib.Microsoft.Graph
         async Task<JsonDocument?> ISlimGraphManagedDevicesClient.GetDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}");
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
         }
         async Task<JsonDocument?> ISlimGraphManagedDevicesClient.CreateDeviceHealthScriptAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
@@ -183,7 +183,7 @@ namespace SlimLib.Microsoft.Graph
         async Task<JsonDocument?> ISlimGraphManagedDevicesClient.GetDeviceAndAppManagementAssignmentFilterAsync(IAzureTenant tenant, string deviceAndAppManagementAssignmentFilterId, InvokeRequestOptions? options, System.Threading.CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/assignmentFilters/{deviceAndAppManagementAssignmentFilterId}");
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
         }
         async Task<JsonDocument?> ISlimGraphManagedDevicesClient.CreateDeviceAndAppManagementAssignmentFilterAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
@@ -203,12 +203,12 @@ namespace SlimLib.Microsoft.Graph
         async Task<JsonDocument?> ISlimGraphManagedDevicesClient.GetDeviceHealthScriptRemediationHistoryAsync(IAzureTenant tenant, string deviceHealthScriptId, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}/getRemediationHistory");
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
         }
         async Task<JsonDocument?> ISlimGraphManagedDevicesClient.GetDeviceHealthScriptRunSummaryAsync(IAzureTenant tenant, string deviceHealthScriptId, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}/runSummary");
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
         }
         async Task ISlimGraphManagedDevicesClient.InitiateOnDemandProactiveRemediationAsync(IAzureTenant tenant, Guid deviceID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
