@@ -15,7 +15,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}");
 
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
         }
 
         async Task<JsonDocument?> ISlimGraphMobileAppsClient.CreateMobileAppAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
@@ -59,7 +59,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}/{type}/contentVersions/{mobileAppContentID}");
 
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
         }
 
         async Task<string> ISlimGraphMobileAppsClient.CreateMobileAppContentAsync(IAzureTenant tenant, Guid appID, string type, InvokeRequestOptions? options, CancellationToken cancellationToken)
@@ -86,7 +86,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}/{type}/contentVersions/{mobileAppContentID}/files/{mobileAppContentFileID}");
 
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
         }
 
         async Task<JsonDocument?> ISlimGraphMobileAppsClient.CreateMobileAppContentFilesAsync(IAzureTenant tenant, Guid appID, string type, string mobileAppContentID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)

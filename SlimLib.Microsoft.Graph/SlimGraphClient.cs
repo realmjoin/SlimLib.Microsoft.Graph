@@ -32,5 +32,6 @@ namespace SlimLib.Microsoft.Graph
         public ISlimGraphPrivilegedAccessClient PrivilegedAccess => impl;
         public ISlimGraphUsersClient Users => impl;
         public ISlimGraphDeviceLocalCredentialsClient DeviceLocalCredentials => impl;
+        public ISlimGraphPartnerBillingReportsClient PartnerBillingReports => impl;
     }
 }

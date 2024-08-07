@@ -14,7 +14,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"organization/{organizationID}");
 
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
         }
 
         IAsyncEnumerable<JsonDocument> ISlimGraphOrganizationsClient.GetOrganizationsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
