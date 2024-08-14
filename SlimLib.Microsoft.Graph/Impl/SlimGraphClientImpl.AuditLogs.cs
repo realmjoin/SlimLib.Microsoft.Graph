@@ -14,7 +14,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"auditLogs/signIns/{signInID}");
 
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         IAsyncEnumerable<JsonDocument> ISlimGraphAuditLogsClient.GetSignInsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)

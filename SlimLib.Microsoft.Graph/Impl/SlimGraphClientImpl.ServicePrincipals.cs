@@ -14,7 +14,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"servicePrincipals/{servicePrincipalID}");
 
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         IAsyncEnumerable<JsonDocument> ISlimGraphServicePrincipalsClient.GetServicePrincipalsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)

@@ -23,7 +23,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"groups/{groupID}");
 
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task<JsonDocument?> ISlimGraphGroupsClient.UpdateGroupAsync(IAzureTenant tenant, Guid groupID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
@@ -49,7 +49,7 @@ namespace SlimLib.Microsoft.Graph
             else
                 link = BuildLink(options, $"groups/{groupID}/photos/{size}");
 
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), null, cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
         async Task<SlimGraphPicture?> ISlimGraphGroupsClient.GetGroupPhotoDataAsync(IAzureTenant tenant, Guid groupID, string size, ScalarRequestOptions? options, CancellationToken cancellationToken)
