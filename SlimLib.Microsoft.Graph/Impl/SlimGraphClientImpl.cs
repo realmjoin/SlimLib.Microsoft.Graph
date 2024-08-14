@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace SlimLib.Microsoft.Graph
 {
-    internal sealed partial class SlimGraphClientImpl : ISlimGraphAdministrativeUnitsClient, ISlimGraphApplicationsClient, ISlimGraphAuditEventsClient, ISlimGraphAuditLogsClient, ISlimGraphDeviceManagementReportsClient, ISlimGraphOrganizationsClient, ISlimGraphOrgContactsClient, ISlimGraphDevicesClient, ISlimGraphDirectoryRolesClient, ISlimGraphDetectedAppsClient, ISlimGraphMobileAppsClient, ISlimGraphManagedDevicesClient, ISlimGraphGroupsClient, ISlimGraphSubscribedSkusClient, ISlimGraphServicePrincipalsClient, ISlimGraphPrivilegedAccessClient, ISlimGraphUsersClient, ISlimGraphDeviceLocalCredentialsClient
+    internal sealed partial class SlimGraphClientImpl : ISlimGraphAdministrativeUnitsClient, ISlimGraphApplicationsClient, ISlimGraphAuditEventsClient, ISlimGraphAuditLogsClient, ISlimGraphDeviceManagementReportsClient, ISlimGraphOrganizationsClient, ISlimGraphOrgContactsClient, ISlimGraphDevicesClient, ISlimGraphDirectoryRolesClient, ISlimGraphDetectedAppsClient, ISlimGraphMobileAppsClient, ISlimGraphManagedDevicesClient, ISlimGraphGroupsClient, ISlimGraphSubscribedSkusClient, ISlimGraphServicePrincipalsClient, ISlimGraphPrivilegedAccessClient, ISlimGraphUsersClient, ISlimGraphDeviceLocalCredentialsClient, ISlimGraphPartnerBillingReportsClient
     {
         private readonly IAuthenticationProvider authenticationProvider;
         private readonly HttpClient httpClient;
@@ -29,17 +29,20 @@ namespace SlimLib.Microsoft.Graph
 
         private async Task DeleteAsync(IAzureTenant tenant, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
         {
-            using var doc = await SendAsync(tenant, HttpMethod.Delete, null, requestUri, options, cancellationToken).ConfigureAwait(false);
+            using var doc = await SendAsync(tenant, HttpMethod.Delete, null, requestUri, options, null, cancellationToken).ConfigureAwait(false);
         }
 
         private Task<JsonDocument?> GetAsync(IAzureTenant tenant, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
-            => SendAsync(tenant, HttpMethod.Get, null, requestUri, options, cancellationToken);
+            => SendAsync(tenant, HttpMethod.Get, null, requestUri, options, null, cancellationToken);
 
         private Task<JsonDocument?> PatchAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
-            => SendAsync(tenant, HttpMethod.Patch, utf8Data, requestUri, options, cancellationToken);
+            => SendAsync(tenant, HttpMethod.Patch, utf8Data, requestUri, options, null, cancellationToken);
 
         private Task<JsonDocument?> PostAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
-            => SendAsync(tenant, HttpMethod.Post, utf8Data, requestUri, options, cancellationToken);
+            => PostAsync(tenant, utf8Data, requestUri, options, null, cancellationToken);
+
+        private Task<JsonDocument?> PostAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions? options, Func<HttpResponseMessage, Task>? httpResponseMessageCustomResponseHandler, CancellationToken cancellationToken)
+            => SendAsync(tenant, HttpMethod.Post, utf8Data, requestUri, options, httpResponseMessageCustomResponseHandler, cancellationToken);
 
         private async IAsyncEnumerable<JsonDocument> GetArrayAsync(IAzureTenant tenant, string nextLink, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
@@ -120,14 +123,23 @@ namespace SlimLib.Microsoft.Graph
             return new Results.Delta.DeltaResult<JsonElement>(result, dLink);
         }
 
-        private async Task<JsonDocument?> SendAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
+        private async Task<JsonDocument?> SendAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, RequestHeaderOptions? options, Func<HttpResponseMessage, Task>? httpResponseMessageCustomResponseHandler, CancellationToken cancellationToken)
         {
             using var response = await SendInternalAsync(tenant, method, utf8Data, requestUri, options, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.NoContent || response.Content.Headers.ContentLength == 0)
             {
                 logger.LogInformation("Got no content for HTTP request to {requestUri}.", requestUri);
+                if (httpResponseMessageCustomResponseHandler != null)
+                {
+                    await httpResponseMessageCustomResponseHandler(response);
+                }
                 return null;
+            }
+
+            if (httpResponseMessageCustomResponseHandler != null)
+            {
+                await httpResponseMessageCustomResponseHandler(response);
             }
 
             using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);

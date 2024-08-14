@@ -20,5 +20,6 @@
         ISlimGraphPrivilegedAccessClient PrivilegedAccess { get; }
         ISlimGraphUsersClient Users { get; }
         ISlimGraphDeviceLocalCredentialsClient DeviceLocalCredentials { get; }
+        ISlimGraphPartnerBillingReportsClient PartnerBillingReports { get; }
     }
 }
