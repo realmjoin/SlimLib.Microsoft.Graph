@@ -21,5 +21,6 @@
         ISlimGraphUsersClient Users { get; }
         ISlimGraphDeviceLocalCredentialsClient DeviceLocalCredentials { get; }
         ISlimGraphPartnerBillingReportsClient PartnerBillingReports { get; }
+        ISlimGraphTenantRelationshipsClient TenantRelationships { get; }
     }
 }
