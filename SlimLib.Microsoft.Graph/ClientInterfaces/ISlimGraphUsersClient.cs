@@ -9,6 +9,8 @@ namespace SlimLib.Microsoft.Graph
 {
     public interface ISlimGraphUsersClient : ISlimGraphDirectoryObjectsClient
     {
+        Task<JsonDocument?> GetUserAsync(IAzureTenant tenant, string userPrincipalName, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
+
         Task<JsonDocument?> GetUserAsync(IAzureTenant tenant, Guid userID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
 
         Task<JsonDocument?> GetUserPhotoAsync(IAzureTenant tenant, Guid userID, string size = "", ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
