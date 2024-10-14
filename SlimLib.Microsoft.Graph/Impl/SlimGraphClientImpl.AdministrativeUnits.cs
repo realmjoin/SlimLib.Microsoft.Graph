@@ -18,6 +18,13 @@ namespace SlimLib.Microsoft.Graph
             return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
+        async Task<JsonDocument?> ISlimGraphAdministrativeUnitsClient.GetMemberAsync(IAzureTenant tenant, Guid adminUnitID, Guid memberID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"directory/administrativeUnits/{adminUnitID}/members/{memberID}");
+
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+
         IAsyncEnumerable<JsonDocument> ISlimGraphAdministrativeUnitsClient.GetMembersAsync(IAzureTenant tenant, Guid adminUnitID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"directory/administrativeUnits/{adminUnitID}/members");
