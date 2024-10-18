@@ -6,11 +6,26 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SlimLib.Microsoft.Graph
 {
     partial class SlimGraphClientImpl
     {
+        async Task<JsonDocument?> ISlimGraphDirectoryObjectsClient.GetObjectAsync(IAzureTenant tenant, Guid objectID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"directoryObjects/{objectID}");
+
+            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+        }
+
+        IAsyncEnumerable<JsonDocument> ISlimGraphDirectoryObjectsClient.GetObjectsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var nextLink = BuildLink(options, "directoryObjects");
+
+            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
+        }
+
         IAsyncEnumerable<Guid[]> ISlimGraphDirectoryObjectsClient.CheckMemberGroupsAsync(IAzureTenant tenant, Guid objectID, ICollection<Guid> groupIDs, InvokeRequestOptions? options, CancellationToken cancellationToken)
             => CheckMemberGroupsImplAsync(tenant, "directoryObjects", objectID.ToString(), groupIDs, options, cancellationToken);
 

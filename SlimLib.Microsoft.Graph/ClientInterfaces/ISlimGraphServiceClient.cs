@@ -6,6 +6,7 @@
         ISlimGraphApplicationsClient Applications { get; }
         ISlimGraphAuditEventsClient AuditEvents { get; }
         ISlimGraphAuditLogsClient AuditLogs { get; }
+        ISlimGraphDirectoryObjectsClient DirectoryObjects { get; }
         ISlimGraphOrganizationsClient Organization { get; }
         ISlimGraphOrgContactsClient OrgContacts { get; }
         ISlimGraphDevicesClient Devices { get; }
