@@ -19,9 +19,9 @@ namespace SlimLib.Microsoft.Graph
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
         }
 
-        IAsyncEnumerable<JsonDocument> ISlimGraphDirectoryObjectsClient.GetObjectsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        IAsyncEnumerable<JsonDocument> ISlimGraphDirectoryObjectsClient.GetObjectsAsync(IAzureTenant tenant, string type, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, "directoryObjects");
+            var nextLink = BuildLink(options, $"directoryObjects/{type}");
 
             return GetArrayAsync(tenant, nextLink, options, cancellationToken);
         }
