@@ -90,7 +90,7 @@ namespace Usage
             // Using the new Deserialize<T>() extension method to simplify the code.
             // This method will automatically set JsonNamingPolicy.CamelCase for you.
             {
-                await foreach (var items in client.Groups.GetGroupsAsync(tenant, options).Deserialize<Group>())
+                await foreach (var items in client.Groups.GetGroupsAsync(tenant, options).DeserializeItemsAsync<Group>())
                 {
                     foreach (var item in items)
                     {
@@ -107,7 +107,7 @@ namespace Usage
 
             // Using the new AsJsonElement() extension method to migrate the old API.
             {
-                await foreach (var item in client.Groups.GetGroupsAsync(tenant, options).AsJsonElements())
+                await foreach (var item in client.Groups.GetGroupsAsync(tenant, options).AsJsonElementsAsync())
                 {
                     Console.WriteLine(item.GetProperty("displayName").GetString());
 
@@ -124,12 +124,12 @@ namespace Usage
             }
 
             {
-                var group = await client.Groups.GetGroupAsync(tenant, groupId).Deserialize<Group>();
+                var group = await client.Groups.GetGroupAsync(tenant, groupId).DeserializeItemAsync<Group>();
                 Console.WriteLine(group?.DisplayName);
             }
 
             {
-                var json = await client.Groups.GetGroupAsync(tenant, groupId).AsJsonElement();
+                var json = await client.Groups.GetGroupAsync(tenant, groupId).AsJsonElementAsync();
                 Console.WriteLine(json.GetProperty("displayName").GetString());
             }
 
