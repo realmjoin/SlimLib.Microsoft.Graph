@@ -143,7 +143,7 @@ namespace SlimLib.Microsoft.Graph
 
             return GetArrayAsync(tenant, nextLink, options, cancellationToken);
         }
-        async Task<JsonDocument?> ISlimGraphManagedDevicesClient.GetDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        async Task<JsonDocument?> ISlimGraphManagedDevicesClient.GetDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}");
             return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
