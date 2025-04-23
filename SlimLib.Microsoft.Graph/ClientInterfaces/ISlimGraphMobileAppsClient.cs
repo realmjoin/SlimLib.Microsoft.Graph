@@ -33,5 +33,8 @@ namespace SlimLib.Microsoft.Graph
         Task<JsonDocument?> UpdateMobileAppCategoryAsync(IAzureTenant tenant, Guid appCategoryID, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
         Task DeleteMobileAppCategoryAsync(IAzureTenant tenant, Guid appCategoryID, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
         IAsyncEnumerable<JsonDocument> GetMobileAppCategoriesAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+
+        Task AssignCategoryToMobileAppAsync(IAzureTenant tenant, Guid appID, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
+        Task RemoveCategoryFromMobileAppAsync(IAzureTenant tenant, Guid appID, Guid appCategoryID, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }
