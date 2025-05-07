@@ -77,6 +77,23 @@ namespace Usage
                                 if (groupId == default) groupId = item.Id;
 
                                 Console.WriteLine(item.DisplayName);
+
+                                var tasks = new Task<long>[]
+                                {
+                                    client.Groups.GetTransitiveMemberCountAsync(tenant, item.Id),
+                                    client.Groups.GetMemberCountAsync(tenant, item.Id, "microsoft.graph.user"),
+                                    client.Groups.GetMemberCountAsync(tenant, item.Id, "microsoft.graph.device"),
+                                    client.Groups.GetMemberCountAsync(tenant, item.Id, "microsoft.graph.group"),
+                                    client.Groups.GetMemberCountAsync(tenant, item.Id, "microsoft.graph.servicePrincipal"),
+                                };
+
+                                await Task.WhenAll(tasks);
+
+                                Console.WriteLine($"Members: {tasks[0].Result} (transitive)");
+                                Console.WriteLine($"Users: {tasks[1].Result} (direct)");
+                                Console.WriteLine($"Devices: {tasks[2].Result} (direct)");
+                                Console.WriteLine($"Groups: {tasks[3].Result} (direct)");
+                                Console.WriteLine($"Other: {tasks[4].Result} (direct)");
                             }
                         }
                     }
