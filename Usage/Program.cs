@@ -81,10 +81,10 @@ namespace Usage
                                 var tasks = new Task<long>[]
                                 {
                                     client.Groups.GetTransitiveMemberCountAsync(tenant, item.Id),
-                                    client.Groups.GetMemberCountAsync(tenant, item.Id, "microsoft.graph.user"),
-                                    client.Groups.GetMemberCountAsync(tenant, item.Id, "microsoft.graph.device"),
-                                    client.Groups.GetMemberCountAsync(tenant, item.Id, "microsoft.graph.group"),
-                                    client.Groups.GetMemberCountAsync(tenant, item.Id, "microsoft.graph.servicePrincipal"),
+                                    client.Groups.GetMemberCountAsync(tenant, item.Id, ObjectType.User),
+                                    client.Groups.GetMemberCountAsync(tenant, item.Id, ObjectType.Device),
+                                    client.Groups.GetMemberCountAsync(tenant, item.Id, ObjectType.Group),
+                                    client.Groups.GetMemberCountAsync(tenant, item.Id, ObjectType.ServicePrincipal),
                                 };
 
                                 await Task.WhenAll(tasks);
