@@ -10,7 +10,7 @@ namespace SlimLib.Microsoft.Graph
     {
         async Task<JsonDocument?> ISlimGraphDeviceManagementReportsClient.GetDeviceInstallStatusByAppAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = "deviceManagement/reports/getDeviceInstallStatusReport";
+            var link = "deviceManagement/reports/microsoft.graph.retrieveDeviceAppInstallationStatusReport";
 
             var data = options?.ToJson() ?? new JsonObject();
 
