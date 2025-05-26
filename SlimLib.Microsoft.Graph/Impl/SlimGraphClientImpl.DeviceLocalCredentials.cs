@@ -10,12 +10,11 @@ namespace SlimLib.Microsoft.Graph
 {
     partial class SlimGraphClientImpl
     {
-        async Task<JsonDocument?> ISlimGraphDeviceLocalCredentialsClient.GetDeviceLocalCredentialAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        Task<JsonDocument?> ISlimGraphDeviceLocalCredentialsClient.GetDeviceLocalCredentialAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"directory/deviceLocalCredentials/{deviceID}");
 
-            //Throws an error wtihout a user agent
-            return await GetAsync(tenant, link, new RequestHeaderOptions { UserAgent = "Mozilla/5.0 (Windows NT 10; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0" }, cancellationToken).ConfigureAwait(false);
+            return GetAsync(tenant, link, options, cancellationToken);
         }
 
         IAsyncEnumerable<JsonDocument> ISlimGraphDeviceLocalCredentialsClient.GetDeviceLocalCredentialsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)

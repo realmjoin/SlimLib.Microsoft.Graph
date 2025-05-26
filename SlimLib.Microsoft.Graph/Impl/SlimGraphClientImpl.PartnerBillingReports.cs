@@ -17,7 +17,7 @@ namespace SlimLib.Microsoft.Graph
             string? location = null;
 
 
-            await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), response =>
+            await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, options, response =>
             {
                 if (response.StatusCode == HttpStatusCode.Accepted && response.Headers.TryGetValues("location", out var locationHeaders))
                 {
@@ -32,7 +32,7 @@ namespace SlimLib.Microsoft.Graph
         Task<JsonDocument?> ISlimGraphPartnerBillingReportsClient.GetOperationAsync(IAzureTenant tenant, string operationID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"reports/partners/billing/operations/{operationID}");
-            return GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken);
+            return GetAsync(tenant, link, options, cancellationToken);
         }
     }
 }

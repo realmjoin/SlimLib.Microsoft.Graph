@@ -27,32 +27,30 @@ namespace SlimLib.Microsoft.Graph
             this.logger = logger;
         }
 
-        private async Task DeleteAsync(IAzureTenant tenant, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
+        private async Task DeleteAsync(IAzureTenant tenant, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             using var doc = await SendAsync(tenant, HttpMethod.Delete, null, requestUri, options, null, cancellationToken).ConfigureAwait(false);
         }
 
-        private Task<JsonDocument?> GetAsync(IAzureTenant tenant, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
+        private Task<JsonDocument?> GetAsync(IAzureTenant tenant, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
             => SendAsync(tenant, HttpMethod.Get, null, requestUri, options, null, cancellationToken);
 
-        private Task<JsonDocument?> PatchAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
+        private Task<JsonDocument?> PatchAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
             => SendAsync(tenant, HttpMethod.Patch, utf8Data, requestUri, options, null, cancellationToken);
 
-        private Task<JsonDocument?> PostAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
+        private Task<JsonDocument?> PostAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
             => PostAsync(tenant, utf8Data, requestUri, options, null, cancellationToken);
 
-        private Task<JsonDocument?> PostAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, RequestHeaderOptions? options, Func<HttpResponseMessage, Task>? httpResponseMessageCustomResponseHandler, CancellationToken cancellationToken)
+        private Task<JsonDocument?> PostAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, InvokeRequestOptions? options, Func<HttpResponseMessage, Task>? httpResponseMessageCustomResponseHandler, CancellationToken cancellationToken)
             => SendAsync(tenant, HttpMethod.Post, utf8Data, requestUri, options, httpResponseMessageCustomResponseHandler, cancellationToken);
 
         private async IAsyncEnumerable<JsonDocument> GetArrayAsync(IAzureTenant tenant, string nextLink, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             string? link = nextLink;
 
-            var reqOptions = new RequestHeaderOptions { ConsistencyLevelEventual = options?.ConsistencyLevelEventual ?? false };
-
             do
             {
-                var doc = await GetAsync(tenant, link, reqOptions, cancellationToken).ConfigureAwait(false);
+                var doc = await GetAsync(tenant, link, options, cancellationToken).ConfigureAwait(false);
 
                 if (doc is not null)
                 {
@@ -63,7 +61,7 @@ namespace SlimLib.Microsoft.Graph
             } while (link != null);
         }
 
-        private async IAsyncEnumerable<JsonDocument> PostArrayAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string nextLink, RequestHeaderOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        private async IAsyncEnumerable<JsonDocument> PostArrayAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string nextLink, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             string? link = nextLink;
 
@@ -87,16 +85,9 @@ namespace SlimLib.Microsoft.Graph
             string? nLink = nextLink;
             string? dLink = default;
 
-            RequestHeaderOptions? reqOptions = null;
-
-            if (options?.PreferMinimal == true)
-            {
-                reqOptions = new RequestHeaderOptions { PreferMinimal = true };
-            }
-
             do
             {
-                using var doc = await GetAsync(tenant, nLink, reqOptions, cancellationToken).ConfigureAwait(false);
+                using var doc = await GetAsync(tenant, nLink, options, cancellationToken).ConfigureAwait(false);
 
                 if (doc is not null)
                 {
@@ -123,7 +114,7 @@ namespace SlimLib.Microsoft.Graph
             return new Results.Delta.DeltaResult<JsonElement>(result, dLink);
         }
 
-        private async Task<JsonDocument?> SendAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, RequestHeaderOptions? options, Func<HttpResponseMessage, Task>? httpResponseMessageCustomResponseHandler, CancellationToken cancellationToken)
+        private async Task<JsonDocument?> SendAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, InvokeRequestOptions? options, Func<HttpResponseMessage, Task>? httpResponseMessageCustomResponseHandler, CancellationToken cancellationToken)
         {
             using var response = await SendInternalAsync(tenant, method, utf8Data, requestUri, options, cancellationToken);
 
@@ -167,7 +158,7 @@ namespace SlimLib.Microsoft.Graph
             return new SlimGraphPicture(buffer, response.Content.Headers.ContentType);
         }
 
-        private async Task<HttpResponseMessage> SendInternalAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, RequestHeaderOptions? options, CancellationToken cancellationToken)
+        private async Task<HttpResponseMessage> SendInternalAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             using var request = new HttpRequestMessage(method, requestUri);
 
@@ -181,34 +172,9 @@ namespace SlimLib.Microsoft.Graph
 
             await authenticationProvider.AuthenticateRequestAsync(tenant, SlimGraphConstants.ScopeDefault, request).ConfigureAwait(false);
 
-            if (options?.ConsistencyLevelEventual == true)
-            {
-                logger.LogDebug("Setting HTTP header ConsistencyLevel: eventual");
-                request.Headers.Add("ConsistencyLevel", "eventual");
-            }
+            options?.ConfigureHttpRequest(request);
 
-            if (options?.PreferMinimal == true)
-            {
-                logger.LogDebug("Setting HTTP header Prefer: return=minimal");
-                request.Headers.Add("Prefer", "return=minimal");
-            }
-            if (!string.IsNullOrEmpty(options?.UserAgent))
-            {
-                request.Headers.Add("User-Agent", options.UserAgent);
-            }
-            var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
-
-            if (options?.PreferMinimal == true)
-            {
-                if (!response.Headers.TryGetValues("Preference-Applied", out var values) || !values.Any(x => x == "return=minimal"))
-                {
-                    throw new InvalidOperationException("Prefer return=minimal was applied, but the Graph did not honor our request and returned a full response.");
-                }
-
-                logger.LogDebug("Received HTTP header Preference-Applied: return=minimal");
-            }
-
-            return response;
+            return await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
         private static SlimGraphException HandleError(HttpStatusCode statusCode, HttpResponseHeaders headers, JsonDocument? root)

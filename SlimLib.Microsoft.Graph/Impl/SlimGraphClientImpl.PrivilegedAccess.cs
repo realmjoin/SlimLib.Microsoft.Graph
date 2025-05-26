@@ -15,7 +15,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"privilegedAccess/aadRoles/resources/{tenantID}");
 
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, options, cancellationToken).ConfigureAwait(false);
         }
 
         IAsyncEnumerable<JsonDocument> ISlimGraphPrivilegedAccessClient.GetRoleAssignmentsAsync(IAzureTenant tenant, Guid tenantID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -29,7 +29,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, "privilegedAccess/aadRoles/roleAssignmentRequests");
 
-            return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, options, cancellationToken).ConfigureAwait(false);
         }
     }
 }

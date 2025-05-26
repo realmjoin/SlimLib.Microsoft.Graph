@@ -2,10 +2,9 @@
 
 namespace SlimLib.Microsoft.Graph
 {
-    public class DeltaRequestOptions
+    public class DeltaRequestOptions : InvokeRequestOptions
     {
         public HashSet<string> Select { get; } = new();
         public string? Filter { get; set; }
-        public bool PreferMinimal { get; set; }
     }
 }

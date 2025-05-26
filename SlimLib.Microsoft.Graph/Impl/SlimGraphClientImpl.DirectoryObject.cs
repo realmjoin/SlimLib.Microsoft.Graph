@@ -16,7 +16,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"directoryObjects/{objectID}");
 
-            return await GetAsync(tenant, link, new RequestHeaderOptions(), cancellationToken).ConfigureAwait(false);
+            return await GetAsync(tenant, link, options, cancellationToken).ConfigureAwait(false);
         }
 
         IAsyncEnumerable<JsonDocument> ISlimGraphDirectoryObjectsClient.GetObjectsAsync(IAzureTenant tenant, string type, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -47,7 +47,7 @@ namespace SlimLib.Microsoft.Graph
                 ["groupIds"] = new JsonArray(groupIDs.Select(x => JsonValue.Create(x)).ToArray())
             };
 
-            await foreach (var doc in PostArrayAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), nextLink, new RequestHeaderOptions(), cancellationToken))
+            await foreach (var doc in PostArrayAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), nextLink, options, cancellationToken))
             {
                 using (doc)
                 {
@@ -72,7 +72,7 @@ namespace SlimLib.Microsoft.Graph
                { "securityEnabledOnly", securityEnabledOnly }
             };
 
-            await foreach (var doc in PostArrayAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), nextLink, new RequestHeaderOptions(), cancellationToken))
+            await foreach (var doc in PostArrayAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), nextLink, options, cancellationToken))
             {
                 using (doc)
                 {
@@ -97,7 +97,7 @@ namespace SlimLib.Microsoft.Graph
                 ["ids"] = new JsonArray(ids.Select(x => JsonValue.Create(x)).ToArray())
             };
 
-            await foreach (var doc in PostArrayAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), nextLink, new RequestHeaderOptions(), cancellationToken))
+            await foreach (var doc in PostArrayAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), nextLink, options, cancellationToken))
             {
                 using (doc)
                 {
@@ -122,7 +122,7 @@ namespace SlimLib.Microsoft.Graph
                { "securityEnabledOnly", securityEnabledOnly }
             };
 
-            await foreach (var doc in PostArrayAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), nextLink, new RequestHeaderOptions(), cancellationToken))
+            await foreach (var doc in PostArrayAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), nextLink, options, cancellationToken))
             {
                 using (doc)
                 {
