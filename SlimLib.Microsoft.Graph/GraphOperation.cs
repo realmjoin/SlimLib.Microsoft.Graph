@@ -1,6 +1,9 @@
 using System;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using SlimLib.Auth.Azure;
 
 namespace SlimLib.Microsoft.Graph;
@@ -41,6 +44,32 @@ public class GraphOperation
     public ReadOnlyMemory<byte> Utf8Data => utf8Data;
 
     public string[]? BatchDependsOn { get; set; }
+
+    public TaskAwaiter GetAwaiter() => ExecuteAsync().GetAwaiter();
+
+    public async Task ExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        if (Method == HttpMethod.Get)
+        {
+            await Client.GetAsync(Tenant, RequestUrl, Options, cancellationToken).ConfigureAwait(false);
+        }
+        else if (Method == HttpMethod.Post)
+        {
+            await Client.PostAsync(Tenant, RequestUrl, Utf8Data, Options, cancellationToken).ConfigureAwait(false);
+        }
+        else if (Method == HttpMethod.Patch)
+        {
+            await Client.PatchAsync(Tenant, RequestUrl, Utf8Data, Options, cancellationToken).ConfigureAwait(false);
+        }
+        else if (Method == HttpMethod.Delete)
+        {
+            await Client.DeleteAsync(Tenant, RequestUrl, Options, cancellationToken).ConfigureAwait(false);
+        }
+        else
+        {
+            throw new NotSupportedException($"HTTP method {Method} is not supported for direct execution in this context.");
+        }
+    }
 
     public virtual void SetBatchResult(JsonElement jsonElement, JsonSerializerOptions? options = null) { }
 }

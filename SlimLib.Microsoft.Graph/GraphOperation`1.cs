@@ -23,9 +23,9 @@ public class GraphOperation<T> : GraphOperation
         this.executeFunc = executeFunc;
     }
 
-    public TaskAwaiter<T?> GetAwaiter() => ExecuteAsync().GetAwaiter();
+    public new TaskAwaiter<T?> GetAwaiter() => ExecuteAsync().GetAwaiter();
 
-    public async Task<T?> ExecuteAsync(CancellationToken cancellationToken = default)
+    public new async Task<T?> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         JsonDocument? doc;
 

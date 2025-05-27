@@ -9,6 +9,7 @@ using SlimLib.Microsoft.Graph;
 using System;
 using System.Net.Http;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace Usage
@@ -219,6 +220,26 @@ namespace Usage
     DESKTOP-ABCDEF1                Failed
     DESKTOP-ZXY                    Installed
                 */
+            }
+
+            // Create group
+            var newGroup = new JsonObject
+            {
+                ["displayName"] = "Test Group",
+                ["description"] = "This is a test group created by SlimLib.Microsoft.Graph",
+                ["mailEnabled"] = false,
+                ["mailNickname"] = "testgroup",
+                ["securityEnabled"] = true,
+            };
+
+            var createdGroup = await client.Groups.CreateGroupAsync(tenant, newGroup).DeserializeItemAsync<Group>();
+            Console.WriteLine($"Created group: {createdGroup?.DisplayName}");
+
+            // Delete group
+            if (createdGroup is not null)
+            {
+                await client.Groups.DeleteGroupAsync(tenant, createdGroup.Id);
+                Console.WriteLine($"Deleted group: {createdGroup.DisplayName}");
             }
         }
     }
