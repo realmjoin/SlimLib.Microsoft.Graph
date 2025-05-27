@@ -238,7 +238,8 @@ namespace Usage
             // Delete group
             if (createdGroup is not null)
             {
-                await client.Groups.DeleteGroupAsync(tenant, createdGroup.Id);
+                // ConfigureAwait is also supported
+                await client.Groups.DeleteGroupAsync(tenant, createdGroup.Id).ConfigureAwait(false);
                 Console.WriteLine($"Deleted group: {createdGroup.DisplayName}");
             }
         }

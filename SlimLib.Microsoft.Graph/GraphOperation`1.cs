@@ -25,6 +25,8 @@ public class GraphOperation<T> : GraphOperation
 
     public new TaskAwaiter<T?> GetAwaiter() => ExecuteAsync().GetAwaiter();
 
+    public new ConfiguredTaskAwaitable<T?> ConfigureAwait(bool continueOnCapturedContext) => ExecuteAsync().ConfigureAwait(continueOnCapturedContext);
+
     public new async Task<T?> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         JsonDocument? doc;

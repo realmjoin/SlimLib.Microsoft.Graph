@@ -47,6 +47,8 @@ public class GraphOperation
 
     public TaskAwaiter GetAwaiter() => ExecuteAsync().GetAwaiter();
 
+    public ConfiguredTaskAwaitable ConfigureAwait(bool continueOnCapturedContext) => ExecuteAsync().ConfigureAwait(continueOnCapturedContext);
+
     public async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
         if (Method == HttpMethod.Get)
