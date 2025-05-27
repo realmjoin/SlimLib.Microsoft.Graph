@@ -1,35 +1,34 @@
 ﻿using SlimLib.Auth.Azure;
 using System;
-using System.Collections.Generic;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SlimLib.Microsoft.Graph
 {
     partial class SlimGraphClientImpl
     {
-        async Task<JsonDocument?> ISlimGraphPrivilegedAccessClient.GetResourceAsync(IAzureTenant tenant, Guid tenantID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        GraphOperation<JsonDocument?> ISlimGraphPrivilegedAccessClient.GetResourceAsync(IAzureTenant tenant, Guid tenantID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"privilegedAccess/aadRoles/resources/{tenantID}");
 
-            return await GetAsync(tenant, link, options, cancellationToken).ConfigureAwait(false);
+            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
         }
 
-        IAsyncEnumerable<JsonDocument> ISlimGraphPrivilegedAccessClient.GetRoleAssignmentsAsync(IAzureTenant tenant, Guid tenantID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        GraphArrayOperation<JsonDocument> ISlimGraphPrivilegedAccessClient.GetRoleAssignmentsAsync(IAzureTenant tenant, Guid tenantID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"privilegedAccess/aadRoles/resources/{tenantID}/roleAssignments");
 
-            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
         }
 
-        async Task<JsonDocument?> ISlimGraphPrivilegedAccessClient.CreateRoleAssignmentRequestAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        GraphOperation<JsonDocument?> ISlimGraphPrivilegedAccessClient.CreateRoleAssignmentRequestAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, "privilegedAccess/aadRoles/roleAssignmentRequests");
 
-            return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, options, cancellationToken).ConfigureAwait(false);
+            return new(this, tenant, HttpMethod.Post, link, options, JsonSerializer.SerializeToUtf8Bytes(data), static doc => doc);
         }
     }
 }

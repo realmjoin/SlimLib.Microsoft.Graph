@@ -1,6 +1,7 @@
 ﻿using SlimLib.Auth.Azure;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
@@ -17,7 +18,7 @@ namespace SlimLib.Microsoft.Graph
             string? location = null;
 
 
-            await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, options, response =>
+            await SendAsync(tenant, HttpMethod.Post, link, JsonSerializer.SerializeToUtf8Bytes(data), options, response =>
             {
                 if (response.StatusCode == HttpStatusCode.Accepted && response.Headers.TryGetValues("location", out var locationHeaders))
                 {
@@ -29,10 +30,10 @@ namespace SlimLib.Microsoft.Graph
             return location;
         }
 
-        Task<JsonDocument?> ISlimGraphPartnerBillingReportsClient.GetOperationAsync(IAzureTenant tenant, string operationID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        GraphOperation<JsonDocument?> ISlimGraphPartnerBillingReportsClient.GetOperationAsync(IAzureTenant tenant, string operationID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"reports/partners/billing/operations/{operationID}");
-            return GetAsync(tenant, link, options, cancellationToken);
+            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
         }
     }
 }

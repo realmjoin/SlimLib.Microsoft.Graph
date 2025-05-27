@@ -1,7 +1,6 @@
 ﻿using SlimLib.Auth.Azure;
 using System.Text.Json;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SlimLib.Microsoft.Graph
 {
@@ -10,7 +9,7 @@ namespace SlimLib.Microsoft.Graph
     /// </summary>
     public interface ISlimGraphDeviceManagementReportsClient
     {
-        Task<JsonDocument?> GetDeviceInstallStatusByAppAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
-        Task<JsonDocument?> GetUserInstallStatusAggregateByAppAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        GraphOperation<JsonDocument?> GetDeviceInstallStatusByAppAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        GraphOperation<JsonDocument?> GetUserInstallStatusAggregateByAppAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }

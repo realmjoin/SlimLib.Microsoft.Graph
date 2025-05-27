@@ -1,29 +1,41 @@
 ﻿using SlimLib.Auth.Azure;
+using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SlimLib.Microsoft.Graph
 {
     partial class SlimGraphClientImpl
     {
-        async Task<JsonDocument?> ISlimGraphDeviceManagementReportsClient.GetDeviceInstallStatusByAppAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
+        GraphOperation<JsonDocument?> ISlimGraphDeviceManagementReportsClient.GetDeviceInstallStatusByAppAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = "deviceManagement/reports/microsoft.graph.retrieveDeviceAppInstallationStatusReport";
 
-            var data = options?.ToJson() ?? new JsonObject();
+            var data = new JsonObject();
+            
+            if (options?.Select is not null)
+                data["select"] = JsonSerializer.SerializeToNode(options.Select);
 
-            return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, options, cancellationToken).ConfigureAwait(false);
+            if (options?.Filter is not null)
+                data["filter"] = JsonSerializer.SerializeToNode(options.Filter);
+
+            return new(this, tenant, HttpMethod.Post, link, options, JsonSerializer.SerializeToUtf8Bytes(data), static doc => doc);
         }
 
-        async Task<JsonDocument?> ISlimGraphDeviceManagementReportsClient.GetUserInstallStatusAggregateByAppAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
+        GraphOperation<JsonDocument?> ISlimGraphDeviceManagementReportsClient.GetUserInstallStatusAggregateByAppAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = "deviceManagement/reports/getUserInstallStatusReport";
 
-            var data = options?.ToJson() ?? new JsonObject();
+            var data = new JsonObject();
+            
+            if (options?.Select is not null)
+                data["select"] = JsonSerializer.SerializeToNode(options.Select);
 
-            return await PostAsync(tenant, JsonSerializer.SerializeToUtf8Bytes(data), link, options, cancellationToken).ConfigureAwait(false);
+            if (options?.Filter is not null)
+                data["filter"] = JsonSerializer.SerializeToNode(options.Filter);
+
+            return new(this, tenant, HttpMethod.Post, link, options, JsonSerializer.SerializeToUtf8Bytes(data), static doc => doc);
         }
     }
 }

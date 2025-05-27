@@ -1,27 +1,26 @@
 ﻿using SlimLib.Auth.Azure;
 using System;
-using System.Collections.Generic;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SlimLib.Microsoft.Graph
 {
     partial class SlimGraphClientImpl
     {
-        async Task<JsonDocument?> ISlimGraphAuditLogsClient.GetSignInAsync(IAzureTenant tenant, Guid signInID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        GraphOperation<JsonDocument?> ISlimGraphAuditLogsClient.GetSignInAsync(IAzureTenant tenant, Guid signInID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"auditLogs/signIns/{signInID}");
 
-            return await GetAsync(tenant, link, options, cancellationToken).ConfigureAwait(false);
+            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
         }
 
-        IAsyncEnumerable<JsonDocument> ISlimGraphAuditLogsClient.GetSignInsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        GraphArrayOperation<JsonDocument> ISlimGraphAuditLogsClient.GetSignInsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "auditLogs/signIns");
 
-            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
         }
     }
 }

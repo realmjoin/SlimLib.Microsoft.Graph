@@ -1,53 +1,40 @@
 ﻿using SlimLib.Auth.Azure;
 using System;
-using System.Collections.Generic;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SlimLib.Microsoft.Graph
 {
     partial class SlimGraphClientImpl
     {
-        async Task<JsonDocument?> ISlimGraphServicePrincipalsClient.GetServicePrincipalAsync(IAzureTenant tenant, Guid servicePrincipalID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        GraphOperation<JsonDocument?> ISlimGraphServicePrincipalsClient.GetServicePrincipalAsync(IAzureTenant tenant, Guid servicePrincipalID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"servicePrincipals/{servicePrincipalID}");
 
-            return await GetAsync(tenant, link, options, cancellationToken).ConfigureAwait(false);
+            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
         }
 
-        IAsyncEnumerable<JsonDocument> ISlimGraphServicePrincipalsClient.GetServicePrincipalsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        GraphArrayOperation<JsonDocument> ISlimGraphServicePrincipalsClient.GetServicePrincipalsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "servicePrincipals");
 
-            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
         }
 
-        async IAsyncEnumerable<JsonDocument> ISlimGraphServicePrincipalsClient.GetAppRoleAssignmentsAsync(IAzureTenant tenant, Guid servicePrincipalID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        GraphArrayOperation<JsonDocument> ISlimGraphServicePrincipalsClient.GetAppRoleAssignmentsAsync(IAzureTenant tenant, Guid servicePrincipalID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"servicePrincipals/{servicePrincipalID}/appRoleAssignments");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item;
-            }
+            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
         }
 
-        async IAsyncEnumerable<JsonDocument> ISlimGraphServicePrincipalsClient.GetAppRoleAssignedToAsync(IAzureTenant tenant, Guid servicePrincipalID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        GraphArrayOperation<JsonDocument> ISlimGraphServicePrincipalsClient.GetAppRoleAssignedToAsync(IAzureTenant tenant, Guid servicePrincipalID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"servicePrincipals/{servicePrincipalID}/appRoleAssignedTo");
 
-            await foreach (var item in GetArrayAsync(tenant, nextLink, options, cancellationToken))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    yield break;
-
-                yield return item;
-            }
+            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
         }
     }
 }

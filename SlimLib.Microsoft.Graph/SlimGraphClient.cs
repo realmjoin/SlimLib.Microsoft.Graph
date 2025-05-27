@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlimLib.Auth.Azure;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SlimLib.Microsoft.Graph
 {
@@ -34,5 +37,7 @@ namespace SlimLib.Microsoft.Graph
         public ISlimGraphDeviceLocalCredentialsClient DeviceLocalCredentials => impl;
         public ISlimGraphPartnerBillingReportsClient PartnerBillingReports => impl;
         public ISlimGraphTenantRelationshipsClient TenantRelationships => impl;
+
+        public Task BatchRequestAsync(IAzureTenant tenant, IList<GraphOperation> operations, CancellationToken cancellationToken = default) => impl.BatchRequestAsync(tenant, operations, cancellationToken);
     }
 }

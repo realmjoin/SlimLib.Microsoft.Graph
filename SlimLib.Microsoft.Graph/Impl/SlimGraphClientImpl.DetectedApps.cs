@@ -1,33 +1,32 @@
 ﻿using SlimLib.Auth.Azure;
-using System.Collections.Generic;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SlimLib.Microsoft.Graph
 {
     partial class SlimGraphClientImpl
     {
-        async Task<JsonDocument?> ISlimGraphDetectedAppsClient.GetDetectedAppAsync(IAzureTenant tenant, string appID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        GraphOperation<JsonDocument?> ISlimGraphDetectedAppsClient.GetDetectedAppAsync(IAzureTenant tenant, string appID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/detectedApps/{appID}");
 
-            return await GetAsync(tenant, link, options, cancellationToken).ConfigureAwait(false);
+            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
         }
 
-        IAsyncEnumerable<JsonDocument> ISlimGraphDetectedAppsClient.GetDetectedAppsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        GraphArrayOperation<JsonDocument> ISlimGraphDetectedAppsClient.GetDetectedAppsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "deviceManagement/detectedApps");
 
-            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
         }
 
-        IAsyncEnumerable<JsonDocument> ISlimGraphDetectedAppsClient.GetManagedDevicesAsync(IAzureTenant tenant, string appID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        GraphArrayOperation<JsonDocument> ISlimGraphDetectedAppsClient.GetManagedDevicesAsync(IAzureTenant tenant, string appID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"deviceManagement/detectedApps/{appID}/managedDevices");
 
-            return GetArrayAsync(tenant, nextLink, options, cancellationToken);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
         }
     }
 }

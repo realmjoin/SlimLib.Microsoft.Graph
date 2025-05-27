@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,24 +28,21 @@ namespace SlimLib.Microsoft.Graph
             this.logger = logger;
         }
 
-        private async Task DeleteAsync(IAzureTenant tenant, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        internal async Task DeleteAsync(IAzureTenant tenant, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            using var doc = await SendAsync(tenant, HttpMethod.Delete, null, requestUri, options, null, cancellationToken).ConfigureAwait(false);
+            using var doc = await SendAsync(tenant, HttpMethod.Delete, requestUri, null, options, null, cancellationToken).ConfigureAwait(false);
         }
 
-        private Task<JsonDocument?> GetAsync(IAzureTenant tenant, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
-            => SendAsync(tenant, HttpMethod.Get, null, requestUri, options, null, cancellationToken);
+        internal Task<JsonDocument?> GetAsync(IAzureTenant tenant, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
+            => SendAsync(tenant, HttpMethod.Get, requestUri, null, options, null, cancellationToken);
 
-        private Task<JsonDocument?> PatchAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
-            => SendAsync(tenant, HttpMethod.Patch, utf8Data, requestUri, options, null, cancellationToken);
+        internal Task<JsonDocument?> PatchAsync(IAzureTenant tenant, string requestUri, ReadOnlyMemory<byte> utf8Data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+            => SendAsync(tenant, HttpMethod.Patch, requestUri, utf8Data, options, null, cancellationToken);
 
-        private Task<JsonDocument?> PostAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
-            => PostAsync(tenant, utf8Data, requestUri, options, null, cancellationToken);
+        internal Task<JsonDocument?> PostAsync(IAzureTenant tenant, string requestUri, ReadOnlyMemory<byte> utf8Data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+            => SendAsync(tenant, HttpMethod.Post, requestUri, utf8Data, options, null, cancellationToken);
 
-        private Task<JsonDocument?> PostAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string requestUri, InvokeRequestOptions? options, Func<HttpResponseMessage, Task>? httpResponseMessageCustomResponseHandler, CancellationToken cancellationToken)
-            => SendAsync(tenant, HttpMethod.Post, utf8Data, requestUri, options, httpResponseMessageCustomResponseHandler, cancellationToken);
-
-        private async IAsyncEnumerable<JsonDocument> GetArrayAsync(IAzureTenant tenant, string nextLink, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        internal async IAsyncEnumerable<JsonDocument> GetArrayAsync(IAzureTenant tenant, string nextLink, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             string? link = nextLink;
 
@@ -61,21 +59,54 @@ namespace SlimLib.Microsoft.Graph
             } while (link != null);
         }
 
-        private async IAsyncEnumerable<JsonDocument> PostArrayAsync(IAzureTenant tenant, ReadOnlyMemory<byte> utf8Data, string nextLink, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        public async Task BatchRequestAsync(IAzureTenant tenant, IList<GraphOperation> operations, CancellationToken cancellationToken)
         {
-            string? link = nextLink;
+            var requests = new JsonArray();
 
-            do
+            var payload = new JsonObject
             {
-                var doc = await PostAsync(tenant, utf8Data, link, options, cancellationToken).ConfigureAwait(false);
+                ["requests"] = requests
+            };
 
-                if (doc is not null)
+            var i = 0;
+
+            foreach (var operation in operations)
+            {
+                var request = new JsonObject
                 {
-                    HandleNextLink(doc.RootElement, ref link);
-                    yield return doc;
+                    ["id"] = i++.ToString(),
+                    ["method"] = operation.Method.ToString(),
+                    ["url"] = operation.RequestUrl,
+                };
+
+                if (operation.BatchDependsOn is not null)
+                {
+                    request["dependsOn"] = JsonSerializer.SerializeToNode(operation.BatchDependsOn);
                 }
 
-            } while (link != null);
+                operation.Options?.ConfigureBatchRequest(request);
+
+                requests.Add(request);
+            }
+
+            using var response = await PostAsync(tenant, "$batch", JsonSerializer.SerializeToUtf8Bytes(payload), options: null, cancellationToken) ?? throw new InvalidOperationException("Batch request failed.");
+
+            if (response.RootElement.TryGetProperty("responses", out var responses) && responses is { ValueKind: JsonValueKind.Array })
+            {
+                for (var j = 0; j < requests.Count; j++)
+                {
+                    var item = responses.EnumerateArray().FirstOrDefault(x => x.TryGetProperty("id", out var id) && id.GetString() == j.ToString());
+
+                    if (item.TryGetProperty("body", out var body))
+                    {
+                        operations[j].SetBatchResult(body);
+                    }
+                }
+
+                return;
+            }
+
+            throw new InvalidOperationException("Batch request failed.");
         }
 
         private async Task<Results.Delta.DeltaResult<JsonElement>> GetDeltaAsync(IAzureTenant tenant, string nextLink, DeltaRequestOptions? options, CancellationToken cancellationToken)
@@ -114,9 +145,9 @@ namespace SlimLib.Microsoft.Graph
             return new Results.Delta.DeltaResult<JsonElement>(result, dLink);
         }
 
-        private async Task<JsonDocument?> SendAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, InvokeRequestOptions? options, Func<HttpResponseMessage, Task>? httpResponseMessageCustomResponseHandler, CancellationToken cancellationToken)
+        private async Task<JsonDocument?> SendAsync(IAzureTenant tenant, HttpMethod method, string requestUri, ReadOnlyMemory<byte>? utf8Data, InvokeRequestOptions? options, Func<HttpResponseMessage, Task>? httpResponseMessageCustomResponseHandler, CancellationToken cancellationToken)
         {
-            using var response = await SendInternalAsync(tenant, method, utf8Data, requestUri, options, cancellationToken);
+            using var response = await SendInternalAsync(tenant, method, requestUri, utf8Data, options, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.NoContent || response.Content.Headers.ContentLength == 0)
             {
@@ -140,12 +171,20 @@ namespace SlimLib.Microsoft.Graph
             if (!response.IsSuccessStatusCode)
                 throw HandleError(response.StatusCode, response.Headers, doc);
 
+            if (doc is not null)
+            {
+                var batchErrors = HandleBatchError(response.Headers, doc);
+
+                if (batchErrors is not null)
+                    throw batchErrors;
+            }
+
             return doc;
         }
 
         private async Task<SlimGraphPicture?> GetPictureAsync(IAzureTenant tenant, string requestUri, CancellationToken cancellationToken)
         {
-            using var response = await SendInternalAsync(tenant, HttpMethod.Get, null, requestUri, null, cancellationToken);
+            using var response = await SendInternalAsync(tenant, HttpMethod.Get, requestUri, null, null, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.NoContent)
             {
@@ -158,7 +197,7 @@ namespace SlimLib.Microsoft.Graph
             return new SlimGraphPicture(buffer, response.Content.Headers.ContentType);
         }
 
-        private async Task<HttpResponseMessage> SendInternalAsync(IAzureTenant tenant, HttpMethod method, ReadOnlyMemory<byte>? utf8Data, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        private async Task<HttpResponseMessage> SendInternalAsync(IAzureTenant tenant, HttpMethod method, string requestUri, ReadOnlyMemory<byte>? utf8Data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             using var request = new HttpRequestMessage(method, requestUri);
 
@@ -177,7 +216,7 @@ namespace SlimLib.Microsoft.Graph
             return await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
-        private static SlimGraphException HandleError(HttpStatusCode statusCode, HttpResponseHeaders headers, JsonDocument? root)
+        private static SlimGraphException HandleError(HttpStatusCode statusCode, HttpResponseHeaders? headers, JsonDocument? root)
         {
             try
             {
@@ -191,6 +230,55 @@ namespace SlimLib.Microsoft.Graph
             }
 
             return new SlimGraphException(0, null, "Unkown error", "");
+        }
+
+        private static AggregateException? HandleBatchError(HttpResponseHeaders headers, JsonDocument root)
+        {
+            if (root.RootElement is not { ValueKind: JsonValueKind.Object })
+                return null;
+
+            var exceptions = new List<SlimGraphException>();
+
+            try
+            {
+                if (root.RootElement.TryGetProperty("responses", out var responses) && responses is { ValueKind: JsonValueKind.Array })
+                {
+                    foreach (var item in responses.EnumerateArray())
+                    {
+                        if (item is not { ValueKind: JsonValueKind.Object })
+                            continue;
+
+                        if (item.TryGetProperty("status", out var status) && status is { ValueKind: JsonValueKind.Number })
+                        {
+                            var http = (HttpStatusCode)status.GetInt32();
+
+                            if (http == HttpStatusCode.OK)
+                                continue;
+
+                            if (item.TryGetProperty("body", out var body) && body is { ValueKind: JsonValueKind.Object })
+                            {
+                                if (body.TryGetProperty("error", out var error))
+                                {
+                                    if (error is { ValueKind: JsonValueKind.Object })
+                                        exceptions.Add(new(http, headers, error.GetProperty("code").GetString() ?? "", error.GetProperty("message").GetString() ?? ""));
+                                    else
+                                        exceptions.Add(new(http, headers, "Unkown error", ""));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+            if (exceptions.Count == 0)
+            {
+                return null;
+            }
+
+            return new AggregateException(exceptions);
         }
 
         private static void HandleNextLink(JsonElement root, ref string? nextLink)

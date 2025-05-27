@@ -78,7 +78,7 @@ namespace Usage
 
                                 Console.WriteLine(item.DisplayName);
 
-                                var tasks = new Task<long>[]
+                                var operations = new GraphOperation<long>[]
                                 {
                                     client.Groups.GetTransitiveMemberCountAsync(tenant, item.Id),
                                     client.Groups.GetMemberCountAsync(tenant, item.Id, ObjectType.User),
@@ -87,13 +87,13 @@ namespace Usage
                                     client.Groups.GetMemberCountAsync(tenant, item.Id, ObjectType.ServicePrincipal),
                                 };
 
-                                await Task.WhenAll(tasks);
+                                await client.BatchRequestAsync(tenant, operations);
 
-                                Console.WriteLine($"Members: {tasks[0].Result} (transitive)");
-                                Console.WriteLine($"Users: {tasks[1].Result} (direct)");
-                                Console.WriteLine($"Devices: {tasks[2].Result} (direct)");
-                                Console.WriteLine($"Groups: {tasks[3].Result} (direct)");
-                                Console.WriteLine($"Other: {tasks[4].Result} (direct)");
+                                Console.WriteLine($"Members: {operations[0].Result} (transitive)");
+                                Console.WriteLine($"Users: {operations[1].Result} (direct)");
+                                Console.WriteLine($"Devices: {operations[2].Result} (direct)");
+                                Console.WriteLine($"Groups: {operations[3].Result} (direct)");
+                                Console.WriteLine($"Other: {operations[4].Result} (direct)");
                             }
                         }
                     }
@@ -154,61 +154,72 @@ namespace Usage
             // Example how to use new Intune app reporting
             // See for more: https://techcommunity.microsoft.com/t5/intune-customer-success/support-tip-retrieving-intune-apps-reporting-data-from-microsoft/ba-p/3851578
 
-            var appID = new Guid("f38e72d5-b55d-45cd-8496-5224215f031c");
+            // Use new ToListAsync<T>() extension method to get a list of apps.
+            var apps = await client.MobileApps.GetMobileAppsAsync(tenant, new() { Select = { "id", "displayName" }, Search = "Edge", Top = 10 }).ToListAsync<JsonElement>(limit: 10);
 
-            // In this example we parse the raw response (which is reminiscent of CSV) using Report.ReportResult
-            // which results in list of rows, with each row containing a list of values as raw JsonElement.
-
-            var raw = await client.DeviceManagementReports.GetUserInstallStatusAggregateByAppAsync(tenant, new() { Filter = $"(ApplicationId eq '{appID}')" });
-
-            if (raw is not null)
+            foreach (var app in apps)
             {
-                var report = SlimLib.Microsoft.Graph.Results.Report.ReportResult.Create(raw);
+                var appID = app.GetProperty("id").GetString();
+                var appName = app.GetProperty("displayName").GetString();
 
-                foreach (var row in report.Values!)
+                // In this example we parse the raw response (which is reminiscent of CSV) using Report.ReportResult
+                // which results in list of rows, with each row containing a list of values as raw JsonElement.
+
+                var raw = await client.DeviceManagementReports.GetUserInstallStatusAggregateByAppAsync(tenant, new() { Filter = $"(ApplicationId eq '{appID}')" });
+
+                if (raw is not null)
                 {
-                    foreach (var item in row)
+                    var report = SlimLib.Microsoft.Graph.Results.Report.ReportResult.Create(raw);
+
+                    Console.WriteLine($"User Install Status for {appName} ({appID}):");
+
+                    foreach (var row in report.Values!)
                     {
-                        Console.WriteLine(item);
+                        foreach (var item in row)
+                        {
+                            Console.WriteLine(item);
+                        }
                     }
                 }
-            }
 
-            /*
-Output similar to:
-7d46f4b4-2e5d-44ff-8f40-bc977fd0b994
-f38e72d5-b55d-45cd-8496-5224215f031c
-John Doe
-john.doe@contoso.com
-1
-0
-0
-0
-0
-             */
+                /*
+    Output similar to:
+    7d46f4b4-2e5d-44ff-8f40-bc977fd0b994
+    f38e72d5-b55d-45cd-8496-5224215f031c
+    John Doe
+    john.doe@contoso.com
+    1
+    0
+    0
+    0
+    0
+                */
 
-            // This examples uses ToDynamicResult() to create dynamic objects from each list of JsonElements.
-            // It also uses the new SelectList feature to only return the columns we need.
-            // Note that for this report, when you request AppInstallState, you also get AppInstallState_loc which is the localized version of the state.
-            // You can not request AppInstallState_loc directly, it will fail with an UnknownError.
+                // This examples uses ToDynamicResult() to create dynamic objects from each list of JsonElements.
+                // It also uses the new SelectList feature to only return the columns we need.
+                // Note that for this report, when you request AppInstallState, you also get AppInstallState_loc which is the localized version of the state.
+                // You can not request AppInstallState_loc directly, it will fail with an UnknownError.
 
-            raw = await client.DeviceManagementReports.GetDeviceInstallStatusByAppAsync(tenant, new() { Select = { "DeviceName", "AppInstallState" }, OrderBy = { "DeviceName asc" }, Filter = $"(ApplicationId eq '{appID}')" });
+                raw = await client.DeviceManagementReports.GetDeviceInstallStatusByAppAsync(tenant, new() { Select = { "DeviceName", "AppInstallState" }, OrderBy = { "DeviceName asc" }, Filter = $"(ApplicationId eq '{appID}')" });
 
-            if (raw is not null)
-            {
-                var report = SlimLib.Microsoft.Graph.Results.Report.ReportResult.Create(raw);
-
-                foreach (var item in report.ToDynamicResult())
+                if (raw is not null)
                 {
-                    Console.WriteLine($"{item.DeviceName,-30} {item.AppInstallState_loc}");
-                }
-            }
+                    var report = SlimLib.Microsoft.Graph.Results.Report.ReportResult.Create(raw);
 
-            /*
-Output similar to:
-DESKTOP-ABCDEF1                Failed
-DESKTOP-ZXY                    Installed
-             */
+                    Console.WriteLine($"Device Install Status for {appName} ({appID}):");
+
+                    foreach (var item in report.ToDynamicResult())
+                    {
+                        Console.WriteLine($"{item.DeviceName,-30} {item.AppInstallState_loc}");
+                    }
+                }
+
+                /*
+    Output similar to:
+    DESKTOP-ABCDEF1                Failed
+    DESKTOP-ZXY                    Installed
+                */
+            }
         }
     }
 }

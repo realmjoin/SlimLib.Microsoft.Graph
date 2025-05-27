@@ -1,0 +1,46 @@
+using System;
+using System.Net.Http;
+using System.Text.Json;
+using SlimLib.Auth.Azure;
+
+namespace SlimLib.Microsoft.Graph;
+
+public class GraphOperation
+{
+    private readonly SlimGraphClientImpl client;
+    private readonly IAzureTenant tenant;
+    private readonly HttpMethod method;
+    private readonly string requestUrl;
+    private readonly InvokeRequestOptions? options;
+    private readonly ReadOnlyMemory<byte> utf8Data;
+
+    internal GraphOperation(SlimGraphClientImpl client, IAzureTenant tenant, HttpMethod method, string requestUrl, InvokeRequestOptions? options)
+    {
+        this.client = client;
+        this.tenant = tenant;
+        this.method = method;
+        this.requestUrl = requestUrl;
+        this.options = options;
+    }
+
+    internal GraphOperation(SlimGraphClientImpl client, IAzureTenant tenant, HttpMethod method, string requestUrl, InvokeRequestOptions? options, ReadOnlyMemory<byte> utf8Data)
+    {
+        this.client = client;
+        this.tenant = tenant;
+        this.method = method;
+        this.requestUrl = requestUrl;
+        this.options = options;
+        this.utf8Data = utf8Data;
+    }
+
+    internal SlimGraphClientImpl Client => client;
+    public IAzureTenant Tenant => tenant;
+    public HttpMethod Method => method;
+    public string RequestUrl => requestUrl;
+    public InvokeRequestOptions? Options => options;
+    public ReadOnlyMemory<byte> Utf8Data => utf8Data;
+
+    public string[]? BatchDependsOn { get; set; }
+
+    public virtual void SetBatchResult(JsonElement jsonElement, JsonSerializerOptions? options = null) { }
+}

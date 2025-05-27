@@ -1,4 +1,9 @@
-﻿namespace SlimLib.Microsoft.Graph
+﻿using SlimLib.Auth.Azure;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace SlimLib.Microsoft.Graph
 {
     public interface ISlimGraphClient
     {
@@ -23,5 +28,7 @@
         ISlimGraphDeviceLocalCredentialsClient DeviceLocalCredentials { get; }
         ISlimGraphPartnerBillingReportsClient PartnerBillingReports { get; }
         ISlimGraphTenantRelationshipsClient TenantRelationships { get; }
+
+        Task BatchRequestAsync(IAzureTenant tenant, IList<GraphOperation> operations, CancellationToken cancellationToken = default);
     }
 }
