@@ -107,7 +107,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}/assign");
 
-            return new(this, tenant, HttpMethod.Post, link, options);
+            return new(this, tenant, HttpMethod.Post, link, options, JsonSerializer.SerializeToUtf8Bytes(data));
         }
 
         GraphOperation<JsonDocument?> ISlimGraphMobileAppsClient.GetMobileAppCategoryAsync(IAzureTenant tenant, Guid appCategoryID, ScalarRequestOptions? options, CancellationToken cancellationToken)
