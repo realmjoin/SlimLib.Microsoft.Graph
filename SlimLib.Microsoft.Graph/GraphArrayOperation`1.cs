@@ -13,7 +13,14 @@ public class GraphArrayOperation<T> : GraphOperation
     private readonly InvokeRequestOptions? options;
     private readonly Func<JsonDocument, T> executeFunc;
 
-    public T? Result { get; private set; }
+    private T? result;
+
+    public T? Result
+    {
+        get => Error is null ? result : throw Error;
+    }
+
+    public SlimGraphException? Error { get; private set; }
 
     internal GraphArrayOperation(SlimGraphClientImpl client, IAzureTenant tenant, HttpMethod method, string requestUrl, InvokeRequestOptions? options, Func<JsonDocument, T> executeFunc) : this(client, tenant, method, requestUrl, options, default, executeFunc)
     {
@@ -73,13 +80,18 @@ public class GraphArrayOperation<T> : GraphOperation
 
         var operation = new GraphOperation<T>(Client, Tenant, Method, nextLink, options, executeFunc);
 
-        Result = await operation.ExecuteAsync(cancellationToken).ConfigureAwait(false);
+        result = await operation.ExecuteAsync(cancellationToken).ConfigureAwait(false);
 
-        return Result;
+        return result;
     }
 
     public override void SetBatchResult(JsonElement jsonElement, JsonSerializerOptions? options = null)
     {
-        Result = jsonElement.Deserialize<T>(options);
+        result = jsonElement.Deserialize<T>(options);
+    }
+
+    public override void SetBatchError(SlimGraphException exception)
+    {
+        Error = exception;
     }
 }

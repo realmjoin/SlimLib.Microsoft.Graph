@@ -86,6 +86,7 @@ namespace Usage
                                     client.Groups.GetMemberCountAsync(tenant, item.Id, ObjectType.Device),
                                     client.Groups.GetMemberCountAsync(tenant, item.Id, ObjectType.Group),
                                     client.Groups.GetMemberCountAsync(tenant, item.Id, ObjectType.ServicePrincipal),
+                                    client.Groups.GetMemberCountAsync(tenant, Guid.Empty, ObjectType.User),
                                 };
 
                                 await client.BatchRequestAsync(tenant, operations);
@@ -95,6 +96,7 @@ namespace Usage
                                 Console.WriteLine($"Devices: {operations[2].Result} (direct)");
                                 Console.WriteLine($"Groups: {operations[3].Result} (direct)");
                                 Console.WriteLine($"Other: {operations[4].Result} (direct)");
+                                Console.WriteLine($"Error: {operations[5].Error}");
                             }
                         }
                     }

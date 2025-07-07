@@ -74,4 +74,5 @@ public class GraphOperation
     }
 
     public virtual void SetBatchResult(JsonElement jsonElement, JsonSerializerOptions? options = null) { }
+    public virtual void SetBatchError(SlimGraphException exception) { }
 }

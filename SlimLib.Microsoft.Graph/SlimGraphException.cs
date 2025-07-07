@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
-using System.Net.Http.Headers;
 
 namespace SlimLib.Microsoft.Graph
 {
     public class SlimGraphException : Exception
     {
-        internal SlimGraphException(HttpStatusCode httpStatusCode, HttpResponseHeaders? headers, string graphErrorCode, string graphErrorMessage) : base(FormatErrorMessage(graphErrorCode, graphErrorMessage))
+        internal SlimGraphException(HttpStatusCode httpStatusCode, IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers, string graphErrorCode, string graphErrorMessage) : base(FormatErrorMessage(graphErrorCode, graphErrorMessage))
         {
             HttpStatusCode = httpStatusCode;
             Headers = headers;
@@ -14,7 +14,7 @@ namespace SlimLib.Microsoft.Graph
         }
 
         public HttpStatusCode HttpStatusCode { get; }
-        public HttpResponseHeaders? Headers { get; }
+        public IEnumerable<KeyValuePair<string, IEnumerable<string>>> Headers { get; }
         public string GraphErrorCode { get; }
 
         private static string FormatErrorMessage(string graphErrorCode, string graphErrorMessage)

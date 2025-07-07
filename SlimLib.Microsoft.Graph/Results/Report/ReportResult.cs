@@ -11,7 +11,7 @@ namespace SlimLib.Microsoft.Graph.Results.Report
         {
             using (result)
             {
-                return JsonSerializer.Deserialize<ReportResult>(result) ?? throw new SlimGraphException(0, null, "Unkown error", "");
+                return JsonSerializer.Deserialize<ReportResult>(result) ?? throw new SlimGraphException(0, [], "Unkown error", "");
             }
         }
 

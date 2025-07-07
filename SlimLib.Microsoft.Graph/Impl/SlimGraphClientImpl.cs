@@ -97,7 +97,13 @@ namespace SlimLib.Microsoft.Graph
                 {
                     var item = responses.EnumerateArray().FirstOrDefault(x => x.TryGetProperty("id", out var id) && id.GetString() == j.ToString());
 
-                    if (item.TryGetProperty("body", out var body))
+                    var error = HandleBatchError(item);
+
+                    if (error is not null)
+                    {
+                        operations[j].SetBatchError(error);
+                    }
+                    else if (item.TryGetProperty("body", out var body))
                     {
                         operations[j].SetBatchResult(body);
                     }
@@ -171,14 +177,6 @@ namespace SlimLib.Microsoft.Graph
             if (!response.IsSuccessStatusCode)
                 throw HandleError(response.StatusCode, response.Headers, doc);
 
-            if (doc is not null)
-            {
-                var batchErrors = HandleBatchError(response.Headers, doc);
-
-                if (batchErrors is not null)
-                    throw batchErrors;
-            }
-
             return doc;
         }
 
@@ -216,7 +214,7 @@ namespace SlimLib.Microsoft.Graph
             return await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
-        private static SlimGraphException HandleError(HttpStatusCode statusCode, HttpResponseHeaders? headers, JsonDocument? root)
+        private static SlimGraphException HandleError(HttpStatusCode statusCode, IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers, JsonDocument? root)
         {
             try
             {
@@ -229,56 +227,68 @@ namespace SlimLib.Microsoft.Graph
             {
             }
 
-            return new SlimGraphException(0, null, "Unkown error", "");
+            return new SlimGraphException(0, [], "Unkown error", "");
         }
 
-        private static AggregateException? HandleBatchError(HttpResponseHeaders headers, JsonDocument root)
+        private static SlimGraphException? HandleBatchError(JsonElement item)
         {
-            if (root.RootElement is not { ValueKind: JsonValueKind.Object })
+            if (item is not { ValueKind: JsonValueKind.Object })
                 return null;
 
-            var exceptions = new List<SlimGraphException>();
-
-            try
+            if (item.TryGetProperty("status", out var status) && status is { ValueKind: JsonValueKind.Number })
             {
-                if (root.RootElement.TryGetProperty("responses", out var responses) && responses is { ValueKind: JsonValueKind.Array })
+                var http = (HttpStatusCode)status.GetInt32();
+
+                if (http == HttpStatusCode.OK)
+                    return null;
+
+                if (item.TryGetProperty("body", out var body) && body is { ValueKind: JsonValueKind.Object })
                 {
-                    foreach (var item in responses.EnumerateArray())
+                    if (body.TryGetProperty("error", out var error))
                     {
-                        if (item is not { ValueKind: JsonValueKind.Object })
-                            continue;
+                        var headers = new List<KeyValuePair<string, IEnumerable<string>>>();
 
-                        if (item.TryGetProperty("status", out var status) && status is { ValueKind: JsonValueKind.Number })
+                        if (item.TryGetProperty("headers", out var headersElement) && headersElement is { ValueKind: JsonValueKind.Object })
                         {
-                            var http = (HttpStatusCode)status.GetInt32();
-
-                            if (http == HttpStatusCode.OK)
-                                continue;
-
-                            if (item.TryGetProperty("body", out var body) && body is { ValueKind: JsonValueKind.Object })
+                            foreach (var header in headersElement.EnumerateObject())
                             {
-                                if (body.TryGetProperty("error", out var error))
+                                var values = new List<string>();
+
+                                if (header.Value.ValueKind == JsonValueKind.Array)
                                 {
-                                    if (error is { ValueKind: JsonValueKind.Object })
-                                        exceptions.Add(new(http, headers, error.GetProperty("code").GetString() ?? "", error.GetProperty("message").GetString() ?? ""));
-                                    else
-                                        exceptions.Add(new(http, headers, "Unkown error", ""));
+                                    foreach (var value in header.Value.EnumerateArray())
+                                    {
+                                        if (value.ValueKind == JsonValueKind.String)
+                                        {
+                                            var str = value.GetString();
+
+                                            if (str is not null)
+                                                values.Add(str);
+                                        }
+                                    }
                                 }
+                                else if (header.Value.ValueKind == JsonValueKind.String)
+                                {
+                                    var str = header.Value.GetString();
+
+                                    if (str is not null)
+                                        values.Add(str);
+                                }
+
+                                if (values.Count > 0)
+                                    headers.Add(new(header.Name, values));
                             }
                         }
+
+                        if (error is { ValueKind: JsonValueKind.Object })
+                            return new(http, headers, error.GetProperty("code").GetString() ?? "", error.GetProperty("message").GetString() ?? "");
+                        else
+                            return new(http, headers, "Unkown error", "");
                     }
                 }
             }
-            catch
-            {
-            }
 
-            if (exceptions.Count == 0)
-            {
-                return null;
-            }
-
-            return new AggregateException(exceptions);
+            return null;
         }
 
         private static void HandleNextLink(JsonElement root, ref string? nextLink)
