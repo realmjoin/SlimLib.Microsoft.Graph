@@ -28,6 +28,7 @@ namespace SlimLib.Microsoft.Graph
         ISlimGraphDeviceLocalCredentialsClient DeviceLocalCredentials { get; }
         ISlimGraphPartnerBillingReportsClient PartnerBillingReports { get; }
         ISlimGraphTenantRelationshipsClient TenantRelationships { get; }
+        ISlimGraphBitLockerClient BitLocker { get; }
 
         Task BatchRequestAsync(IAzureTenant tenant, IList<GraphOperation> operations, CancellationToken cancellationToken = default);
     }

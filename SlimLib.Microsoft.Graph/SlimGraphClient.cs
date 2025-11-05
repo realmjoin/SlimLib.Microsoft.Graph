@@ -37,6 +37,7 @@ namespace SlimLib.Microsoft.Graph
         public ISlimGraphDeviceLocalCredentialsClient DeviceLocalCredentials => impl;
         public ISlimGraphPartnerBillingReportsClient PartnerBillingReports => impl;
         public ISlimGraphTenantRelationshipsClient TenantRelationships => impl;
+        public ISlimGraphBitLockerClient BitLocker => impl;
 
         public Task BatchRequestAsync(IAzureTenant tenant, IList<GraphOperation> operations, CancellationToken cancellationToken = default) => impl.BatchRequestAsync(tenant, operations, cancellationToken);
     }
