@@ -231,5 +231,12 @@ namespace SlimLib.Microsoft.Graph
 
             return new(this, tenant, HttpMethod.Post, link, options);
         }
+
+        GraphOperation<JsonDocument?> ISlimGraphManagedDevicesClient.RetrieveMacOSManagedDeviceLocalAdminAccountDetailAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/retrieveMacOSManagedDeviceLocalAdminAccountDetail");
+
+            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+        }
     }
 }
