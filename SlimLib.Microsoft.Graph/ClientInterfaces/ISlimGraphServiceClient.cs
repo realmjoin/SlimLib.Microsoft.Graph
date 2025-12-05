@@ -25,6 +25,7 @@ namespace SlimLib.Microsoft.Graph
         ISlimGraphSubscribedSkusClient SubscribedSkus { get; }
         ISlimGraphPrivilegedAccessClient PrivilegedAccess { get; }
         ISlimGraphUsersClient Users { get; }
+        ISlimGraphWindowsDeviceUpdatesClient WindowsDeviceUpdates { get; }
         ISlimGraphDeviceLocalCredentialsClient DeviceLocalCredentials { get; }
         ISlimGraphPartnerBillingReportsClient PartnerBillingReports { get; }
         ISlimGraphTenantRelationshipsClient TenantRelationships { get; }
