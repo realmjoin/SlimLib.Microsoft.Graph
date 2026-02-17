@@ -238,5 +238,19 @@ namespace SlimLib.Microsoft.Graph
 
             return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
         }
+
+        GraphOperation<JsonDocument?> ISlimGraphManagedDevicesClient.GetFileVaultKeyAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/getFileVaultKey");
+
+            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+        }
+
+        GraphOperation ISlimGraphManagedDevicesClient.RotateFileVaultKeyAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/rotateFileVaultKey");
+
+            return new(this, tenant, HttpMethod.Post, link, options);
+        }
     }
 }
