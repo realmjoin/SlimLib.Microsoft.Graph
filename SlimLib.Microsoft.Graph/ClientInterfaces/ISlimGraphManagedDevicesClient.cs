@@ -47,5 +47,7 @@ namespace SlimLib.Microsoft.Graph
         GraphArrayOperation<JsonDocument> GetDeviceRunStatesAsync(IAzureTenant tenant, string deviceHealthScriptId, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
         GraphOperation RotateLocalAdminPasswordAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
         GraphOperation<JsonDocument?> RetrieveMacOSManagedDeviceLocalAdminAccountDetailAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken = default);
+        GraphOperation<JsonDocument?> GetFileVaultKeyAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken = default);
+        GraphOperation RotateFileVaultKeyAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }
