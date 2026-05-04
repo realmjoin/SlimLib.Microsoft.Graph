@@ -12,9 +12,21 @@ namespace SlimLib.Microsoft.Graph
     partial class SlimGraphClientImpl
     {
         private const int ZERO_NUMBER_OF_SECONDS = 0;
+
+        async Task<string?> ISlimGraphPartnerBillingReportsClient.ExportUnbilledReconciliationAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, "reports/partners/billing/reconciliation/unbilled/export");
+            return await ExportAsync(tenant, data, options, link, cancellationToken);
+        }
+
         async Task<string?> ISlimGraphPartnerBillingReportsClient.ExportBilledReconciliationAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, "reports/partners/billing/reconciliation/billed/export");
+            return await ExportAsync(tenant, data, options, link, cancellationToken);
+        }
+
+        private async Task<string?> ExportAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, string link, CancellationToken cancellationToken)
+        {
             string? location = null;
 
 
