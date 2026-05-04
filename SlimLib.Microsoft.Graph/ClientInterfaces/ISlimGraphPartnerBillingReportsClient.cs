@@ -8,6 +8,7 @@ namespace SlimLib.Microsoft.Graph
 {
     public interface ISlimGraphPartnerBillingReportsClient
     {
+        Task<string?> ExportUnbilledReconciliationAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
         Task<string?> ExportBilledReconciliationAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
         GraphOperation<JsonDocument?> GetOperationAsync(IAzureTenant tenant, string operationID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
