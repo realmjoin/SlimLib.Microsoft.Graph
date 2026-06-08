@@ -252,5 +252,12 @@ namespace SlimLib.Microsoft.Graph
 
             return new(this, tenant, HttpMethod.Post, link, options);
         }
+
+        GraphOperation ISlimGraphManagedDevicesClient.RotateBitLockerKeysAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/rotateBitLockerKeys");
+
+            return new(this, tenant, HttpMethod.Post, link, options);
+        }
     }
 }

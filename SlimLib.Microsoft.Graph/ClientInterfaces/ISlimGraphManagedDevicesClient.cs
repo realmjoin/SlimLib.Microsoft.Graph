@@ -49,5 +49,6 @@ namespace SlimLib.Microsoft.Graph
         GraphOperation<JsonDocument?> RetrieveMacOSManagedDeviceLocalAdminAccountDetailAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken = default);
         GraphOperation<JsonDocument?> GetFileVaultKeyAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken = default);
         GraphOperation RotateFileVaultKeyAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
+        GraphOperation RotateBitLockerKeysAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }
