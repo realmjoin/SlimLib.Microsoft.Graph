@@ -17,7 +17,7 @@ namespace SlimLib.Microsoft.Graph
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
-        GraphArrayOperation<JsonDocument> ISlimGraphPrivilegedAccessClient.GetRoleAssignmentsAsync(IAzureTenant tenant, Guid tenantID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        GraphArrayOperation<JsonDocument> ISlimGraphPrivilegedAccessClient.GetRoleAssignmentsAsync(IAzureTenant tenant, Guid tenantID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"privilegedAccess/aadRoles/resources/{tenantID}/roleAssignments");
 

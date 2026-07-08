@@ -16,7 +16,7 @@ namespace SlimLib.Microsoft.Graph
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
-        GraphArrayOperation<JsonDocument> ISlimGraphOrgContactsClient.GetOrgContactsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        GraphArrayOperation<JsonDocument> ISlimGraphOrgContactsClient.GetOrgContactsAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "contacts");
 

@@ -19,7 +19,7 @@ namespace SlimLib.Microsoft.Graph
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
-        GraphArrayOperation<JsonDocument> ISlimGraphDirectoryObjectsClient.GetObjectsAsync(IAzureTenant tenant, string type, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        GraphArrayOperation<JsonDocument> ISlimGraphDirectoryObjectsClient.GetObjectsAsync(IAzureTenant tenant, string type, ListRequestOptions? options, CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"directoryObjects/{type}");
 
@@ -38,7 +38,7 @@ namespace SlimLib.Microsoft.Graph
         GraphArrayOperation<Guid[]> ISlimGraphDirectoryObjectsClient.GetMemberObjectsAsync(IAzureTenant tenant, Guid objectID, bool securityEnabledOnly, InvokeRequestOptions? options, CancellationToken cancellationToken)
             => GetMemberObjectsImplAsync(tenant, "directoryObjects", objectID.ToString(), securityEnabledOnly, options, cancellationToken);
 
-        GraphArrayOperation<Guid[]> CheckMemberGroupsImplAsync(IAzureTenant tenant, string type, string id, ICollection<Guid> groupIDs, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        GraphArrayOperation<Guid[]> CheckMemberGroupsImplAsync(IAzureTenant tenant, string type, string id, ICollection<Guid> groupIDs, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"{type}/{id}/checkMemberGroups");
 
@@ -56,7 +56,7 @@ namespace SlimLib.Microsoft.Graph
             });
         }
 
-        GraphArrayOperation<Guid[]> GetMemberGroupsImplAsync(IAzureTenant tenant, string type, string id, bool securityEnabledOnly, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        GraphArrayOperation<Guid[]> GetMemberGroupsImplAsync(IAzureTenant tenant, string type, string id, bool securityEnabledOnly, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"{type}/{id}/getMemberGroups");
 
@@ -74,7 +74,7 @@ namespace SlimLib.Microsoft.Graph
             });
         }
 
-        GraphArrayOperation<Guid[]> CheckMemberObjectsImplAsync(IAzureTenant tenant, string type, string id, ICollection<Guid> ids, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        GraphArrayOperation<Guid[]> CheckMemberObjectsImplAsync(IAzureTenant tenant, string type, string id, ICollection<Guid> ids, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"{type}/{id}/checkMemberObjects");
 
@@ -92,7 +92,7 @@ namespace SlimLib.Microsoft.Graph
             });
         }
 
-        GraphArrayOperation<Guid[]> GetMemberObjectsImplAsync(IAzureTenant tenant, string type, string id, bool securityEnabledOnly, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        GraphArrayOperation<Guid[]> GetMemberObjectsImplAsync(IAzureTenant tenant, string type, string id, bool securityEnabledOnly, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"{type}/{id}/getMemberObjects");
 
