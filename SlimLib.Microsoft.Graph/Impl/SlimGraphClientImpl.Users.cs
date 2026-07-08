@@ -13,14 +13,14 @@ namespace SlimLib.Microsoft.Graph
     {
         GraphOperation<JsonDocument?> ISlimGraphUsersClient.GetUserAsync(IAzureTenant tenant, string userPrincipalName, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"users/{userPrincipalName}");
+            var link = ODataLinkBuilder.BuildLink(options, $"users/{userPrincipalName}");
 
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphOperation<JsonDocument?> ISlimGraphUsersClient.GetUserAsync(IAzureTenant tenant, Guid userID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"users/{userID}");
+            var link = ODataLinkBuilder.BuildLink(options, $"users/{userID}");
 
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
@@ -30,9 +30,9 @@ namespace SlimLib.Microsoft.Graph
             string link;
 
             if (string.IsNullOrEmpty(size))
-                link = BuildLink(options, $"users/{userID}/photo");
+                link = ODataLinkBuilder.BuildLink(options, $"users/{userID}/photo");
             else
-                link = BuildLink(options, $"users/{userID}/photos/{size}");
+                link = ODataLinkBuilder.BuildLink(options, $"users/{userID}/photos/{size}");
 
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
@@ -42,37 +42,37 @@ namespace SlimLib.Microsoft.Graph
             string link;
 
             if (string.IsNullOrEmpty(size))
-                link = BuildLink(options, $"users/{userID}/photo/$value");
+                link = ODataLinkBuilder.BuildLink(options, $"users/{userID}/photo/$value");
             else
-                link = BuildLink(options, $"users/{userID}/photos/{size}/$value");
+                link = ODataLinkBuilder.BuildLink(options, $"users/{userID}/photos/{size}/$value");
 
             return await GetPictureAsync(tenant, link, cancellationToken).ConfigureAwait(false);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphUsersClient.GetUserPhotosAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"users/{userID}/photos");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"users/{userID}/photos");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphUsersClient.GetUserAppRoleAssignmentsAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"users/{userID}/appRoleAssignments");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"users/{userID}/appRoleAssignments");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphUsersClient.GetUsersAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, "users");
+            var nextLink = ODataLinkBuilder.BuildLink(options, "users");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         Task<Results.Delta.DeltaResult<JsonElement>> ISlimGraphUsersClient.GetUsersDeltaAsync(IAzureTenant tenant, DeltaRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, "users/delta");
+            var nextLink = ODataLinkBuilder.BuildLink("users/delta", options?.Select, options?.Filter);
 
             return GetDeltaAsync(tenant, nextLink, options, cancellationToken);
         }
@@ -84,28 +84,28 @@ namespace SlimLib.Microsoft.Graph
 
         GraphArrayOperation<JsonDocument> ISlimGraphUsersClient.GetMemberOfAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"users/{userID}/memberOf");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"users/{userID}/memberOf");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphUsersClient.GetTransitiveMemberOfAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"users/{userID}/transitiveMemberOf");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"users/{userID}/transitiveMemberOf");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphUsersClient.GetOwnedDevicesAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"users/{userID}/ownedDevices");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"users/{userID}/ownedDevices");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphUsersClient.GetRegisteredDevicesAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"users/{userID}/registeredDevices");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"users/{userID}/registeredDevices");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }

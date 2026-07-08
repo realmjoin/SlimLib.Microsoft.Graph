@@ -12,28 +12,28 @@ namespace SlimLib.Microsoft.Graph
     {
         GraphOperation<JsonDocument?> ISlimGraphAdministrativeUnitsClient.AddMemberAsync(IAzureTenant tenant, Guid adminUnitID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"directory/administrativeUnits/{adminUnitID}/members");
+            var link = ODataLinkBuilder.BuildLink(options, $"directory/administrativeUnits/{adminUnitID}/members");
 
             return new(this, tenant, HttpMethod.Post, link, options, JsonSerializer.SerializeToUtf8Bytes(data), static doc => doc);
         }
 
         GraphOperation<JsonDocument?> ISlimGraphAdministrativeUnitsClient.GetMemberAsync(IAzureTenant tenant, Guid adminUnitID, Guid memberID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"directory/administrativeUnits/{adminUnitID}/members/{memberID}");
+            var link = ODataLinkBuilder.BuildLink(options, $"directory/administrativeUnits/{adminUnitID}/members/{memberID}");
 
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphAdministrativeUnitsClient.GetMembersAsync(IAzureTenant tenant, Guid adminUnitID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"directory/administrativeUnits/{adminUnitID}/members");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"directory/administrativeUnits/{adminUnitID}/members");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphAdministrativeUnitsClient.GetMembersAsync(IAzureTenant tenant, Guid adminUnitID, string type, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"directory/administrativeUnits/{adminUnitID}/members/{type}");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"directory/administrativeUnits/{adminUnitID}/members/{type}");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }

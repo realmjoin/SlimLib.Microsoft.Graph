@@ -15,28 +15,28 @@ namespace SlimLib.Microsoft.Graph
     {
         GraphOperation<JsonDocument?> ISlimGraphGroupsClient.CreateGroupAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, "groups");
+            var link = ODataLinkBuilder.BuildLink(options, "groups");
 
             return new(this, tenant, HttpMethod.Post, link, options, JsonSerializer.SerializeToUtf8Bytes(data), static doc => doc);
         }
 
         GraphOperation<JsonDocument?> ISlimGraphGroupsClient.GetGroupAsync(IAzureTenant tenant, Guid groupID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"groups/{groupID}");
+            var link = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}");
 
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphOperation<JsonDocument?> ISlimGraphGroupsClient.UpdateGroupAsync(IAzureTenant tenant, Guid groupID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"groups/{groupID}");
+            var link = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}");
 
             return new(this, tenant, HttpMethod.Patch, link, options, JsonSerializer.SerializeToUtf8Bytes(data), static doc => doc);
         }
 
         GraphOperation ISlimGraphGroupsClient.DeleteGroupAsync(IAzureTenant tenant, Guid groupID, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"groups/{groupID}");
+            var link = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}");
 
             return new(this, tenant, HttpMethod.Delete, link, options, default);
         }
@@ -46,9 +46,9 @@ namespace SlimLib.Microsoft.Graph
             string link;
 
             if (string.IsNullOrEmpty(size))
-                link = BuildLink(options, $"groups/{groupID}/photo");
+                link = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}/photo");
             else
-                link = BuildLink(options, $"groups/{groupID}/photos/{size}");
+                link = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}/photos/{size}");
 
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
@@ -58,30 +58,30 @@ namespace SlimLib.Microsoft.Graph
             string link;
 
             if (string.IsNullOrEmpty(size))
-                link = BuildLink(options, $"groups/{groupID}/photo/$value");
+                link = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}/photo/$value");
             else
-                link = BuildLink(options, $"groups/{groupID}/photos/{size}/$value");
+                link = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}/photos/{size}/$value");
 
             return await GetPictureAsync(tenant, link, cancellationToken).ConfigureAwait(false);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphGroupsClient.GetGroupPhotosAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"groups/{groupID}/photos");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}/photos");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphGroupsClient.GetGroupsAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, "groups");
+            var nextLink = ODataLinkBuilder.BuildLink(options, "groups");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         Task<Results.Delta.DeltaResult<JsonElement>> ISlimGraphGroupsClient.GetGroupsDeltaAsync(IAzureTenant tenant, DeltaRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, "groups/delta");
+            var nextLink = ODataLinkBuilder.BuildLink("groups/delta", options?.Select, options?.Filter);
 
             return GetDeltaAsync(tenant, nextLink, options, cancellationToken);
         }
@@ -93,42 +93,42 @@ namespace SlimLib.Microsoft.Graph
 
         GraphArrayOperation<JsonDocument> ISlimGraphGroupsClient.GetOwnersAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"groups/{groupID}/owners");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}/owners");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphGroupsClient.GetOwnersAsync(IAzureTenant tenant, Guid groupID, string type, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"groups/{groupID}/owners/{type}");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}/owners/{type}");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphGroupsClient.GetMembersAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"groups/{groupID}/members");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}/members");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphGroupsClient.GetMembersAsync(IAzureTenant tenant, Guid groupID, string type, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"groups/{groupID}/members/{type}");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}/members/{type}");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphGroupsClient.GetTransitiveMembersAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"groups/{groupID}/transitiveMembers");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}/transitiveMembers");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphGroupsClient.GetTransitiveMembersAsync(IAzureTenant tenant, Guid groupID, string type, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"groups/{groupID}/transitiveMembers/{type}");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}/transitiveMembers/{type}");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
@@ -192,21 +192,21 @@ namespace SlimLib.Microsoft.Graph
 
         GraphArrayOperation<JsonDocument> ISlimGraphGroupsClient.GetMemberOfAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"groups/{groupID}/memberOf");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}/memberOf");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphGroupsClient.GetTransitiveMemberOfAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"groups/{groupID}/transitiveMemberOf");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}/transitiveMemberOf");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphOperation<JsonDocument?> ISlimGraphGroupsClient.AddMemberAsync(IAzureTenant tenant, Guid groupID, TypedMember member, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"groups/{groupID}/members/$ref");
+            var link = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}/members/$ref");
 
             var data = new JsonObject
             {
@@ -218,7 +218,7 @@ namespace SlimLib.Microsoft.Graph
 
         GraphOperation<JsonDocument?> ISlimGraphGroupsClient.AddMembersAsync(IAzureTenant tenant, Guid groupID, IEnumerable<TypedMember> members, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"groups/{groupID}");
+            var link = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}");
 
             var data = new JsonObject
             {
@@ -230,7 +230,7 @@ namespace SlimLib.Microsoft.Graph
 
         GraphOperation ISlimGraphGroupsClient.RemoveMemberAsync(IAzureTenant tenant, Guid groupID, Guid memberID, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"groups/{groupID}/members/{memberID}/$ref");
+            var link = ODataLinkBuilder.BuildLink(options, $"groups/{groupID}/members/{memberID}/$ref");
 
             return new(this, tenant, HttpMethod.Delete, link, options, default);
         }

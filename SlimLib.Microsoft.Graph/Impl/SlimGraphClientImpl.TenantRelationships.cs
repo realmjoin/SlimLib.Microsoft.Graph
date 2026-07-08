@@ -10,7 +10,7 @@ namespace SlimLib.Microsoft.Graph
     {
         GraphArrayOperation<JsonDocument> ISlimGraphTenantRelationshipsClient.GetDelegatedAdminRelationshipsAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, "tenantRelationships/delegatedAdminRelationships");
+            var nextLink = ODataLinkBuilder.BuildLink(options, "tenantRelationships/delegatedAdminRelationships");
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
     }

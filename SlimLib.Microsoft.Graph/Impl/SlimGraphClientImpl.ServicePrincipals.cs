@@ -11,28 +11,28 @@ namespace SlimLib.Microsoft.Graph
     {
         GraphOperation<JsonDocument?> ISlimGraphServicePrincipalsClient.GetServicePrincipalAsync(IAzureTenant tenant, Guid servicePrincipalID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"servicePrincipals/{servicePrincipalID}");
+            var link = ODataLinkBuilder.BuildLink(options, $"servicePrincipals/{servicePrincipalID}");
 
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphServicePrincipalsClient.GetServicePrincipalsAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, "servicePrincipals");
+            var nextLink = ODataLinkBuilder.BuildLink(options, "servicePrincipals");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphServicePrincipalsClient.GetAppRoleAssignmentsAsync(IAzureTenant tenant, Guid servicePrincipalID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"servicePrincipals/{servicePrincipalID}/appRoleAssignments");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"servicePrincipals/{servicePrincipalID}/appRoleAssignments");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphServicePrincipalsClient.GetAppRoleAssignedToAsync(IAzureTenant tenant, Guid servicePrincipalID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"servicePrincipals/{servicePrincipalID}/appRoleAssignedTo");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"servicePrincipals/{servicePrincipalID}/appRoleAssignedTo");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }

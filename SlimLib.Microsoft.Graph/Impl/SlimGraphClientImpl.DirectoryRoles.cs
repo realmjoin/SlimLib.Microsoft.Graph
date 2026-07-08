@@ -11,21 +11,21 @@ namespace SlimLib.Microsoft.Graph
     {
         GraphOperation<JsonDocument?> ISlimGraphDirectoryRolesClient.GetDirectoryRoleAsync(IAzureTenant tenant, Guid directoryRoleID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"directoryRoles/{directoryRoleID}");
+            var link = ODataLinkBuilder.BuildLink(options, $"directoryRoles/{directoryRoleID}");
 
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphDirectoryRolesClient.GetDirectoryRolesAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, "directoryRoles");
+            var nextLink = ODataLinkBuilder.BuildLink(options, "directoryRoles");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphDirectoryRolesClient.GetMembersAsync(IAzureTenant tenant, Guid directoryRoleID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"directoryRoles/{directoryRoleID}/members");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"directoryRoles/{directoryRoleID}/members");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }

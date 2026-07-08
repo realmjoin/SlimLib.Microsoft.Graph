@@ -15,13 +15,13 @@ namespace SlimLib.Microsoft.Graph
 
         async Task<string?> ISlimGraphPartnerBillingReportsClient.ExportUnbilledReconciliationAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, "reports/partners/billing/reconciliation/unbilled/export");
+            var link = ODataLinkBuilder.BuildLink(options, "reports/partners/billing/reconciliation/unbilled/export");
             return await ExportAsync(tenant, data, options, link, cancellationToken);
         }
 
         async Task<string?> ISlimGraphPartnerBillingReportsClient.ExportBilledReconciliationAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, "reports/partners/billing/reconciliation/billed/export");
+            var link = ODataLinkBuilder.BuildLink(options, "reports/partners/billing/reconciliation/billed/export");
             return await ExportAsync(tenant, data, options, link, cancellationToken);
         }
 
@@ -44,7 +44,7 @@ namespace SlimLib.Microsoft.Graph
 
         GraphOperation<JsonDocument?> ISlimGraphPartnerBillingReportsClient.GetOperationAsync(IAzureTenant tenant, string operationID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"reports/partners/billing/operations/{operationID}");
+            var link = ODataLinkBuilder.BuildLink(options, $"reports/partners/billing/operations/{operationID}");
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
     }

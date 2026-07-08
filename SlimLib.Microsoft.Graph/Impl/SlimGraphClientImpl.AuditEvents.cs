@@ -11,14 +11,14 @@ namespace SlimLib.Microsoft.Graph
     {
         GraphOperation<JsonDocument?> ISlimGraphAuditEventsClient.GetAuditEventAsync(IAzureTenant tenant, Guid auditEventID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"deviceManagement/auditEvents/{auditEventID}");
+            var link = ODataLinkBuilder.BuildLink(options, $"deviceManagement/auditEvents/{auditEventID}");
 
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphAuditEventsClient.GetAuditEventsAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, "deviceManagement/auditEvents");
+            var nextLink = ODataLinkBuilder.BuildLink(options, "deviceManagement/auditEvents");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }

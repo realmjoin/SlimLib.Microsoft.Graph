@@ -4,25 +4,15 @@ using System.Net;
 
 namespace SlimLib.Microsoft.Graph
 {
-    public class SlimGraphException : Exception
+    [Obsolete("Use SlimApiException from SlimLib.Auth.Azure instead.")]
+    public class SlimGraphException : SlimApiException
     {
-        internal SlimGraphException(HttpStatusCode httpStatusCode, IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers, string graphErrorCode, string graphErrorMessage) : base(FormatErrorMessage(graphErrorCode, graphErrorMessage))
+        internal SlimGraphException(HttpStatusCode httpStatusCode, IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers, string graphErrorCode, string graphErrorMessage)
+            : base(httpStatusCode, headers, graphErrorCode, graphErrorMessage)
         {
-            HttpStatusCode = httpStatusCode;
-            Headers = headers;
-            GraphErrorCode = graphErrorCode;
         }
 
-        public HttpStatusCode HttpStatusCode { get; }
-        public IEnumerable<KeyValuePair<string, IEnumerable<string>>> Headers { get; }
-        public string GraphErrorCode { get; }
-
-        private static string FormatErrorMessage(string graphErrorCode, string graphErrorMessage)
-        {
-            if (string.IsNullOrEmpty(graphErrorMessage))
-                return graphErrorCode;
-
-            return $"{graphErrorCode}: {graphErrorMessage}";
-        }
+        [Obsolete("Use ErrorCode instead.")]
+        public string GraphErrorCode => ErrorCode;
     }
 }

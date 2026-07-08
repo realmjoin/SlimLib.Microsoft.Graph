@@ -10,7 +10,7 @@ namespace SlimLib.Microsoft.Graph
     {
         GraphOperation<JsonDocument?> ISlimGraphWindowsDeviceUpdatesClient.GetEnrollmentStateAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"admin/windows/updates/updatableAssets/{deviceID}");
+            var link = ODataLinkBuilder.BuildLink(options, $"admin/windows/updates/updatableAssets/{deviceID}");
 
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }

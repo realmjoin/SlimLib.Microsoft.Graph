@@ -10,21 +10,21 @@ namespace SlimLib.Microsoft.Graph
     {
         GraphOperation<JsonDocument?> ISlimGraphDetectedAppsClient.GetDetectedAppAsync(IAzureTenant tenant, string appID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"deviceManagement/detectedApps/{appID}");
+            var link = ODataLinkBuilder.BuildLink(options, $"deviceManagement/detectedApps/{appID}");
 
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphDetectedAppsClient.GetDetectedAppsAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, "deviceManagement/detectedApps");
+            var nextLink = ODataLinkBuilder.BuildLink(options, "deviceManagement/detectedApps");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphDetectedAppsClient.GetManagedDevicesAsync(IAzureTenant tenant, string appID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"deviceManagement/detectedApps/{appID}/managedDevices");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"deviceManagement/detectedApps/{appID}/managedDevices");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }

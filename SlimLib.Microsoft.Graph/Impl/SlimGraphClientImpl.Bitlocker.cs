@@ -10,13 +10,13 @@ namespace SlimLib.Microsoft.Graph
     {
         GraphArrayOperation<JsonDocument> ISlimGraphBitLockerClient.GetRecoveryKeysAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, "informationProtection/bitlocker/recoveryKeys");
+            var nextLink = ODataLinkBuilder.BuildLink(options, "informationProtection/bitlocker/recoveryKeys");
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphOperation<JsonDocument?> ISlimGraphBitLockerClient.GetRecoveryKeyAsync(IAzureTenant tenant, string bitlockeryRecoveryKeyId, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"informationProtection/bitlocker/recoveryKeys/{bitlockeryRecoveryKeyId}");
+            var link = ODataLinkBuilder.BuildLink(options, $"informationProtection/bitlocker/recoveryKeys/{bitlockeryRecoveryKeyId}");
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
     }

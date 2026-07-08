@@ -12,21 +12,21 @@ namespace SlimLib.Microsoft.Graph
     {
         GraphOperation<JsonDocument?> ISlimGraphPrivilegedAccessClient.GetResourceAsync(IAzureTenant tenant, Guid tenantID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"privilegedAccess/aadRoles/resources/{tenantID}");
+            var link = ODataLinkBuilder.BuildLink(options, $"privilegedAccess/aadRoles/resources/{tenantID}");
 
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphPrivilegedAccessClient.GetRoleAssignmentsAsync(IAzureTenant tenant, Guid tenantID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"privilegedAccess/aadRoles/resources/{tenantID}/roleAssignments");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"privilegedAccess/aadRoles/resources/{tenantID}/roleAssignments");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphOperation<JsonDocument?> ISlimGraphPrivilegedAccessClient.CreateRoleAssignmentRequestAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, "privilegedAccess/aadRoles/roleAssignmentRequests");
+            var link = ODataLinkBuilder.BuildLink(options, "privilegedAccess/aadRoles/roleAssignmentRequests");
 
             return new(this, tenant, HttpMethod.Post, link, options, JsonSerializer.SerializeToUtf8Bytes(data), static doc => doc);
         }

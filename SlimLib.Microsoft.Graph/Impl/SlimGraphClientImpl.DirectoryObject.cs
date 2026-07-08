@@ -14,14 +14,14 @@ namespace SlimLib.Microsoft.Graph
     {
         GraphOperation<JsonDocument?> ISlimGraphDirectoryObjectsClient.GetObjectAsync(IAzureTenant tenant, Guid objectID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
-            var link = BuildLink(options, $"directoryObjects/{objectID}");
+            var link = ODataLinkBuilder.BuildLink(options, $"directoryObjects/{objectID}");
 
             return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphDirectoryObjectsClient.GetObjectsAsync(IAzureTenant tenant, string type, ListRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"directoryObjects/{type}");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"directoryObjects/{type}");
 
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
@@ -40,7 +40,7 @@ namespace SlimLib.Microsoft.Graph
 
         GraphArrayOperation<Guid[]> CheckMemberGroupsImplAsync(IAzureTenant tenant, string type, string id, ICollection<Guid> groupIDs, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"{type}/{id}/checkMemberGroups");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"{type}/{id}/checkMemberGroups");
 
             var data = new JsonObject
             {
@@ -58,7 +58,7 @@ namespace SlimLib.Microsoft.Graph
 
         GraphArrayOperation<Guid[]> GetMemberGroupsImplAsync(IAzureTenant tenant, string type, string id, bool securityEnabledOnly, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"{type}/{id}/getMemberGroups");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"{type}/{id}/getMemberGroups");
 
             var data = new JsonObject
             {
@@ -76,7 +76,7 @@ namespace SlimLib.Microsoft.Graph
 
         GraphArrayOperation<Guid[]> CheckMemberObjectsImplAsync(IAzureTenant tenant, string type, string id, ICollection<Guid> ids, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"{type}/{id}/checkMemberObjects");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"{type}/{id}/checkMemberObjects");
 
             var data = new JsonObject
             {
@@ -94,7 +94,7 @@ namespace SlimLib.Microsoft.Graph
 
         GraphArrayOperation<Guid[]> GetMemberObjectsImplAsync(IAzureTenant tenant, string type, string id, bool securityEnabledOnly, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = BuildLink(options, $"{type}/{id}/getMemberObjects");
+            var nextLink = ODataLinkBuilder.BuildLink(options, $"{type}/{id}/getMemberObjects");
 
             var data = new JsonObject
             {

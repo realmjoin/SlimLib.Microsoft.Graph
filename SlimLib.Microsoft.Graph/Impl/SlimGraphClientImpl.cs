@@ -214,6 +214,8 @@ namespace SlimLib.Microsoft.Graph
             return await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
+#pragma warning disable CS0618 // SlimGraphException is intentionally thrown for backward compatibility
+
         private static SlimGraphException HandleError(HttpStatusCode statusCode, IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers, JsonDocument? root)
         {
             try
@@ -281,15 +283,17 @@ namespace SlimLib.Microsoft.Graph
                         }
 
                         if (error is { ValueKind: JsonValueKind.Object })
-                            return new(http, headers, error.GetProperty("code").GetString() ?? "", error.GetProperty("message").GetString() ?? "");
+                            return new SlimGraphException(http, headers, error.GetProperty("code").GetString() ?? "", error.GetProperty("message").GetString() ?? "");
                         else
-                            return new(http, headers, "Unkown error", "");
+                            return new SlimGraphException(http, headers, "Unkown error", "");
                     }
                 }
             }
 
             return null;
         }
+
+#pragma warning restore CS0618
 
         private static void HandleNextLink(JsonElement root, ref string? nextLink)
         {
@@ -315,67 +319,7 @@ namespace SlimLib.Microsoft.Graph
             }
         }
 
-        private static string BuildLink(ScalarRequestOptions? options, string call)
-        {
-            var args = new List<string>();
 
-            if (options?.Select != null)
-                args.Add("$select=" + Uri.EscapeDataString(string.Join(",", options.Select)));
-
-            if (options?.Expand != null)
-                args.Add("$expand=" + Uri.EscapeDataString(options.Expand));
-
-            return RequestOptions.BuildLink(call, args);
-        }
-
-        private static string BuildLink(ListRequestOptions? options, string call)
-        {
-            var args = new List<string>();
-
-            if (options?.Select.Count > 0)
-                args.Add("$select=" + Uri.EscapeDataString(string.Join(",", options.Select)));
-
-            if (options?.Filter != null)
-                args.Add("$filter=" + Uri.EscapeDataString(options.Filter));
-
-            if (options?.Search != null)
-                args.Add("$search=" + Uri.EscapeDataString(options.Search));
-
-            if (options?.Expand != null)
-                args.Add("$expand=" + Uri.EscapeDataString(options.Expand));
-
-            if (options?.OrderBy.Count > 0)
-                args.Add("$orderby=" + Uri.EscapeDataString(string.Join(",", options.OrderBy)));
-
-            if (options?.Count != null)
-                args.Add("$count=" + (options.Count.Value ? "true" : "false"));
-
-            if (options?.Skip != null)
-                args.Add("$skip=" + options.Skip);
-
-            if (options?.Top != null)
-                args.Add("$top=" + options.Top);
-
-            return RequestOptions.BuildLink(call, args);
-        }
-
-        private static string BuildLink(InvokeRequestOptions? options, string call)
-        {
-            return RequestOptions.BuildLink(call, Enumerable.Empty<string>());
-        }
-
-        private static string BuildLink(DeltaRequestOptions? options, string call)
-        {
-            var args = new List<string>();
-
-            if (options?.Select != null)
-                args.Add("$select=" + Uri.EscapeDataString(string.Join(",", options.Select)));
-
-            if (options?.Filter != null)
-                args.Add("$filter=" + Uri.EscapeDataString(options.Filter));
-
-            return RequestOptions.BuildLink(call, args);
-        }
 
         Task<JsonDocument?> ISlimHttpClient.GetAsync(IAzureTenant tenant, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
             => GetAsync(tenant, requestUri, options, cancellationToken);
