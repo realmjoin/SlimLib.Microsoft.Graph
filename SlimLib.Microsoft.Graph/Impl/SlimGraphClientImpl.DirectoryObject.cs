@@ -16,14 +16,14 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"directoryObjects/{objectID}");
 
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphDirectoryObjectsClient.GetObjectsAsync(IAzureTenant tenant, string type, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"directoryObjects/{type}");
 
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<Guid[]> ISlimGraphDirectoryObjectsClient.CheckMemberGroupsAsync(IAzureTenant tenant, Guid objectID, ICollection<Guid> groupIDs, InvokeRequestOptions? options, CancellationToken cancellationToken)

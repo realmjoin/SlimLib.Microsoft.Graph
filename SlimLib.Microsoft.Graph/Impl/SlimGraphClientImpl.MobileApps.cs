@@ -15,7 +15,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}");
 
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphOperation<JsonDocument?> ISlimGraphMobileAppsClient.CreateMobileAppAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
@@ -36,7 +36,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}");
 
-            return new(this, tenant, HttpMethod.Delete, link, options);
+            return new(this, tenant, HttpMethod.Delete, link, options, default);
         }
 
 
@@ -44,14 +44,14 @@ namespace SlimLib.Microsoft.Graph
         {
             var nextLink = BuildLink(options, "deviceAppManagement/mobileApps");
 
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphMobileAppsClient.GetMobileAppAssignmentsAsync(IAzureTenant tenant, Guid appID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}/assignments");
 
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
 
@@ -59,7 +59,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}/{type}/contentVersions/{mobileAppContentID}");
 
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         async Task<string> ISlimGraphMobileAppsClient.CreateMobileAppContentAsync(IAzureTenant tenant, Guid appID, string type, InvokeRequestOptions? options, CancellationToken cancellationToken)
@@ -86,7 +86,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}/{type}/contentVersions/{mobileAppContentID}/files/{mobileAppContentFileID}");
 
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         async Task<JsonDocument?> ISlimGraphMobileAppsClient.CreateMobileAppContentFilesAsync(IAzureTenant tenant, Guid appID, string type, string mobileAppContentID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
@@ -113,7 +113,7 @@ namespace SlimLib.Microsoft.Graph
         GraphOperation<JsonDocument?> ISlimGraphMobileAppsClient.GetMobileAppCategoryAsync(IAzureTenant tenant, Guid appCategoryID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceAppManagement/mobileAppCategories/{appCategoryID}");
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphOperation<JsonDocument?> ISlimGraphMobileAppsClient.CreateMobileAppCategoryAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
@@ -131,13 +131,13 @@ namespace SlimLib.Microsoft.Graph
         GraphOperation ISlimGraphMobileAppsClient.DeleteMobileAppCategoryAsync(IAzureTenant tenant, Guid appCategoryID, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceAppManagement/mobileAppCategories/{appCategoryID}");
-            return new(this, tenant, HttpMethod.Delete, link, options);
+            return new(this, tenant, HttpMethod.Delete, link, options, default);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphMobileAppsClient.GetMobileAppCategoriesAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "deviceAppManagement/mobileAppCategories");
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphOperation ISlimGraphMobileAppsClient.AssignCategoryToMobileAppAsync(IAzureTenant tenant, Guid appID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
@@ -149,7 +149,7 @@ namespace SlimLib.Microsoft.Graph
         GraphOperation ISlimGraphMobileAppsClient.RemoveCategoryFromMobileAppAsync(IAzureTenant tenant, Guid appID, Guid appCategoryID, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceAppManagement/mobileApps/{appID}/categories/{appCategoryID}/$ref");
-            return new(this, tenant, HttpMethod.Delete, link, options);
+            return new(this, tenant, HttpMethod.Delete, link, options, default);
         }
     }
 }

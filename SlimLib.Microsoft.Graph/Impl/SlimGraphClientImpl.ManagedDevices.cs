@@ -37,7 +37,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}");
 
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         [Obsolete("This API is limited to 50 items and does not support paging. Use /beta/deviceManagement/manageddevices/xxx?$expand=detectedApps as alternative.")]
@@ -45,14 +45,14 @@ namespace SlimLib.Microsoft.Graph
         {
             var nextLink = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/detectedApps");
 
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<Guid[]> ISlimGraphManagedDevicesClient.GetManagedDeviceUsersAsync(IAzureTenant tenant, Guid deviceID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/users");
 
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc =>
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc =>
             {
                 using (doc)
                 {
@@ -65,21 +65,21 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceManagement/managedDeviceOverview");
 
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphManagedDevicesClient.GetManagedDevicesAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "deviceManagement/managedDevices");
 
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphManagedDevicesClient.GetManagedDeviceEncryptionStatesAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "deviceManagement/managedDeviceEncryptionStates");
 
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
 
@@ -87,21 +87,21 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceManagement/windowsAutopilotDeviceIdentities/{identityID}");
 
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphManagedDevicesClient.GetWindowsAutopilotDeviceIdentitiesAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "deviceManagement/windowsAutopilotDeviceIdentities");
 
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
         GraphOperation<JsonDocument?> ISlimGraphManagedDevicesClient.GetImportedWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, Guid identityID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/importedWindowsAutopilotDeviceIdentities/{identityID}");
 
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphManagedDevicesClient.ImportWindowsAutopilotDeviceIdentityAsync(IAzureTenant tenant, ICollection<JsonObject> identities, InvokeRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -120,7 +120,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceManagement/windowsAutopilotDeviceIdentities/{identityID}");
 
-            return new(this, tenant, HttpMethod.Delete, link, options);
+            return new(this, tenant, HttpMethod.Delete, link, options, default);
         }
 
 
@@ -135,12 +135,12 @@ namespace SlimLib.Microsoft.Graph
         {
             var nextLink = BuildLink(options, "deviceManagement/deviceHealthScripts");
 
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
         GraphOperation<JsonDocument?> ISlimGraphManagedDevicesClient.GetDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}");
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
         GraphOperation<JsonDocument?> ISlimGraphManagedDevicesClient.CreateDeviceHealthScriptAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
@@ -155,7 +155,7 @@ namespace SlimLib.Microsoft.Graph
         GraphOperation ISlimGraphManagedDevicesClient.DeleteDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}");
-            return new(this, tenant, HttpMethod.Delete, link, options);
+            return new(this, tenant, HttpMethod.Delete, link, options, default);
         }
         GraphOperation ISlimGraphManagedDevicesClient.AssignDeviceHealthScriptAsync(IAzureTenant tenant, string deviceHealthScriptId, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
@@ -166,18 +166,18 @@ namespace SlimLib.Microsoft.Graph
         {
             var nextLink = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}/assignments");
 
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
         GraphArrayOperation<JsonDocument> ISlimGraphManagedDevicesClient.GetDeviceAndAppManagementAssignmentFiltersAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "deviceManagement/assignmentFilters");
 
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
         GraphOperation<JsonDocument?> ISlimGraphManagedDevicesClient.GetDeviceAndAppManagementAssignmentFilterAsync(IAzureTenant tenant, string deviceAndAppManagementAssignmentFilterId, InvokeRequestOptions? options, System.Threading.CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/assignmentFilters/{deviceAndAppManagementAssignmentFilterId}");
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
         GraphOperation<JsonDocument?> ISlimGraphManagedDevicesClient.CreateDeviceAndAppManagementAssignmentFilterAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
@@ -192,17 +192,17 @@ namespace SlimLib.Microsoft.Graph
         GraphOperation ISlimGraphManagedDevicesClient.DeleteDeviceAndAppManagementAssignmentFilterAsync(IAzureTenant tenant, string deviceAndAppManagementAssignmentFilterId, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/assignmentFilters/{deviceAndAppManagementAssignmentFilterId}");
-            return new(this, tenant, HttpMethod.Delete, link, options);
+            return new(this, tenant, HttpMethod.Delete, link, options, default);
         }
         GraphOperation<JsonDocument?> ISlimGraphManagedDevicesClient.GetDeviceHealthScriptRemediationHistoryAsync(IAzureTenant tenant, string deviceHealthScriptId, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}/getRemediationHistory");
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
         GraphOperation<JsonDocument?> ISlimGraphManagedDevicesClient.GetDeviceHealthScriptRunSummaryAsync(IAzureTenant tenant, string deviceHealthScriptId, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}/runSummary");
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
         GraphOperation ISlimGraphManagedDevicesClient.InitiateOnDemandProactiveRemediationAsync(IAzureTenant tenant, Guid deviceID, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
@@ -213,51 +213,51 @@ namespace SlimLib.Microsoft.Graph
         GraphArrayOperation<JsonDocument> ISlimGraphManagedDevicesClient.GetRemoteActionAuditsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"deviceManagement/remoteActionAudits");
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
         GraphArrayOperation<JsonDocument> ISlimGraphManagedDevicesClient.GetDeviceHealthScriptStatesAsync(IAzureTenant tenant, Guid deviceID, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/deviceHealthScriptStates");
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
         GraphArrayOperation<JsonDocument> ISlimGraphManagedDevicesClient.GetDeviceRunStatesAsync(IAzureTenant tenant, string deviceHealthScriptId, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, $"deviceManagement/deviceHealthScripts/{deviceHealthScriptId}/deviceRunStates");
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
         GraphOperation ISlimGraphManagedDevicesClient.RotateLocalAdminPasswordAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/rotateLocalAdminPassword");
 
-            return new(this, tenant, HttpMethod.Post, link, options);
+            return new(this, tenant, HttpMethod.Post, link, options, default);
         }
 
         GraphOperation<JsonDocument?> ISlimGraphManagedDevicesClient.RetrieveMacOSManagedDeviceLocalAdminAccountDetailAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/retrieveMacOSManagedDeviceLocalAdminAccountDetail");
 
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphOperation<JsonDocument?> ISlimGraphManagedDevicesClient.GetFileVaultKeyAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/getFileVaultKey");
 
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphOperation ISlimGraphManagedDevicesClient.RotateFileVaultKeyAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/rotateFileVaultKey");
 
-            return new(this, tenant, HttpMethod.Post, link, options);
+            return new(this, tenant, HttpMethod.Post, link, options, default);
         }
 
         GraphOperation ISlimGraphManagedDevicesClient.RotateBitLockerKeysAsync(IAzureTenant tenant, Guid deviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"deviceManagement/managedDevices/{deviceID}/rotateBitLockerKeys");
 
-            return new(this, tenant, HttpMethod.Post, link, options);
+            return new(this, tenant, HttpMethod.Post, link, options, default);
         }
     }
 }

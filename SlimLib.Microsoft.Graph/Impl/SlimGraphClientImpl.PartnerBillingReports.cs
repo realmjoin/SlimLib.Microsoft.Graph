@@ -45,7 +45,7 @@ namespace SlimLib.Microsoft.Graph
         GraphOperation<JsonDocument?> ISlimGraphPartnerBillingReportsClient.GetOperationAsync(IAzureTenant tenant, string operationID, ScalarRequestOptions? options, CancellationToken cancellationToken)
         {
             var link = BuildLink(options, $"reports/partners/billing/operations/{operationID}");
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
     }
 }

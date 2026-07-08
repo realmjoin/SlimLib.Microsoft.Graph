@@ -13,14 +13,14 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"deviceManagement/auditEvents/{auditEventID}");
 
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphAuditEventsClient.GetAuditEventsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "deviceManagement/auditEvents");
 
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
     }
 }

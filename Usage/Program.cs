@@ -96,7 +96,7 @@ namespace Usage
                                 Console.WriteLine($"Devices: {operations[2].Result} (direct)");
                                 Console.WriteLine($"Groups: {operations[3].Result} (direct)");
                                 Console.WriteLine($"Other: {operations[4].Result} (direct)");
-                                Console.WriteLine($"Error: {operations[5].Error}");
+                                Console.WriteLine($"Error: {operations[5].Error as SlimGraphException}");
                             }
                         }
                     }

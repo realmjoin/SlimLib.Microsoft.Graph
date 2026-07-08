@@ -13,14 +13,14 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"directory/deviceLocalCredentials/{deviceID}");
 
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphDeviceLocalCredentialsClient.GetDeviceLocalCredentialsAsync(IAzureTenant tenant, ListRequestOptions? options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var nextLink = BuildLink(options, "directory/deviceLocalCredentials");
 
-            return new(this, tenant, HttpMethod.Get, nextLink, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
     }
 }

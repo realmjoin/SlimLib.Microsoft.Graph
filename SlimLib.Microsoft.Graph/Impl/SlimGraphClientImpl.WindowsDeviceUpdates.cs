@@ -12,7 +12,7 @@ namespace SlimLib.Microsoft.Graph
         {
             var link = BuildLink(options, $"admin/windows/updates/updatableAssets/{deviceID}");
 
-            return new(this, tenant, HttpMethod.Get, link, options, static doc => doc);
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
     }
 }

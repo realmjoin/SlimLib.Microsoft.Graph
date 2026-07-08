@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace SlimLib.Microsoft.Graph
 {
-    internal sealed partial class SlimGraphClientImpl : ISlimGraphAdministrativeUnitsClient, ISlimGraphApplicationsClient, ISlimGraphAuditEventsClient, ISlimGraphAuditLogsClient, ISlimGraphDeviceManagementReportsClient, ISlimGraphOrganizationsClient, ISlimGraphOrgContactsClient, ISlimGraphDevicesClient, ISlimGraphDirectoryRolesClient, ISlimGraphDetectedAppsClient, ISlimGraphMobileAppsClient, ISlimGraphManagedDevicesClient, ISlimGraphGroupsClient, ISlimGraphSubscribedSkusClient, ISlimGraphServicePrincipalsClient, ISlimGraphPrivilegedAccessClient, ISlimGraphUsersClient, ISlimGraphDeviceLocalCredentialsClient, ISlimGraphPartnerBillingReportsClient, ISlimGraphTenantRelationshipsClient, ISlimGraphBitLockerClient, ISlimGraphWindowsDeviceUpdatesClient
+    internal sealed partial class SlimGraphClientImpl : ISlimHttpClient, ISlimGraphAdministrativeUnitsClient, ISlimGraphApplicationsClient, ISlimGraphAuditEventsClient, ISlimGraphAuditLogsClient, ISlimGraphDeviceManagementReportsClient, ISlimGraphOrganizationsClient, ISlimGraphOrgContactsClient, ISlimGraphDevicesClient, ISlimGraphDirectoryRolesClient, ISlimGraphDetectedAppsClient, ISlimGraphMobileAppsClient, ISlimGraphManagedDevicesClient, ISlimGraphGroupsClient, ISlimGraphSubscribedSkusClient, ISlimGraphServicePrincipalsClient, ISlimGraphPrivilegedAccessClient, ISlimGraphUsersClient, ISlimGraphDeviceLocalCredentialsClient, ISlimGraphPartnerBillingReportsClient, ISlimGraphTenantRelationshipsClient, ISlimGraphBitLockerClient, ISlimGraphWindowsDeviceUpdatesClient
     {
         private readonly IAuthenticationProvider authenticationProvider;
         private readonly HttpClient httpClient;
@@ -79,9 +79,9 @@ namespace SlimLib.Microsoft.Graph
                     ["url"] = operation.RequestUrl,
                 };
 
-                if (operation.BatchDependsOn is not null)
+                if (operation.DependsOn is not null)
                 {
-                    request["dependsOn"] = JsonSerializer.SerializeToNode(operation.BatchDependsOn);
+                    request["dependsOn"] = JsonSerializer.SerializeToNode(operation.DependsOn);
                 }
 
                 operation.Options?.ConfigureBatchRequest(request);
@@ -105,7 +105,7 @@ namespace SlimLib.Microsoft.Graph
                     }
                     else if (item.TryGetProperty("body", out var body))
                     {
-                        operations[j].SetBatchResult(body);
+                        operations[j].SetResultBatch(body);
                     }
                 }
 
@@ -376,5 +376,20 @@ namespace SlimLib.Microsoft.Graph
 
             return RequestOptions.BuildLink(call, args);
         }
+
+        Task<JsonDocument?> ISlimHttpClient.GetAsync(IAzureTenant tenant, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
+            => GetAsync(tenant, requestUri, options, cancellationToken);
+
+        Task<JsonDocument?> ISlimHttpClient.PostAsync(IAzureTenant tenant, string requestUri, ReadOnlyMemory<byte> utf8Data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+            => PostAsync(tenant, requestUri, utf8Data, options, cancellationToken);
+
+        Task<JsonDocument?> ISlimHttpClient.PatchAsync(IAzureTenant tenant, string requestUri, ReadOnlyMemory<byte> utf8Data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+            => PatchAsync(tenant, requestUri, utf8Data, options, cancellationToken);
+
+        Task ISlimHttpClient.DeleteAsync(IAzureTenant tenant, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
+            => DeleteAsync(tenant, requestUri, options, cancellationToken);
+
+        IAsyncEnumerable<JsonDocument> ISlimHttpClient.GetArrayAsync(IAzureTenant tenant, string requestUri, InvokeRequestOptions? options, CancellationToken cancellationToken)
+            => GetArrayAsync(tenant, requestUri, options, cancellationToken);
     }
 }
