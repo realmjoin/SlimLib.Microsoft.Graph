@@ -210,7 +210,7 @@ namespace SlimLib.Microsoft.Graph
 
             var data = new JsonObject
             {
-                ["@odata.id"] = "" + httpClient.BaseAddress + member
+                ["@odata.id"] = "" + HttpClient.BaseAddress + member
             };
 
             return new(this, tenant, HttpMethod.Post, link, options, JsonSerializer.SerializeToUtf8Bytes(data), static doc => doc);
@@ -222,7 +222,7 @@ namespace SlimLib.Microsoft.Graph
 
             var data = new JsonObject
             {
-                ["members@odata.bind"] = new JsonArray(members.Select(x => JsonValue.Create("" + httpClient.BaseAddress + x)).ToArray())
+                ["members@odata.bind"] = new JsonArray(members.Select(x => JsonValue.Create("" + HttpClient.BaseAddress + x)).ToArray())
             };
 
             return new(this, tenant, HttpMethod.Patch, link, options, JsonSerializer.SerializeToUtf8Bytes(data), static doc => doc);
