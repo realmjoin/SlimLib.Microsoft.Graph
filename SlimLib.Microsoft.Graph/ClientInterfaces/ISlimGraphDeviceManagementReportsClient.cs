@@ -11,5 +11,6 @@ namespace SlimLib.Microsoft.Graph
     {
         GraphOperation<JsonDocument?> GetDeviceInstallStatusByAppAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
         GraphOperation<JsonDocument?> GetUserInstallStatusAggregateByAppAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
+        GraphOperation<JsonDocument?> GetDevicePoliciesComplianceReportAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
     }
 }
