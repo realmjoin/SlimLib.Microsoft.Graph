@@ -37,5 +37,20 @@ namespace SlimLib.Microsoft.Graph
 
             return new(this, tenant, HttpMethod.Post, link, options, JsonSerializer.SerializeToUtf8Bytes(data), static doc => doc);
         }
+
+        GraphOperation<JsonDocument?> ISlimGraphDeviceManagementReportsClient.GetDevicePoliciesComplianceReportAsync(IAzureTenant tenant, ListRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = "deviceManagement/reports/getDevicePoliciesComplianceReport";
+
+            var data = new JsonObject();
+            
+            if (options?.Select is not null)
+                data["select"] = JsonSerializer.SerializeToNode(options.Select);
+
+            if (options?.Filter is not null)
+                data["filter"] = JsonSerializer.SerializeToNode(options.Filter);
+
+            return new(this, tenant, HttpMethod.Post, link, options, JsonSerializer.SerializeToUtf8Bytes(data), static doc => doc);
+        }
     }
 }
