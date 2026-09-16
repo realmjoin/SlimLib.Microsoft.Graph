@@ -28,6 +28,8 @@ namespace SlimLib.Microsoft.Graph
         GraphArrayOperation<JsonDocument> GetOwnedDevicesAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
         GraphArrayOperation<JsonDocument> GetRegisteredDevicesAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
 
+        GraphOperation<JsonDocument?> GetMobileAppIntentAndStateAsync(IAzureTenant tenant, Guid userID, Guid managedDeviceID, ScalarRequestOptions? options = default, CancellationToken cancellationToken = default);
+
         GraphArrayOperation<Guid[]> CheckMemberGroupsAsync(IAzureTenant tenant, string userPrincipalName, ICollection<Guid> groupIDs, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
         GraphArrayOperation<Guid[]> GetMemberGroupsAsync(IAzureTenant tenant, string userPrincipalName, bool securityEnabledOnly, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
 

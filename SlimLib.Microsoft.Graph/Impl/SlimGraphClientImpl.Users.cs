@@ -96,6 +96,13 @@ namespace SlimLib.Microsoft.Graph
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
+        GraphOperation<JsonDocument?> ISlimGraphUsersClient.GetMobileAppIntentAndStateAsync(IAzureTenant tenant, Guid userID, Guid managedDeviceID, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = ODataLinkBuilder.BuildLink(options, $"users/{userID}/mobileAppIntentAndStates/{managedDeviceID}");
+
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
+        }
+
         GraphArrayOperation<JsonDocument> ISlimGraphUsersClient.GetOwnedDevicesAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
             var nextLink = ODataLinkBuilder.BuildLink(options, $"users/{userID}/ownedDevices");
