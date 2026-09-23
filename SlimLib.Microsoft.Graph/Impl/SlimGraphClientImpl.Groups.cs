@@ -79,16 +79,16 @@ namespace SlimLib.Microsoft.Graph
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
-        Task<Results.Delta.DeltaResult<JsonElement>> ISlimGraphGroupsClient.GetGroupsDeltaAsync(IAzureTenant tenant, DeltaRequestOptions? options, CancellationToken cancellationToken)
+        GraphArrayOperation<JsonDocument> ISlimGraphGroupsClient.GetGroupsDeltaAsync(IAzureTenant tenant, DeltaRequestOptions? options, CancellationToken cancellationToken)
         {
-            var nextLink = ODataLinkBuilder.BuildLink("groups/delta", options?.Select, options?.Filter);
+            var nextLink = BuildDeltaLink("groups/delta", options);
 
-            return GetDeltaAsync(tenant, nextLink, options, cancellationToken);
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
-        Task<Results.Delta.DeltaResult<JsonElement>> ISlimGraphGroupsClient.GetGroupsDeltaChangeAsync(IAzureTenant tenant, string previousDeltaLink, DeltaRequestOptions? options, CancellationToken cancellationToken)
+        GraphArrayOperation<JsonDocument> ISlimGraphGroupsClient.GetGroupsDeltaChangeAsync(IAzureTenant tenant, string previousDeltaLink, InvokeRequestOptions? options, CancellationToken cancellationToken)
         {
-            return GetDeltaAsync(tenant, previousDeltaLink, options, cancellationToken);
+            return new(this, tenant, HttpMethod.Get, previousDeltaLink, options, default, static doc => doc);
         }
 
         GraphArrayOperation<JsonDocument> ISlimGraphGroupsClient.GetOwnersAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions? options, CancellationToken cancellationToken)

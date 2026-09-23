@@ -19,8 +19,17 @@ namespace SlimLib.Microsoft.Graph
         GraphArrayOperation<JsonDocument> GetUserAppRoleAssignmentsAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
 
         GraphArrayOperation<JsonDocument> GetUsersAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
-        Task<Results.Delta.DeltaResult<JsonElement>> GetUsersDeltaAsync(IAzureTenant tenant, DeltaRequestOptions? options = default, CancellationToken cancellationToken = default);
-        Task<Results.Delta.DeltaResult<JsonElement>> GetUsersDeltaChangeAsync(IAzureTenant tenant, string previousDeltaLink, DeltaRequestOptions? options = default, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Starts a delta round: pages of changed objects, the last one carrying the <c>@odata.deltaLink</c> to
+        /// continue from (see <see cref="Results.Delta.ODataDeltaListResponse{T}"/>). Pages are streamed, dispose each.
+        /// </summary>
+        GraphArrayOperation<JsonDocument> GetUsersDeltaAsync(IAzureTenant tenant, DeltaRequestOptions? options = default, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Continues from the <c>@odata.deltaLink</c> of a previous round, same paging as <see cref="GetUsersDeltaAsync"/>.
+        /// </summary>
+        GraphArrayOperation<JsonDocument> GetUsersDeltaChangeAsync(IAzureTenant tenant, string previousDeltaLink, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
 
         GraphArrayOperation<JsonDocument> GetMemberOfAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
         GraphArrayOperation<JsonDocument> GetTransitiveMemberOfAsync(IAzureTenant tenant, Guid userID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);

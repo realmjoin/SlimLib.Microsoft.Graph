@@ -20,8 +20,17 @@ namespace SlimLib.Microsoft.Graph
         GraphArrayOperation<JsonDocument> GetGroupPhotosAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
 
         GraphArrayOperation<JsonDocument> GetGroupsAsync(IAzureTenant tenant, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
-        Task<Results.Delta.DeltaResult<JsonElement>> GetGroupsDeltaAsync(IAzureTenant tenant, DeltaRequestOptions? options = default, CancellationToken cancellationToken = default);
-        Task<Results.Delta.DeltaResult<JsonElement>> GetGroupsDeltaChangeAsync(IAzureTenant tenant, string previousDeltaLink, DeltaRequestOptions? options = default, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Starts a delta round: pages of changed objects, the last one carrying the <c>@odata.deltaLink</c> to
+        /// continue from (see <see cref="Results.Delta.ODataDeltaListResponse{T}"/>). Pages are streamed, dispose each.
+        /// </summary>
+        GraphArrayOperation<JsonDocument> GetGroupsDeltaAsync(IAzureTenant tenant, DeltaRequestOptions? options = default, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Continues from the <c>@odata.deltaLink</c> of a previous round, same paging as <see cref="GetGroupsDeltaAsync"/>.
+        /// </summary>
+        GraphArrayOperation<JsonDocument> GetGroupsDeltaChangeAsync(IAzureTenant tenant, string previousDeltaLink, InvokeRequestOptions? options = default, CancellationToken cancellationToken = default);
 
         GraphArrayOperation<JsonDocument> GetOwnersAsync(IAzureTenant tenant, Guid groupID, ListRequestOptions? options = default, CancellationToken cancellationToken = default);
         GraphArrayOperation<JsonDocument> GetOwnersAsync(IAzureTenant tenant, Guid groupID, string type, ListRequestOptions? options = default, CancellationToken cancellationToken = default);

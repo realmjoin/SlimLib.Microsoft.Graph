@@ -29,40 +29,16 @@ namespace SlimLib.Microsoft.Graph
 
 #pragma warning restore CS0618
 
-        private async Task<Results.Delta.DeltaResult<JsonElement>> GetDeltaAsync(IAzureTenant tenant, string nextLink, DeltaRequestOptions? options, CancellationToken cancellationToken)
+        private static string BuildDeltaLink(string resource, DeltaRequestOptions? options)
         {
-            var result = new List<JsonElement>();
+            var link = ODataLinkBuilder.BuildLink(resource, options?.Select, options?.Filter);
 
-            string? nLink = nextLink;
-            string? dLink = default;
-
-            do
+            if (options?.StartFromLatest == true)
             {
-                using var doc = await GetAsync(tenant, nLink, options, cancellationToken).ConfigureAwait(false);
+                link += (link.Contains('?') ? "&" : "?") + "$deltatoken=latest";
+            }
 
-                if (doc is not null)
-                {
-                    if (doc.RootElement.TryGetProperty("value", out var items) && items.ValueKind == JsonValueKind.Array)
-                    {
-                        foreach (var item in items.EnumerateArray())
-                        {
-                            if (cancellationToken.IsCancellationRequested)
-                                break;
-
-                            result.Add(item);
-                        }
-                    }
-
-                    if (cancellationToken.IsCancellationRequested)
-                        break;
-
-                    HandleNextLink(doc.RootElement, ref nLink);
-                    HandleDeltaLink(doc.RootElement, ref dLink);
-                }
-
-            } while (nLink != null);
-
-            return new Results.Delta.DeltaResult<JsonElement>(result, dLink);
+            return link;
         }
 
         private async Task<SlimGraphPicture?> GetPictureAsync(IAzureTenant tenant, string requestUri, CancellationToken cancellationToken)
@@ -78,18 +54,6 @@ namespace SlimLib.Microsoft.Graph
             var buffer = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
 
             return new SlimGraphPicture(buffer, response.Content.Headers.ContentType);
-        }
-
-        private static void HandleDeltaLink(JsonElement root, ref string? deltaLink)
-        {
-            if (root.TryGetProperty("@odata.deltaLink", out var el))
-            {
-                deltaLink = el.GetString();
-            }
-            else
-            {
-                deltaLink = null;
-            }
         }
     }
 }
