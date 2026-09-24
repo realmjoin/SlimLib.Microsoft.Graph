@@ -23,6 +23,18 @@ namespace SlimLib.Microsoft.Graph
             return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
         }
 
+        GraphArrayOperation<JsonDocument> ISlimGraphDevicesClient.GetDevicesDeltaAsync(IAzureTenant tenant, DeltaRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var nextLink = BuildDeltaLink("devices/delta", options);
+
+            return new(this, tenant, HttpMethod.Get, nextLink, options, default, static doc => doc);
+        }
+
+        GraphArrayOperation<JsonDocument> ISlimGraphDevicesClient.GetDevicesDeltaChangeAsync(IAzureTenant tenant, string previousDeltaLink, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        {
+            return new(this, tenant, HttpMethod.Get, previousDeltaLink, options, default, static doc => doc);
+        }
+
         GraphArrayOperation<JsonDocument> ISlimGraphDevicesClient.GetRegisteredOwnersAsync(IAzureTenant tenant, Guid deviceID, ListRequestOptions? options, CancellationToken cancellationToken)
         {
             var nextLink = ODataLinkBuilder.BuildLink(options, $"devices/{deviceID}/registeredOwners");
