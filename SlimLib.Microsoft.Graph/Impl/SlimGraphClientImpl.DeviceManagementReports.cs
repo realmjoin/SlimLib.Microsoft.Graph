@@ -1,4 +1,5 @@
 ﻿using SlimLib.Auth.Azure;
+using System;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -34,6 +35,20 @@ namespace SlimLib.Microsoft.Graph
             var link = "deviceManagement/reports/getDevicePolicySettingsComplianceReport";
 
             return new(this, tenant, HttpMethod.Post, link, options, BuildReportBody(options), static doc => doc);
+        }
+
+        GraphOperation<JsonDocument?> ISlimGraphDeviceManagementReportsClient.CreateExportJobAsync(IAzureTenant tenant, JsonObject data, InvokeRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = ODataLinkBuilder.BuildLink(options, "deviceManagement/reports/exportJobs");
+
+            return new(this, tenant, HttpMethod.Post, link, options, JsonSerializer.SerializeToUtf8Bytes(data), static doc => doc);
+        }
+
+        GraphOperation<JsonDocument?> ISlimGraphDeviceManagementReportsClient.GetExportJobAsync(IAzureTenant tenant, string id, ScalarRequestOptions? options, CancellationToken cancellationToken)
+        {
+            var link = ODataLinkBuilder.BuildLink(options, $"deviceManagement/reports/exportJobs/{Uri.EscapeDataString(id)}");
+
+            return new(this, tenant, HttpMethod.Get, link, options, default, static doc => doc);
         }
 
         private static byte[] BuildReportBody(ListRequestOptions? options)
